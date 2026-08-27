@@ -13,7 +13,7 @@ class DashboardController extends Controller
         $mesCommunautes = Session::get('mes_communautes', []);
 
         return $this->view('createur.dashboard', [
-            'mes_communautes' => $mesCommunautes,
+            'mesCommunautes' => $mesCommunautes,
             'titre' => 'Mon tableau de bord',
         ]);
     }
