@@ -4,6 +4,7 @@ namespace App\Controllers;
 
 use App\Core\Controller;
 use App\Core\Response;
+use App\Core\View;
 use App\Services\CommunauteService;
 
 class AccueilController extends Controller
@@ -13,10 +14,10 @@ class AccueilController extends Controller
         $communauteService = new CommunauteService();
         $communautes = $communauteService->recupererPubliques(1, 6);
 
-        return $this->view('public.accueil', [
+        return Response::html(View::make('public.accueil', [
             'communautes' => $communautes,
             'titre' => 'Bienvenue sur Cado.me',
-        ]);
+        ]));
     }
 
     public function decouvrir(): Response
@@ -24,9 +25,9 @@ class AccueilController extends Controller
         $communauteService = new CommunauteService();
         $communautes = $communauteService->recupererPubliques(1, 24);
 
-        return $this->view('public.decouvrir', [
+        return Response::html(View::make('public.decouvrir', [
             'communautes' => $communautes,
             'titre' => 'Découvrir les communautés',
-        ]);
+        ]));
     }
 }

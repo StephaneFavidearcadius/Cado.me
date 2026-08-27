@@ -4,6 +4,7 @@ namespace App\Controllers;
 
 use App\Core\Controller;
 use App\Core\Database;
+use App\Core\Request;
 use App\Core\Response;
 use App\Core\Session;
 use App\Services\PublicationService;
@@ -38,7 +39,7 @@ class FeedController extends Controller
         $resultat = $publicationService->creer($communaute['id'], Session::get('utilisateur_id'), $_POST);
 
         if ($resultat['success']) {
-            if (Session::has('utilisateur_id') && \App\Core\Request::isAjax()) {
+            if (Session::has('utilisateur_id') && Request::isAjax()) {
                 return $this->json(['success' => true, 'publication_id' => $resultat['publication_id']]);
             }
             Session::flash('success', 'Publication créée !');
@@ -57,7 +58,7 @@ class FeedController extends Controller
         $publicationService = new PublicationService();
         $resultat = $publicationService->aimer($communaute['id'], (int)$id, Session::get('utilisateur_id'));
 
-        if (\App\Core\Request::isAjax()) {
+        if ((new Request())->isAjax()) {
             return $this->json($resultat);
         }
 
@@ -75,7 +76,7 @@ class FeedController extends Controller
         $commentaireService = new \App\Services\CommentaireService();
         $resultat = $commentaireService->ajouter($communaute['id'], (int)$id, Session::get('utilisateur_id'), $contenu, $parentId);
 
-        if (\App\Core\Request::isAjax()) {
+        if ((new Request())->isAjax()) {
             return $this->json($resultat);
         }
 

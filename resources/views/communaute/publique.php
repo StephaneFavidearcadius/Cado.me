@@ -73,7 +73,7 @@
                         <?php endif; ?>
                     </div>
                     <?php if (App\Core\Session::has('utilisateur_id')): ?>
-                    <form method="POST" action="/c <?= htmlspecialchars($communaute['slug']) ?>/rejoindre">
+                    <form method="POST" action="/c/<?= htmlspecialchars($communaute['slug']) ?>/rejoindre">
                         <?= App\Core\Csrf::field() ?>
                         <button type="submit"
                                 class="px-6 py-3 bg-violet-500 hover:bg-violet-600 text-white font-semibold rounded-xl transition shadow-lg shadow-violet-500/25">

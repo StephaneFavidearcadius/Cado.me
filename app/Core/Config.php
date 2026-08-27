@@ -8,9 +8,13 @@ class Config
 {
     private static array $configs = [];
 
+    private static string $rootPath = '';
+
     public static function load(): void
     {
-        $dotenv = Dotenv::createImmutable(dirname(__DIR__));
+        self::$rootPath = dirname(__DIR__, 2);
+
+        $dotenv = Dotenv::createImmutable(self::$rootPath);
         $dotenv->load();
 
         $configFiles = [
@@ -22,8 +26,9 @@ class Config
         ];
 
         foreach ($configFiles as $key => $file) {
-            if (file_exists($file)) {
-                self::$configs[$key] = require $file;
+            $path = self::$rootPath . '/' . $file;
+            if (file_exists($path)) {
+                self::$configs[$key] = require $path;
             }
         }
     }

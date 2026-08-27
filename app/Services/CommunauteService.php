@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Core\Config;
 use App\Core\Database;
 use App\Core\Session;
 
@@ -61,7 +62,7 @@ class CommunauteService
             ]);
 
             // 3. Créer l'abonnement gratuit par défaut
-            $planDefaut = Config::get('abonnement.default');
+            // Plan gratuit par défaut (plan_id = 1)
             $stmt = $this->db->prepare(
                 'INSERT INTO abonnements (communaute_id, plan_id, statut, periode_debut, periode_fin, date_creation, date_modification)
                  VALUES (:cid, 1, :statut, NOW(), DATE_ADD(NOW(), INTERVAL 1 YEAR), NOW(), NOW())'

@@ -16,7 +16,7 @@
     <?php if (!empty($mesCommunautes)): ?>
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         <?php foreach ($mesCommunautes as $communaute): ?>
-        <a href="/c <?= htmlspecialchars($communaute['slug']) ?>/app"
+        <a href="/c/<?= htmlspecialchars($communaute['slug']) ?>/app"
            class="group bg-white rounded-2xl border border-gray-100 overflow-hidden hover:shadow-lg transition-all duration-300">
             <!-- Couverture -->
             <div class="h-24 bg-gradient-to-r from-violet-500 to-violet-400 relative">

@@ -12,7 +12,7 @@ class AuthMiddleware
     {
         if (!Session::has('utilisateur_id')) {
             Session::flash('error', 'Veuillez vous connecter pour accéder à cette page.');
-            return Response::redirect('/connexion');
+            return Response::redirect('/connexion'));
         }
 
         return null;

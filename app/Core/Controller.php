@@ -11,7 +11,7 @@ abstract class Controller
 
     protected function viewAuth(string $view, array $data = [], int $statusCode = 200): Response
     {
-        return View::renderWithLayout('auth', $view, $data, $statusCode);
+        return View::renderWithLayout('auth', "auth.{$view}", $data, $statusCode);
     }
 
     protected function viewAdmin(string $view, array $data = [], int $statusCode = 200): Response

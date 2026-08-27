@@ -6,7 +6,7 @@
 
     <!-- Nouvelle publication -->
     <div class="bg-white rounded-2xl border border-gray-100 p-5 mb-6">
-        <form method="POST" action="/c <?= htmlspecialchars($communaute['slug']) ?>/publications" class="space-y-4">
+        <form method="POST" action="/c/<?= htmlspecialchars($communaute['slug']) ?>/publications" class="space-y-4">
             <?= \App\Core\Csrf::field() ?>
             <div class="flex items-start gap-3">
                 <div class="w-10 h-10 rounded-full bg-violet-100 flex items-center justify-center flex-shrink-0">
@@ -59,7 +59,7 @@
 
             <!-- Actions -->
             <div class="flex items-center gap-6 pt-3 border-t border-gray-100">
-                <form method="POST" action="/c <?= htmlspecialchars($communaute['slug']) ?>/publications/<?= $pub['id'] ?>/like">
+                <form method="POST" action="/c/<?= htmlspecialchars($communaute['slug']) ?>/publications/<?= $pub['id'] ?>/like">
                     <?= \App\Core\Csrf::field() ?>
                     <button type="submit" class="flex items-center gap-1.5 text-sm text-gray-500 hover:text-violet-600 transition">
                         <i data-lucide="heart" class="w-4 h-4"></i>
@@ -83,7 +83,7 @@
 
             <!-- Commentaires (Alpine.js) -->
             <div x-show="showComments" x-cloak x-transition class="mt-4 pt-4 border-t border-gray-100">
-                <form method="POST" action="/c <?= htmlspecialchars($communaute['slug']) ?>/publications/<?= $pub['id'] ?>/commentaires" class="flex gap-2">
+                <form method="POST" action="/c/<?= htmlspecialchars($communaute['slug']) ?>/publications/<?= $pub['id'] ?>/commentaires" class="flex gap-2">
                     <?= \App\Core\Csrf::field() ?>
                     <input type="text" name="contenu" placeholder="Écrire un commentaire..."
                            class="flex-1 px-4 py-2 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-violet-500 focus:border-transparent outline-none">

@@ -39,6 +39,15 @@ class Request
     {
         $uri = $this->server['REQUEST_URI'] ?? '/';
         $uri = explode('?', $uri)[0];
+
+        // Calculer le chemin de base depuis SCRIPT_NAME
+        $scriptName = $this->server['SCRIPT_NAME'] ?? '';
+        $basePath = rtrim(dirname($scriptName), '/');
+
+        if ($basePath !== '' && str_starts_with($uri, $basePath)) {
+            $uri = substr($uri, strlen($basePath));
+        }
+
         return rtrim($uri, '/') ?: '/';
     }
 

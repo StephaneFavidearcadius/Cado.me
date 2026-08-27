@@ -14,7 +14,7 @@ class SuperAdministrateurMiddleware
 
         if ($role !== 'super_administrateur') {
             Session::flash('error', 'Accès réservé aux super administrateurs.');
-            return Response::redirect('/app');
+            return Response::redirect('/app'));
         }
 
         return null;
