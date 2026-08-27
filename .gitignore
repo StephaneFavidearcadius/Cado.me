@@ -1,0 +1,33 @@
+# Cado.me .gitignore
+
+# Environment
+.env
+
+# Vendor
+vendor/
+
+# Uploads
+uploads/
+
+# Storage
+storage/logs/*
+storage/cache/*
+storage/sessions/*
+!storage/logs/.gitkeep
+!storage/cache/.gitkeep
+!storage/sessions/.gitkeep
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Node (if used for assets)
+node_modules/
+package-lock.json
