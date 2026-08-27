@@ -47,6 +47,7 @@
     <base href="/">
     <style>
         [x-cloak] { display: none !important; }
+        *, *::before, *::after { border-radius: 0 !important; }
     </style>
 </head>
 <body class="font-sora bg-gray-50 text-gray-900 min-h-screen">

@@ -27,6 +27,7 @@
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
     <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
 </head>
+<style>*, *::before, *::after { border-radius: 0 !important; }</style>
 <body class="font-sora bg-gray-50 min-h-screen">
 
     <!-- Header -->

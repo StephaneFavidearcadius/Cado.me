@@ -47,6 +47,7 @@
 
     <style>
         [x-cloak] { display: none !important; }
+        *, *::before, *::after { border-radius: 0 !important; }
     </style>
 </head>
 <body class="font-sora bg-gray-50 min-h-screen flex items-center justify-center p-4">

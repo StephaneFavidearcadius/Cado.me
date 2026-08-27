@@ -21,7 +21,7 @@
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
     <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
     <base href="/">
-    <style>[x-cloak] { display: none !important; }</style>
+    <style>[x-cloak] { display: none !important; } *, *::before, *::after { border-radius: 0 !important; }</style>
 </head>
 <body class="font-sora bg-gray-50 text-gray-900 min-h-screen">
 
