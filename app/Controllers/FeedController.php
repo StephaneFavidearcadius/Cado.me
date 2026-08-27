@@ -20,7 +20,7 @@ class FeedController extends Controller
         $publicationService = new PublicationService();
         $data = $publicationService->feed($communaute['id'], $page);
 
-        return $this->view('feed.index', [
+        return $this->viewCommunity('feed.index', [
             'communaute' => $communaute,
             'publications' => $data['publications'],
             'total' => $data['total'],
@@ -35,11 +35,16 @@ class FeedController extends Controller
         $communaute = $this->getCommunaute($slug);
         if (!$communaute) return $this->view('errors.404', [], 404);
 
+        $data = $_POST;
+        $data['images'] = $_FILES['images'] ?? null;
+        $data['videos'] = $_FILES['videos'] ?? null;
+        $data['fichiers'] = $_FILES['fichiers'] ?? null;
+
         $publicationService = new PublicationService();
-        $resultat = $publicationService->creer($communaute['id'], Session::get('utilisateur_id'), $_POST);
+        $resultat = $publicationService->creer($communaute['id'], Session::get('utilisateur_id'), $data);
 
         if ($resultat['success']) {
-            if (Session::has('utilisateur_id') && Request::isAjax()) {
+            if ((new Request())->isAjax()) {
                 return $this->json(['success' => true, 'publication_id' => $resultat['publication_id']]);
             }
             Session::flash('success', 'Publication créée !');

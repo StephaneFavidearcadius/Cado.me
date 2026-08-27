@@ -22,7 +22,7 @@ class MessageController extends Controller
         $messageService = new MessageService();
         $conversations = $messageService->listerConversations($communaute['id'], Session::get('utilisateur_id'));
 
-        return $this->view('messages.index', [
+        return $this->viewCommunity('messages.index', [
             'communaute' => $communaute,
             'conversations' => $conversations,
             'titre' => 'Messages',

@@ -93,7 +93,7 @@ class CommunauteController extends Controller
             return $this->view('errors.404', [], 404);
         }
 
-        return $this->view('communaute.app', [
+        return $this->viewCommunity('communaute.app', [
             'communaute' => $communaute,
             'titre' => $communaute['nom'],
         ]);
@@ -108,7 +108,7 @@ class CommunauteController extends Controller
             return $this->view('errors.404', [], 404);
         }
 
-        return $this->view('communaute.gestion', [
+        return $this->viewCommunity('communaute.gestion', [
             'communaute' => $communaute,
             'titre' => "Gestion - {$communaute['nom']}",
         ]);
@@ -123,7 +123,7 @@ class CommunauteController extends Controller
             return $this->view('errors.404', [], 404);
         }
 
-        return $this->view('communaute.parametres', [
+        return $this->viewCommunity('communaute.parametres', [
             'communaute' => $communaute,
             'titre' => "Paramètres - {$communaute['nom']}",
         ]);

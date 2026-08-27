@@ -21,7 +21,7 @@ class EvenementController extends Controller
         $evenementService = new EvenementService();
         $evenements = $evenementService->lister($communaute['id']);
 
-        return $this->view('evenements.index', [
+        return $this->viewCommunity('evenements.index', [
             'communaute' => $communaute,
             'evenements' => $evenements,
             'titre' => 'Événements',

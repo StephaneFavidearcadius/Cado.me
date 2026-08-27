@@ -14,7 +14,7 @@ class ProprietaireMiddleware
         $communaute = Session::get('communaute_courante');
 
         if (!$communaute) {
-            return Response::redirect('/app'));
+            return Response::redirect('/app');
         }
 
         $utilisateurId = Session::get('utilisateur_id');
@@ -32,7 +32,7 @@ class ProprietaireMiddleware
 
         if (!$stmt->fetch()) {
             Session::flash('error', 'Vous n\'avez pas les droits de propriétaire pour cette communauté.');
-            return Response::redirect("/c/{$communaute['slug']}/app"));
+            return Response::redirect("/c/{$communaute['slug']}/app");
         }
 
         return null;

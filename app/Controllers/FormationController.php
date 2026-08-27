@@ -22,7 +22,7 @@ class FormationController extends Controller
         $formationService = new FormationService();
         $formations = $formationService->lister($communaute['id']);
 
-        return $this->view('formations.index', [
+        return $this->viewCommunity('formations.index', [
             'communaute' => $communaute,
             'formations' => $formations,
             'titre' => 'Formations',
@@ -47,7 +47,7 @@ class FormationController extends Controller
 
         $lecons = $formationService->listerLecons($communaute['id'], $formationData['id']);
 
-        return $this->view('formations.detail', [
+        return $this->viewCommunity('formations.detail', [
             'communaute' => $communaute,
             'formation' => $formationData,
             'lecons' => $lecons,

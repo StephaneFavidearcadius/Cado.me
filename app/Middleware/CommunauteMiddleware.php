@@ -43,7 +43,7 @@ class CommunauteMiddleware
 
                 if (!$stmt->fetch()) {
                     Session::flash('error', 'Vous n\'êtes pas membre de cette communauté.');
-                    return Response::redirect('/app'));
+                    return Response::redirect('/app');
                 }
             }
 

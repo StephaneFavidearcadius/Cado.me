@@ -9,6 +9,11 @@ abstract class Controller
         return View::renderWithLayout('main', $view, $data, $statusCode);
     }
 
+    protected function viewCommunity(string $view, array $data = [], int $statusCode = 200): Response
+    {
+        return View::renderWithLayout('community', $view, $data, $statusCode);
+    }
+
     protected function viewAuth(string $view, array $data = [], int $statusCode = 200): Response
     {
         return View::renderWithLayout('auth', "auth.{$view}", $data, $statusCode);

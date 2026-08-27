@@ -18,8 +18,18 @@ class PublicationService
      */
     public function creer(int $communauteId, int $utilisateurId, array $data): array
     {
-        if (empty($data['contenu']) && empty($data['type'])) {
-            return ['success' => false, 'errors' => ['Le contenu est requis.']];
+        $contenu = trim($data['contenu'] ?? '');
+        $hasMedia = !empty($data['images']['name'][0]) || !empty($data['videos']['name'][0]) || !empty($data['fichiers']['name'][0]);
+
+        if (empty($contenu) && !$hasMedia) {
+            return ['success' => false, 'errors' => ['Le contenu ou un fichier est requis.']];
+        }
+
+        $type = 'texte';
+        if (!empty($data['images']['name'][0])) {
+            $type = 'image';
+        } elseif (!empty($data['videos']['name'][0])) {
+            $type = 'video';
         }
 
         $stmt = $this->db->prepare(
@@ -30,12 +40,58 @@ class PublicationService
         $stmt->execute([
             'cid' => $communauteId,
             'uid' => $utilisateurId,
-            'contenu' => htmlspecialchars(trim($data['contenu'] ?? '')),
-            'type' => $data['type'] ?? 'texte',
+            'contenu' => htmlspecialchars($contenu),
+            'type' => $type,
             'statut' => 'active',
         ]);
 
-        return ['success' => true, 'publication_id' => $this->db->lastInsertId()];
+        $publicationId = $this->db->lastInsertId();
+
+        // Upload des fichiers
+        $storage = new \App\Services\StorageService();
+        $this->uploaderMedias($publicationId, $communauteId, $data['images'] ?? null, 'image', $storage);
+        $this->uploaderMedias($publicationId, $communauteId, $data['videos'] ?? null, 'video', $storage);
+        $this->uploaderMedias($publicationId, $communauteId, $data['fichiers'] ?? null, 'fichier', $storage);
+
+        return ['success' => true, 'publication_id' => $publicationId];
+    }
+
+    private function uploaderMedias(int $publicationId, int $communauteId, ?array $fichiers, string $type, \App\Services\StorageService $storage): void
+    {
+        if (!$fichiers || empty($fichiers['name'][0])) {
+            return;
+        }
+
+        $count = count($fichiers['name']);
+        for ($i = 0; $i < $count; $i++) {
+            $fichier = [
+                'name' => $fichiers['name'][$i],
+                'type' => $fichiers['type'][$i],
+                'tmp_name' => $fichiers['tmp_name'][$i],
+                'error' => $fichiers['error'][$i],
+                'size' => $fichiers['size'][$i],
+            ];
+
+            if ($fichier['error'] !== UPLOAD_ERR_OK || empty($fichier['tmp_name'])) {
+                continue;
+            }
+
+            $chemin = $storage->stocker($fichier, $communauteId, 'publications');
+            if ($chemin) {
+                $stmt = $this->db->prepare(
+                    'INSERT INTO medias_publications (publication_id, communaute_id, type, chemin, nom_original, taille, date_creation)
+                     VALUES (:pid, :cid, :type, :chemin, :nom, :taille, NOW())'
+                );
+                $stmt->execute([
+                    'pid' => $publicationId,
+                    'cid' => $communauteId,
+                    'type' => $type,
+                    'chemin' => $chemin,
+                    'nom' => $fichier['name'],
+                    'taille' => $fichier['size'],
+                ]);
+            }
+        }
     }
 
     /**
@@ -47,8 +103,8 @@ class PublicationService
 
         $stmt = $this->db->prepare(
             'SELECT p.*, u.prenom, u.nom, u.avatar, u.identifiant,
-                    (SELECT COUNT(*) FROM commentaires WHERE publication_id = p.id AND statut = :statut_c AND communaute_id = :cid) as nb_commentaires,
-                    (SELECT COUNT(*) FROM likes_publications WHERE publication_id = p.id AND communaute_id = :cid) as nb_likes
+                    (SELECT COUNT(*) FROM commentaires WHERE publication_id = p.id AND statut = :statut_c AND communaute_id = p.communaute_id) as nb_commentaires,
+                    (SELECT COUNT(*) FROM likes_publications WHERE publication_id = p.id AND communaute_id = p.communaute_id) as nb_likes
              FROM publications p
              JOIN utilisateurs u ON u.id = p.utilisateur_id
              WHERE p.communaute_id = :cid AND p.statut = :statut

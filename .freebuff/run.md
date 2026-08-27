@@ -1,32 +1,31 @@
-# Cado.me Preview Run Doc
+# Cado.me - Run Instructions
 
-## How to reproduce artifacts
+## How to Run the Server
 
-This project runs on WAMP (Apache + MySQL). For the preview, we use PHP's built-in dev server.
+1. **Start the PHP built-in server:**
+   ```bash
+   cd C:\wamp64\www\Cado.me
+   C:\wamp64\bin\php\php8.4.15\php.exe -S 127.0.0.1:8080 -t public public\index.php
+   ```
 
-1. PHP 8.4+ is required (available at `C:\wamp64\bin\php\php8.4.15\php.exe`)
-2. `.env` must exist at the project root with WAMP defaults (already in place)
-3. `vendor/` must be installed via `composer install` (already in place)
-4. MySQL database `cado_me` must exist in WAMP's MySQL (already imported)
+2. **Access the app:** http://127.0.0.1:8080
 
-## How to run the server
+3. **Or via Apache (WAMP):** http://localhost/Cado.me/public/
+   - A `.htaccess` at `C:\wamp64\www\` also routes `localhost/*` to Cado.me
 
-Start PHP's built-in server with the app's entry point as router:
+## Environment
 
-```
-C:\wamp64\bin\php\php8.4.15\php.exe -S 127.0.0.1:8080 public/index.php
-```
+- PHP 8.4.15 (WAMP)
+- MySQL (WAMP) — database: `cado_me`
+- `.env` at project root — already configured for WAMP defaults
 
-Port: **8080** (avoids conflict with WAMP's Apache on port 80)
+## Admin Account
 
-### Windows detach (bash/MSYS2)
+- Email: `admin@cado.me`
+- Password: `password`
 
-```bash
-/c/wamp64/bin/php/php8.4.15/php.exe -S 127.0.0.1:8080 public/index.php > .freebuff/preview.log 2>&1 &
-```
+## User Account (with communities)
 
-### Windows detach (PowerShell)
-
-```powershell
-Start-Process -FilePath 'C:\wamp64\bin\php\php8.4.15\php.exe' -ArgumentList '-S','127.0.0.1:8080','public/index.php' -RedirectStandardOutput '.freebuff\preview.log' -RedirectStandardError '.freebuff\preview.log.err' -WindowStyle Hidden -PassThru
-```
+- Email: `favidestephanearcadius@gmail.com`
+- Identifiant: `stephanefavide`
+- Has 3 communities: AI MASTERY, AI First, AI Builders

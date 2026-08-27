@@ -74,9 +74,16 @@ class CommunauteService
 
             $this->db->commit();
 
-            // Recharger les communautés en session
-            $authService = new AuthService();
-            $authService->connecter(Session::get('utilisateur_email'), '');
+            // Recharger les communautés en session directement
+            $stmt = $this->db->prepare(
+                'SELECT mc.*, c.nom, c.slug, c.logo, c.couleur_principale
+                 FROM membres_communautes mc
+                 JOIN communautes c ON c.id = mc.communaute_id
+                 WHERE mc.utilisateur_id = :uid AND mc.statut = :statut
+                 ORDER BY mc.date_adhesion DESC'
+            );
+            $stmt->execute(['uid' => $proprietaireId, 'statut' => 'actif']);
+            Session::set('mes_communautes', $stmt->fetchAll());
 
             return ['success' => true, 'communaute_id' => $communauteId, 'slug' => $slug];
 

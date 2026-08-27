@@ -22,7 +22,7 @@ class MembreController extends Controller
         $membreService = new MembreCommunauteService();
         $membres = $membreService->lister($communaute['id']);
 
-        return $this->view('membres.index', [
+        return $this->viewCommunity('membres.index', [
             'communaute' => $communaute,
             'membres' => $membres,
             'titre' => 'Membres',
@@ -48,7 +48,7 @@ class MembreController extends Controller
             return $this->view('errors.404', [], 404);
         }
 
-        return $this->view('membres.profil', [
+        return $this->viewCommunity('membres.profil', [
             'communaute' => $communaute,
             'membre' => $membre,
             'titre' => "{$membre['prenom']} {$membre['nom']}",

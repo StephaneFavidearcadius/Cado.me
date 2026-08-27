@@ -21,7 +21,7 @@ class RessourceController extends Controller
         $ressourceService = new RessourceService();
         $ressources = $ressourceService->lister($communaute['id']);
 
-        return $this->view('ressources.index', [
+        return $this->viewCommunity('ressources.index', [
             'communaute' => $communaute,
             'ressources' => $ressources,
             'titre' => 'Ressources',

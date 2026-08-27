@@ -115,11 +115,11 @@ class MessageService
     {
         $stmt = $this->db->prepare(
             'SELECT c.*, 
-                    (SELECT contenu FROM messages WHERE conversation_id = c.id AND communaute_id = :cid ORDER BY date_creation DESC LIMIT 1) as dernier_message,
-                    (SELECT COUNT(*) FROM messages WHERE conversation_id = c.id AND communaute_id = :cid AND lu = 0 AND utilisateur_id != :uid) as non_lus
+                    (SELECT contenu FROM messages WHERE conversation_id = c.id AND communaute_id = c.communaute_id ORDER BY date_creation DESC LIMIT 1) as dernier_message,
+                    (SELECT COUNT(*) FROM messages WHERE conversation_id = c.id AND communaute_id = c.communaute_id AND lu = 0 AND utilisateur_id != :uid) as non_lus
              FROM conversations c
-             JOIN participants_conversations pc ON pc.conversation_id = c.id AND pc.utilisateur_id = :uid2 AND pc.communaute_id = :cid2
-             WHERE c.communaute_id = :cid3
+             JOIN participants_conversations pc ON pc.conversation_id = c.id AND pc.utilisateur_id = :uid2 AND pc.communaute_id = c.communaute_id
+             WHERE c.communaute_id = :cid
              ORDER BY c.date_modification DESC'
         );
 
@@ -127,8 +127,6 @@ class MessageService
             'cid' => $communauteId,
             'uid' => $utilisateurId,
             'uid2' => $utilisateurId,
-            'cid2' => $communauteId,
-            'cid3' => $communauteId,
         ]);
 
         return $stmt->fetchAll();

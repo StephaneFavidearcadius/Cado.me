@@ -23,7 +23,7 @@ class ProfilController extends Controller
         $stmt->execute(['id' => Session::get('utilisateur_id')]);
         $utilisateur = $stmt->fetch();
 
-        return $this->view('profil.index', [
+        return $this->viewCommunity('profil.index', [
             'communaute' => $communaute,
             'utilisateur' => $utilisateur,
             'titre' => 'Mon profil',

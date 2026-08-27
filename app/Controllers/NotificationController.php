@@ -22,7 +22,7 @@ class NotificationController extends Controller
         $notificationService = new NotificationService();
         $notifications = $notificationService->lister($communaute['id'], Session::get('utilisateur_id'));
 
-        return $this->view('notifications.index', [
+        return $this->viewCommunity('notifications.index', [
             'communaute' => $communaute,
             'notifications' => $notifications,
             'titre' => 'Notifications',
