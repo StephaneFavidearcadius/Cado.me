@@ -79,7 +79,7 @@ class PublicationService
             $chemin = $storage->stocker($fichier, $communauteId, 'publications');
             if ($chemin) {
                 $stmt = $this->db->prepare(
-                    'INSERT INTO medias_publications (publication_id, communaute_id, type, chemin, nom_original, taille, date_creation)
+                    'INSERT INTO medias_publications (publication_id, communaute_id, type, chemin, nom_fichier, taille, date_creation)
                      VALUES (:pid, :cid, :type, :chemin, :nom, :taille, NOW())'
                 );
                 $stmt->execute([
@@ -87,7 +87,7 @@ class PublicationService
                     'cid' => $communauteId,
                     'type' => $type,
                     'chemin' => $chemin,
-                    'nom' => $fichier['name'],
+                    'nom' => $fichier['name'] ?? '',
                     'taille' => $fichier['size'],
                 ]);
             }
@@ -120,6 +120,27 @@ class PublicationService
         $stmt->execute();
 
         $publications = $stmt->fetchAll();
+
+        // Charger les médias pour chaque publication
+        if (!empty($publications)) {
+            $pubIds = array_column($publications, 'id');
+            $placeholders = implode(',', array_fill(0, count($pubIds), '?'));
+            $mediaStmt = $this->db->prepare(
+                "SELECT * FROM medias_publications WHERE publication_id IN ($placeholders) ORDER BY id ASC"
+            );
+            $mediaStmt->execute($pubIds);
+            $allMedias = $mediaStmt->fetchAll();
+
+            $mediasByPub = [];
+            foreach ($allMedias as $m) {
+                $mediasByPub[$m['publication_id']][] = $m;
+            }
+
+            foreach ($publications as &$pub) {
+                $pub['medias'] = $mediasByPub[$pub['id']] ?? [];
+            }
+            unset($pub);
+        }
 
         // Nombre total
         $countStmt = $this->db->prepare(

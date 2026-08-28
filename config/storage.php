@@ -2,7 +2,7 @@
 
 return [
     'driver' => $_ENV['STORAGE_DRIVER'] ?? 'local',
-    'local_path' => $_ENV['STORAGE_PATH'] ?? 'uploads',
+    'local_path' => $_ENV['STORAGE_PATH'] ?? 'public/uploads',
     's3' => [
         'endpoint' => $_ENV['S3_ENDPOINT'] ?? '',
         'bucket' => $_ENV['S3_BUCKET'] ?? '',

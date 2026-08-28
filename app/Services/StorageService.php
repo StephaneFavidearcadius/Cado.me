@@ -64,11 +64,15 @@ class StorageService
     public function url(string $chemin): string
     {
         if ($this->driver === 's3') {
-            // Future implémentation S3/R2
             return $chemin;
         }
 
-        return '/' . ltrim($chemin, '/');
+        // Si le chemin commence par public/, enlever ce préfixe pour l'URL web
+        $clean = ltrim($chemin, '/');
+        if (str_starts_with($clean, 'public/')) {
+            return '/' . substr($clean, 7);
+        }
+        return '/' . $clean;
     }
 
     /**

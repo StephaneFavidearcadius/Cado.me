@@ -67,6 +67,9 @@ $router->post('/c/{slug}/publications/{id}/like', [FeedController::class, 'aimer
 $router->middleware([AuthMiddleware::class, CommunauteMiddleware::class, CsrfMiddleware::class]);
 $router->post('/c/{slug}/publications/{id}/commentaires', [FeedController::class, 'commenter']);
 
+$router->middleware([AuthMiddleware::class, CommunauteMiddleware::class]);
+$router->get('/c/{slug}/publications/{id}/commentaires', [FeedController::class, 'listerCommentaires']);
+
 // Membres
 $router->middleware([AuthMiddleware::class, CommunauteMiddleware::class, CsrfMiddleware::class]);
 $router->get('/c/{slug}/membres', [MembreController::class, 'index']);

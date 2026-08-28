@@ -88,6 +88,17 @@ class FeedController extends Controller
         return $this->redirect("/c/{$slug}/app");
     }
 
+    public function listerCommentaires(string $slug, string $id): Response
+    {
+        $communaute = $this->getCommunaute($slug);
+        if (!$communaute) return $this->json(['error' => 'Not found'], 404);
+
+        $commentaireService = new \App\Services\CommentaireService();
+        $commentaires = $commentaireService->lister($communaute['id'], (int)$id);
+
+        return $this->json($commentaires);
+    }
+
     private function getCommunaute(string $slug): ?array
     {
         $communauteService = new \App\Services\CommunauteService();
