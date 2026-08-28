@@ -55,34 +55,41 @@
         <h2 class="text-lg font-semibold text-gray-900">Mes communautés</h2>
     </div>
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-        <?php foreach ($mesCommunautes as $communaute): ?>
+        <?php
+        $storage = new \App\Services\StorageService();
+        foreach ($mesCommunautes as $communaute):
+            $cColor = $communaute['couleur_principale'] ?? '#7830E0';
+            $cColorLight = $cColor . '20';
+            $cLogo = !empty($communaute['logo']) ? $storage->url($communaute['logo']) : '';
+            $cCover = !empty($communaute['image_couverture']) ? $storage->url($communaute['image_couverture']) : '';
+        ?>
         <a href="/c/<?= htmlspecialchars($communaute['slug']) ?>/app"
-           class="group bg-white rounded-2xl border border-gray-100 hover:border-violet-200 hover:shadow-md transition-all duration-200 overflow-hidden">
+           class="group bg-white border border-gray-200 hover:border-gray-300 hover:shadow-md transition-all duration-200 overflow-hidden">
             <!-- Cover -->
-            <div class="h-20 bg-gradient-to-r from-violet-500 to-violet-400 relative">
-                <?php if (!empty($communaute['image_couverture'])): ?>
-                <img src="<?= htmlspecialchars($communaute['image_couverture']) ?>" class="w-full h-full object-cover" alt="">
+            <div class="h-20 relative" style="background: <?= $cColor ?>;">
+                <?php if ($cCover): ?>
+                <img src="<?= htmlspecialchars($cCover) ?>" class="w-full h-full object-cover" alt="">
+                <?php else: ?>
+                <div class="w-full h-full" style="background: linear-gradient(135deg, <?= $cColor ?>, <?= $cColor ?>cc);"></div>
                 <?php endif; ?>
             </div>
 
             <div class="p-5">
                 <div class="flex items-center gap-3 -mt-8 mb-3">
-                    <div class="w-12 h-12 rounded-xl bg-white border-2 border-white shadow-sm flex items-center justify-center">
-                        <?php if (!empty($communaute['logo'])): ?>
-                        <img src="<?= htmlspecialchars($communaute['logo']) ?>" class="w-10 h-10 rounded-lg object-cover" alt="">
+                    <div class="w-12 h-12 bg-white border-2 border-white shadow-sm flex items-center justify-center" style="border-radius: 0;">
+                        <?php if ($cLogo): ?>
+                        <img src="<?= htmlspecialchars($cLogo) ?>" class="w-10 h-10 object-cover" style="border-radius: 0;" alt="">
                         <?php else: ?>
-                        <span class="text-violet-600 font-bold text-lg"><?= strtoupper(substr($communaute['nom'], 0, 1)) ?></span>
+                        <span class="font-bold text-lg" style="color: <?= $cColor ?>;"><?= strtoupper(substr($communaute['nom'], 0, 1)) ?></span>
                         <?php endif; ?>
                     </div>
                 </div>
 
-                <h3 class="font-semibold text-gray-900 group-hover:text-violet-600 transition text-sm"><?= htmlspecialchars($communaute['nom']) ?></h3>
+                <h3 class="font-semibold text-gray-900 transition text-sm"><?= htmlspecialchars($communaute['nom']) ?></h3>
                 <div class="flex items-center gap-2 mt-2">
-                    <span class="inline-flex items-center text-[10px] bg-violet-50 text-violet-600 px-2 py-0.5 rounded-full font-medium">
+                    <span class="inline-flex items-center text-[10px] px-2 py-0.5 font-medium" style="background: <?= $cColorLight ?>; color: <?= $cColor ?>;">
                         <?= ucfirst(htmlspecialchars($communaute['role'])) ?>
                     </span>
-                    <span class="text-[10px] text-gray-400">•</span>
-                    <span class="text-[10px] text-gray-400">Activé</span>
                 </div>
             </div>
         </a>

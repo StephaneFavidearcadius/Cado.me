@@ -48,7 +48,10 @@
     $commActive = $_SESSION['communaute_courante'] ?? ($mesCommunautes[0] ?? null);
     $slug = htmlspecialchars($commActive['slug'] ?? '');
     $currentPath = $_SERVER['REQUEST_URI'] ?? '';
+    $commColor = $commActive['couleur_principale'] ?? '#7830E0';
+    $commColorLight = $commColor . '18';
     ?>
+    <style>:root { --comm-color: <?= $commColor ?>; --comm-color-light: <?= $commColorLight ?>; }</style>
 
     <!-- Header -->
     <header class="bg-white border-b border-gray-200 sticky top-0 z-40">
@@ -65,20 +68,31 @@
                     <?php if (!empty($mesCommunautes)): ?>
                     <div x-data="{ open: false }" class="relative">
                         <button @click="open = !open" class="flex items-center gap-2 px-3 py-1.5 rounded-lg hover:bg-gray-100 transition">
-                            <div class="w-6 h-6 rounded-full bg-violet-100 flex items-center justify-center">
-                                <span class="text-violet-600 text-xs font-bold"><?= strtoupper(substr($commActive['nom'] ?? 'C', 0, 1)) ?></span>
+                            <?php if (!empty($commActive['logo'])): ?>
+                            <img src="<?= htmlspecialchars((new \App\Services\StorageService())->url($commActive['logo'])) ?>" class="w-7 h-7 object-cover" alt="">
+                            <?php else: ?>
+                            <div class="w-7 h-7 flex items-center justify-center" style="background: var(--comm-color-light);">
+                                <span class="text-xs font-bold" style="color: var(--comm-color);"><?= strtoupper(substr($commActive['nom'] ?? 'C', 0, 1)) ?></span>
                             </div>
+                            <?php endif; ?>
                             <span class="text-sm font-medium text-gray-700"><?= htmlspecialchars($commActive['nom'] ?? '') ?></span>
                             <i data-lucide="chevron-down" class="w-4 h-4 text-gray-400"></i>
                         </button>
                         <div x-show="open" @click.away="open = false" x-cloak
                              class="absolute left-0 mt-2 w-64 bg-white rounded-xl shadow-lg border border-gray-100 py-2">
-                            <?php foreach ($mesCommunautes as $comm): ?>
+                            <?php foreach ($mesCommunautes as $comm):
+                                    $cColor = $comm['couleur_principale'] ?? '#7830E0';
+                                    $isActive = ($comm['slug'] ?? '') === ($commActive['slug'] ?? '');
+                                ?>
                             <a href="/c/<?= htmlspecialchars($comm['slug']) ?>/app"
-                               class="flex items-center gap-3 px-4 py-2 hover:bg-violet-50 transition">
-                                <div class="w-8 h-8 rounded-full bg-violet-100 flex items-center justify-center">
-                                    <span class="text-violet-600 text-xs font-bold"><?= strtoupper(substr($comm['nom'], 0, 1)) ?></span>
+                               class="flex items-center gap-3 px-4 py-2 transition" style="<?= $isActive ? 'background:' . $cColor . '12;' : '' ?>">
+                                <?php if (!empty($comm['logo'])): ?>
+                                <img src="<?= htmlspecialchars((new \App\Services\StorageService())->url($comm['logo'])) ?>" class="w-8 h-8 object-cover" alt="">
+                                <?php else: ?>
+                                <div class="w-8 h-8 flex items-center justify-center" style="background: <?= $cColor ?>18;">
+                                    <span class="text-xs font-bold" style="color: <?= $cColor ?>;"><?= strtoupper(substr($comm['nom'], 0, 1)) ?></span>
                                 </div>
+                                <?php endif; ?>
                                 <div>
                                     <p class="text-sm font-medium text-gray-900"><?= htmlspecialchars($comm['nom']) ?></p>
                                     <p class="text-xs text-gray-500"><?= ucfirst(htmlspecialchars($comm['role'])) ?></p>
@@ -139,8 +153,12 @@
                 <div class="sticky top-24 space-y-1">
                     <?php if ($commActive): ?>
                     <div class="flex items-center gap-3 px-3 py-3 mb-4">
-                        <div class="w-10 h-10 rounded-xl bg-violet-100 flex items-center justify-center">
-                            <span class="text-violet-600 font-bold"><?= strtoupper(substr($commActive['nom'], 0, 1)) ?></span>
+                        <div class="w-10 h-10 flex items-center justify-center" style="background: var(--comm-color-light);">
+                            <?php if (!empty($commActive['logo'])): ?>
+                            <img src="<?= htmlspecialchars((new \App\Services\StorageService())->url($commActive['logo'])) ?>" class="w-10 h-10 object-cover" alt="">
+                            <?php else: ?>
+                            <span class="font-bold" style="color: var(--comm-color);"><?= strtoupper(substr($commActive['nom'], 0, 1)) ?></span>
+                            <?php endif; ?>
                         </div>
                         <div>
                             <p class="font-semibold text-gray-900 text-sm"><?= htmlspecialchars($commActive['nom']) ?></p>
@@ -150,34 +168,32 @@
                     <?php endif; ?>
 
                     <nav class="space-y-1">
-                        <a href="/c/<?= $slug ?>/app" class="flex items-center gap-3 px-3 py-2.5 rounded-xl <?= str_ends_with($currentPath, '/app') ? 'bg-violet-50 text-violet-700 font-medium' : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900' ?> text-sm transition">
-                            <i data-lucide="home" class="w-5 h-5"></i> Accueil
+                        <?php
+                        $navItems = [
+                            ['slug' => '/app', 'label' => 'Accueil', 'icon' => 'home', 'match' => fn($p) => str_ends_with($p, '/app')],
+                            ['slug' => '/feed', 'label' => 'Feed', 'icon' => 'layout-dashboard', 'match' => fn($p) => str_ends_with($p, '/feed')],
+                            ['slug' => '/membres', 'label' => 'Membres', 'icon' => 'users', 'match' => fn($p) => str_contains($p, '/membres')],
+                            ['slug' => '/formations', 'label' => 'Formations', 'icon' => 'book-open', 'match' => fn($p) => str_contains($p, '/formations')],
+                            ['slug' => '/ressources', 'label' => 'Ressources', 'icon' => 'folder', 'match' => fn($p) => str_contains($p, '/ressources')],
+                            ['slug' => '/evenements', 'label' => 'Événements', 'icon' => 'calendar', 'match' => fn($p) => str_contains($p, '/evenements')],
+                            ['slug' => '/messages', 'label' => 'Messages', 'icon' => 'message-circle', 'match' => fn($p) => str_contains($p, '/messages')],
+                            ['slug' => '/notifications', 'label' => 'Notifications', 'icon' => 'bell', 'match' => fn($p) => str_contains($p, '/notifications')],
+                        ];
+                        foreach ($navItems as $nav):
+                            $active = $nav['match']($currentPath);
+                            $activeStyle = $active ? 'background: var(--comm-color-light); color: var(--comm-color); font-weight: 600;' : '';
+                        ?>
+                        <a href="/c/<?= $slug ?><?= $nav['slug'] ?>" class="flex items-center gap-3 px-3 py-2.5 text-sm transition" style="<?= $activeStyle ?> <?= !$active ? 'color: #4B5563;' : '' ?>">
+                            <i data-lucide="<?= $nav['icon'] ?>" class="w-5 h-5"></i> <?= $nav['label'] ?>
                         </a>
-                        <a href="/c/<?= $slug ?>/feed" class="flex items-center gap-3 px-3 py-2.5 rounded-xl <?= str_ends_with($currentPath, '/feed') ? 'bg-violet-50 text-violet-700 font-medium' : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900' ?> text-sm transition">
-                            <i data-lucide="layout-dashboard" class="w-5 h-5"></i> Feed
-                        </a>
-                        <a href="/c/<?= $slug ?>/membres" class="flex items-center gap-3 px-3 py-2.5 rounded-xl <?= str_contains($currentPath, '/membres') ? 'bg-violet-50 text-violet-700 font-medium' : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900' ?> text-sm transition">
-                            <i data-lucide="users" class="w-5 h-5"></i> Membres
-                        </a>
-                        <a href="/c/<?= $slug ?>/formations" class="flex items-center gap-3 px-3 py-2.5 rounded-xl <?= str_contains($currentPath, '/formations') ? 'bg-violet-50 text-violet-700 font-medium' : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900' ?> text-sm transition">
-                            <i data-lucide="book-open" class="w-5 h-5"></i> Formations
-                        </a>
-                        <a href="/c/<?= $slug ?>/ressources" class="flex items-center gap-3 px-3 py-2.5 rounded-xl <?= str_contains($currentPath, '/ressources') ? 'bg-violet-50 text-violet-700 font-medium' : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900' ?> text-sm transition">
-                            <i data-lucide="folder" class="w-5 h-5"></i> Ressources
-                        </a>
-                        <a href="/c/<?= $slug ?>/evenements" class="flex items-center gap-3 px-3 py-2.5 rounded-xl <?= str_contains($currentPath, '/evenements') ? 'bg-violet-50 text-violet-700 font-medium' : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900' ?> text-sm transition">
-                            <i data-lucide="calendar" class="w-5 h-5"></i> Événements
-                        </a>
-                        <a href="/c/<?= $slug ?>/messages" class="flex items-center gap-3 px-3 py-2.5 rounded-xl <?= str_contains($currentPath, '/messages') ? 'bg-violet-50 text-violet-700 font-medium' : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900' ?> text-sm transition">
-                            <i data-lucide="message-circle" class="w-5 h-5"></i> Messages
-                        </a>
-                        <a href="/c/<?= $slug ?>/notifications" class="flex items-center gap-3 px-3 py-2.5 rounded-xl <?= str_contains($currentPath, '/notifications') ? 'bg-violet-50 text-violet-700 font-medium' : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900' ?> text-sm transition">
-                            <i data-lucide="bell" class="w-5 h-5"></i> Notifications
-                        </a>
+                        <?php endforeach; ?>
 
                         <hr class="my-3 border-gray-100">
 
-                        <a href="/c/<?= $slug ?>/gestion" class="flex items-center gap-3 px-3 py-2.5 rounded-xl <?= str_contains($currentPath, '/gestion') ? 'bg-violet-50 text-violet-700 font-medium' : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900' ?> text-sm transition">
+                        <a href="/c/<?= $slug ?>/a-propos" class="flex items-center gap-3 px-3 py-2.5 text-sm transition <?= str_contains($currentPath, '/a-propos') ? 'font-semibold' : '' ?>" style="<?= str_contains($currentPath, '/a-propos') ? 'background: var(--comm-color-light); color: var(--comm-color);' : 'color: #4B5563;' ?>">
+                            <i data-lucide="info" class="w-5 h-5"></i> À propos
+                        </a>
+                        <a href="/c/<?= $slug ?>/gestion" class="flex items-center gap-3 px-3 py-2.5 text-sm transition" style="<?= str_contains($currentPath, '/gestion') ? 'background: var(--comm-color-light); color: var(--comm-color); font-weight: 600;' : 'color: #4B5563;' ?>">
                             <i data-lucide="settings" class="w-5 h-5"></i> Gestion
                         </a>
                     </nav>

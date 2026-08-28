@@ -56,6 +56,9 @@ $router->middleware([AuthMiddleware::class, CommunauteMiddleware::class, CsrfMid
 $router->get('/c/{slug}/app', [CommunauteController::class, 'app']);
 
 $router->middleware([AuthMiddleware::class, CommunauteMiddleware::class, CsrfMiddleware::class]);
+$router->get('/c/{slug}/a-propos', [CommunauteController::class, 'apropos']);
+
+$router->middleware([AuthMiddleware::class, CommunauteMiddleware::class, CsrfMiddleware::class]);
 $router->get('/c/{slug}/feed', [FeedController::class, 'index']);
 
 $router->middleware([AuthMiddleware::class, CommunauteMiddleware::class, CsrfMiddleware::class]);
