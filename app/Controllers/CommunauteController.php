@@ -59,6 +59,7 @@ class CommunauteController extends Controller
 
         return $this->view('communaute.publique', [
             'communaute' => $communaute,
+            'estConnecte' => !empty(Session::get('utilisateur_id')),
             'titre' => $communaute['nom'],
         ]);
     }

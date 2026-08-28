@@ -26,15 +26,19 @@
     <header class="bg-white border-b border-gray-100 sticky top-0 z-50">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex items-center justify-between h-16">
-                <a href="/" class="flex items-center gap-2.5">
+                <a href="<?= $estConnecte ?? false ? '/app' : '/' ?>" class="flex items-center gap-2.5">
                     <div class="w-9 h-9 bg-violet-500 rounded-xl flex items-center justify-center">
                         <span class="text-white font-bold text-lg">C</span>
                     </div>
                     <span class="font-bold text-xl text-gray-900">Cado.me</span>
                 </a>
                 <div class="flex items-center gap-3">
-                    <a href="/connexion" class="px-5 py-2.5 text-sm font-medium text-gray-700 hover:text-violet-600 transition">Connexion</a>
-                    <a href="/inscription" class="px-5 py-2.5 text-sm font-semibold text-white bg-violet-500 hover:bg-violet-600 rounded-xl transition">Commencer</a>
+                    <?php if ($estConnecte ?? false): ?>
+                        <a href="/app" class="px-5 py-2.5 text-sm font-semibold text-white bg-violet-500 hover:bg-violet-600 transition">Mon espace</a>
+                    <?php else: ?>
+                        <a href="/connexion" class="px-5 py-2.5 text-sm font-medium text-gray-700 hover:text-violet-600 transition">Connexion</a>
+                        <a href="/inscription" class="px-5 py-2.5 text-sm font-semibold text-white bg-violet-500 hover:bg-violet-600 transition">Commencer</a>
+                    <?php endif; ?>
                 </div>
             </div>
         </div>
