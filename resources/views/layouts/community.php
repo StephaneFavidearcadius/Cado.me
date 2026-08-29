@@ -110,9 +110,17 @@
                 </div>
 
                 <div class="flex items-center gap-4">
-                    <?php if ($slug): ?>
+                    <?php if ($slug):
+                        $notifService = new \App\Services\NotificationService();
+                        $nbNotifs = $notifService->compterNonLues($commActive['id'] ?? 0, $_SESSION['utilisateur_id'] ?? 0);
+                    ?>
                     <a href="/c/<?= $slug ?>/notifications" class="relative p-2 rounded-lg hover:bg-gray-100 transition">
                         <i data-lucide="bell" class="w-5 h-5 text-gray-500"></i>
+                        <?php if ($nbNotifs > 0): ?>
+                        <span class="absolute -top-0.5 -right-0.5 w-4 h-4 bg-red-500 text-white text-[10px] font-bold flex items-center justify-center">
+                            <?= $nbNotifs > 9 ? '9+' : $nbNotifs ?>
+                        </span>
+                        <?php endif; ?>
                     </a>
                     <?php endif; ?>
                     <div x-data="{ open: false }" class="relative">
@@ -172,10 +180,10 @@
                         $navItems = [
                             ['slug' => '/app', 'label' => 'Accueil', 'icon' => 'home', 'match' => fn($p) => str_ends_with($p, '/app')],
                             ['slug' => '/feed', 'label' => 'Feed', 'icon' => 'layout-dashboard', 'match' => fn($p) => str_ends_with($p, '/feed')],
+                            ['slug' => '/classroom', 'label' => 'Classroom', 'icon' => 'graduation-cap', 'match' => fn($p) => str_contains($p, '/classroom')],
+                            ['slug' => '/calendrier', 'label' => 'Calendrier', 'icon' => 'calendar', 'match' => fn($p) => str_contains($p, '/calendrier')],
                             ['slug' => '/membres', 'label' => 'Membres', 'icon' => 'users', 'match' => fn($p) => str_contains($p, '/membres')],
-                            ['slug' => '/formations', 'label' => 'Formations', 'icon' => 'book-open', 'match' => fn($p) => str_contains($p, '/formations')],
-                            ['slug' => '/ressources', 'label' => 'Ressources', 'icon' => 'folder', 'match' => fn($p) => str_contains($p, '/ressources')],
-                            ['slug' => '/evenements', 'label' => 'Événements', 'icon' => 'calendar', 'match' => fn($p) => str_contains($p, '/evenements')],
+                            ['slug' => '/leaderboards', 'label' => 'Leaderboards', 'icon' => 'trophy', 'match' => fn($p) => str_contains($p, '/leaderboards')],
                             ['slug' => '/messages', 'label' => 'Messages', 'icon' => 'message-circle', 'match' => fn($p) => str_contains($p, '/messages')],
                             ['slug' => '/notifications', 'label' => 'Notifications', 'icon' => 'bell', 'match' => fn($p) => str_contains($p, '/notifications')],
                         ];

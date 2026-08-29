@@ -70,30 +70,51 @@ $router->post('/c/{slug}/publications/{id}/like', [FeedController::class, 'aimer
 $router->middleware([AuthMiddleware::class, CommunauteMiddleware::class, CsrfMiddleware::class]);
 $router->post('/c/{slug}/publications/{id}/commentaires', [FeedController::class, 'commenter']);
 
+$router->middleware([AuthMiddleware::class, CommunauteMiddleware::class, AdministrateurMiddleware::class, CsrfMiddleware::class]);
+$router->post('/c/{slug}/publications/{id}/supprimer', [FeedController::class, 'supprimer']);
+
 $router->middleware([AuthMiddleware::class, CommunauteMiddleware::class]);
 $router->get('/c/{slug}/publications/{id}/commentaires', [FeedController::class, 'listerCommentaires']);
 
 // Membres
 $router->middleware([AuthMiddleware::class, CommunauteMiddleware::class, CsrfMiddleware::class]);
 $router->get('/c/{slug}/membres', [MembreController::class, 'index']);
+$router->middleware([AuthMiddleware::class, CommunauteMiddleware::class, CsrfMiddleware::class]);
+$router->get('/c/{slug}/leaderboards', [MembreController::class, 'leaderboards']);
 
 $router->middleware([AuthMiddleware::class, CommunauteMiddleware::class, CsrfMiddleware::class]);
 $router->get('/c/{slug}/membres/{identifiant}', [MembreController::class, 'profil']);
 
 // Formations
 $router->middleware([AuthMiddleware::class, CommunauteMiddleware::class, CsrfMiddleware::class]);
+$router->get('/c/{slug}/classroom', [FormationController::class, 'classroom']);
+$router->middleware([AuthMiddleware::class, CommunauteMiddleware::class, CsrfMiddleware::class]);
 $router->get('/c/{slug}/formations', [FormationController::class, 'index']);
 
 $router->middleware([AuthMiddleware::class, CommunauteMiddleware::class, CsrfMiddleware::class]);
 $router->get('/c/{slug}/formations/{formation}', [FormationController::class, 'detail']);
 
+$router->middleware([AuthMiddleware::class, CommunauteMiddleware::class, AdministrateurMiddleware::class, CsrfMiddleware::class]);
+$router->post('/c/{slug}/formations', [FormationController::class, 'creer']);
+
+$router->middleware([AuthMiddleware::class, CommunauteMiddleware::class, AdministrateurMiddleware::class, CsrfMiddleware::class]);
+$router->post('/c/{slug}/formations/{formation}/lecons', [FormationController::class, 'ajouterLecon']);
+
 // Ressources
 $router->middleware([AuthMiddleware::class, CommunauteMiddleware::class, CsrfMiddleware::class]);
 $router->get('/c/{slug}/ressources', [RessourceController::class, 'index']);
 
+$router->middleware([AuthMiddleware::class, CommunauteMiddleware::class, AdministrateurMiddleware::class, CsrfMiddleware::class]);
+$router->post('/c/{slug}/ressources', [RessourceController::class, 'creer']);
+
 // Événements
 $router->middleware([AuthMiddleware::class, CommunauteMiddleware::class, CsrfMiddleware::class]);
 $router->get('/c/{slug}/evenements', [EvenementController::class, 'index']);
+$router->middleware([AuthMiddleware::class, CommunauteMiddleware::class, CsrfMiddleware::class]);
+$router->get('/c/{slug}/calendrier', [EvenementController::class, 'calendrier']);
+
+$router->middleware([AuthMiddleware::class, CommunauteMiddleware::class, AdministrateurMiddleware::class, CsrfMiddleware::class]);
+$router->post('/c/{slug}/evenements', [EvenementController::class, 'creer']);
 
 // Notifications
 $router->middleware([AuthMiddleware::class, CommunauteMiddleware::class, CsrfMiddleware::class]);
@@ -105,6 +126,12 @@ $router->post('/c/{slug}/notifications/tout-lu', [NotificationController::class,
 // Messages
 $router->middleware([AuthMiddleware::class, CommunauteMiddleware::class, CsrfMiddleware::class]);
 $router->get('/c/{slug}/messages', [MessageController::class, 'index']);
+
+$router->middleware([AuthMiddleware::class, CommunauteMiddleware::class, CsrfMiddleware::class]);
+$router->post('/c/{slug}/messages', [MessageController::class, 'creerConversation']);
+
+$router->middleware([AuthMiddleware::class, CommunauteMiddleware::class, CsrfMiddleware::class]);
+$router->post('/c/{slug}/messages/{conversation}', [MessageController::class, 'envoyer']);
 
 // Profil
 $router->middleware([AuthMiddleware::class, CommunauteMiddleware::class, CsrfMiddleware::class]);

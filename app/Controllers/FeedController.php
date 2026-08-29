@@ -99,6 +99,18 @@ class FeedController extends Controller
         return $this->json($commentaires);
     }
 
+    public function supprimer(string $slug, string $id): Response
+    {
+        $communaute = $this->getCommunaute($slug);
+        if (!$communaute) return $this->view('errors.404', [], 404);
+
+        $publicationService = new PublicationService();
+        $publicationService->supprimer($communaute['id'], (int)$id);
+
+        Session::flash('success', 'Publication supprimée.');
+        return $this->redirect("/c/{$slug}/feed");
+    }
+
     private function getCommunaute(string $slug): ?array
     {
         $communauteService = new \App\Services\CommunauteService();

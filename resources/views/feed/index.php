@@ -127,6 +127,15 @@
                 <button class="flex items-center gap-1.5 text-sm text-gray-500 hover:text-violet-600 transition">
                     <i data-lucide="bookmark" class="w-4 h-4"></i>
                 </button>
+
+                <?php if (in_array($_SESSION['communaute_courante']['role'] ?? '', ['proprietaire', 'administrateur'])): ?>
+                <form method="POST" action="/c/<?= htmlspecialchars($communaute['slug']) ?>/publications/<?= $pub['id'] ?>/supprimer" class="ml-auto" onsubmit="return confirm('Supprimer cette publication ?')">
+                    <?= \App\Core\Csrf::field() ?>
+                    <button type="submit" class="flex items-center gap-1.5 text-sm text-red-400 hover:text-red-600 transition">
+                        <i data-lucide="trash-2" class="w-4 h-4"></i>
+                    </button>
+                </form>
+                <?php endif; ?>
             </div>
 
             <!-- Commentaires -->
