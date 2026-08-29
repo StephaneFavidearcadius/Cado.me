@@ -41,9 +41,7 @@
                     <span class="font-bold text-xl text-gray-900">Cado.me</span>
                 </a>
                 <nav class="hidden md:flex items-center gap-8">
-                    <a href="#features" class="text-sm text-gray-500 hover:text-gray-900 transition">Fonctionnalités</a>
-                    <a href="#pricing" class="text-sm text-gray-500 hover:text-gray-900 transition">Tarifs</a>
-                    <a href="#resources" class="text-sm text-gray-500 hover:text-gray-900 transition">Ressources</a>
+                    <a href="/decouvrir" class="text-sm text-gray-500 hover:text-gray-900 transition">Découvrir</a>
                 </nav>
                 <div class="flex items-center gap-3">
                     <a href="/connexion" class="px-4 py-2 text-sm font-medium text-gray-700 hover:text-violet-600 transition">Connexion</a>

@@ -107,11 +107,11 @@ class CommunauteController extends Controller
             }
         }
 
-        return $this->view('communaute.publique', [
+        return \App\Core\Response::html(\App\Core\View::make('communaute.publique', [
             'communaute' => $communaute,
             'estConnecte' => !empty(Session::get('utilisateur_id')),
             'titre' => $communaute['nom'],
-        ]);
+        ]));
     }
 
     public function rejoindre(string $slug): Response

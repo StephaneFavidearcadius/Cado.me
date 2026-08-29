@@ -27,16 +27,20 @@ class DashboardController extends Controller
         // Mettre à jour la session
         Session::set('mes_communautes', $mesCommunautes);
 
-        // Rediriger toujours vers le feed de la première communauté
-        if (!empty($mesCommunautes)) {
-            Session::set('communaute_courante', $mesCommunautes[0]);
-            return $this->redirect("/c/{$mesCommunautes[0]['slug']}/feed");
-        }
+        // Vérifier si l'utilisateur a un abonnement actif (plan payant)
+        $stmt = $db->prepare(
+            'SELECT a.*, p.nom as plan_nom, p.prix_mensuel, p.limite_communautes
+             FROM abonnements a
+             JOIN plans p ON p.id = a.plan_id
+             WHERE a.statut = :statut AND a.periode_fin >= CURDATE()'
+        );
+        $stmt->execute(['statut' => 'actif']);
+        $abonnement = $stmt->fetch();
 
-        // Sinon formulaire de création
         return $this->view('createur.dashboard', [
             'mesCommunautes' => $mesCommunautes,
-            'titre' => 'Créer votre première communauté',
+            'abonnement' => $abonnement,
+            'titre' => 'Mon tableau de bord',
         ]);
     }
 }

@@ -12,8 +12,9 @@ class AuthController extends Controller
 {
     public function formulaireConnexion(): Response
     {
-        return $this->viewAuth('connexion', [
+        return $this->viewAuth('combined', [
             'titre' => 'Connexion',
+            'activeTab' => 'connexion',
         ]);
     }
 
@@ -37,8 +38,9 @@ class AuthController extends Controller
 
     public function formulaireInscription(): Response
     {
-        return $this->viewAuth('inscription', [
+        return $this->viewAuth('combined', [
             'titre' => 'Inscription',
+            'activeTab' => 'inscription',
         ]);
     }
 

@@ -21,7 +21,6 @@ $derniersMembres = $stmt->fetchAll();
 
 $estConnecte = !empty($_SESSION['utilisateur_id'] ?? null);
 
-// Vérifier si l'utilisateur est déjà membre
 $estMembre = false;
 if ($estConnecte) {
     $stmt = $db->prepare('SELECT id FROM membres_communautes WHERE communaute_id = :cid AND utilisateur_id = :uid AND statut = :statut');
@@ -53,74 +52,69 @@ if ($estConnecte) {
 </head>
 <body class="font-sora bg-gray-50 min-h-screen">
 
-    <!-- Header -->
+    <!-- Header simple style Skool -->
     <header class="bg-white border-b border-gray-200 sticky top-0 z-50">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex items-center justify-between h-16">
-                <a href="<?= $estConnecte ? '/app' : '/' ?>" class="flex items-center gap-2.5">
-                    <div class="w-9 h-9 bg-violet-500 flex items-center justify-center">
-                        <span class="text-white font-bold text-lg">C</span>
+        <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-14">
+                <a href="/" class="flex items-center gap-2.5">
+                    <div class="w-8 h-8 flex items-center justify-center" style="background: <?= $commColor ?>;">
+                        <?php if ($logoUrl): ?>
+                        <img src="<?= htmlspecialchars($logoUrl) ?>" class="w-8 h-8 object-cover" alt="">
+                        <?php else: ?>
+                        <span class="text-white font-bold text-sm"><?= strtoupper(substr($communaute['nom'], 0, 1)) ?></span>
+                        <?php endif; ?>
                     </div>
-                    <span class="font-bold text-xl text-gray-900">Cado.me</span>
+                    <span class="font-bold text-lg text-gray-900"><?= htmlspecialchars($communaute['nom']) ?></span>
                 </a>
                 <?php if ($estConnecte): ?>
-                <a href="/app" class="px-5 py-2.5 text-sm font-semibold text-white bg-violet-500 hover:bg-violet-600 transition">Mon espace</a>
+                <a href="/app" class="px-4 py-2 text-sm font-semibold text-white transition" style="background: <?= $commColor ?>;">Mon espace</a>
                 <?php else: ?>
-                <div class="flex items-center gap-3">
-                    <a href="/connexion" class="px-5 py-2.5 text-sm font-medium text-gray-700 hover:text-violet-600 transition">Connexion</a>
-                    <a href="/inscription" class="px-5 py-2.5 text-sm font-semibold text-white bg-violet-500 hover:bg-violet-600 transition">Rejoindre</a>
-                </div>
+                <a href="/connexion" class="px-5 py-2 text-sm font-semibold border border-gray-300 text-gray-700 hover:bg-gray-50 transition">Connexion</a>
                 <?php endif; ?>
             </div>
         </div>
     </header>
 
+    <!-- Contenu -->
     <main class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div class="flex gap-8">
-            <!-- Main Content -->
-            <div class="flex-1 min-w-0">
-                <div class="bg-white border border-gray-200 p-8">
-                    <!-- Community Name -->
-                    <h1 class="text-2xl font-bold text-gray-900 mb-6"><?= htmlspecialchars($communaute['nom']) ?></h1>
 
-                    <!-- Banner Image -->
+            <!-- ===== CONTENU PRINCAL (gauche) ===== -->
+            <div class="flex-1 min-w-0">
+                <div class="bg-white border border-gray-200">
+
+                    <!-- Nom communauté -->
+                    <div class="px-8 pt-8 pb-4">
+                        <h1 class="text-2xl font-bold text-gray-900"><?= htmlspecialchars($communaute['nom']) ?></h1>
+                    </div>
+
+                    <!-- Bannière image (pleine largeur) -->
                     <?php if ($coverUrl): ?>
-                    <div class="mb-6 overflow-hidden">
-                        <img src="<?= htmlspecialchars($coverUrl) ?>" alt="Bannière" class="w-full h-auto object-cover" style="max-height: 400px;">
+                    <div class="px-8 mb-6">
+                        <img src="<?= htmlspecialchars($coverUrl) ?>" alt="" class="w-full object-cover" style="max-height: 450px;">
                     </div>
                     <?php else: ?>
-                    <div class="w-full h-48 mb-6 flex items-center justify-center" style="background: <?= $commColor ?>18;">
+                    <div class="mx-8 h-64 mb-6 flex items-center justify-center" style="background: <?= $commColor ?>18;">
                         <i data-lucide="image" class="w-12 h-12" style="color: <?= $commColor ?>40;"></i>
                     </div>
                     <?php endif; ?>
 
-                    <!-- Profile Thumbnail -->
-                    <div class="mb-6">
-                        <?php if ($logoUrl): ?>
-                        <img src="<?= htmlspecialchars($logoUrl) ?>" alt="Logo" class="w-16 h-16 object-cover border-4 border-white shadow-sm">
-                        <?php else: ?>
-                        <div class="w-16 h-16 flex items-center justify-center border-4 border-white shadow-sm" style="background: <?= $commColor ?>18;">
-                            <span class="text-2xl font-bold" style="color: <?= $commColor ?>;"><?= strtoupper(substr($communaute['nom'], 0, 1)) ?></span>
-                        </div>
-                        <?php endif; ?>
-                    </div>
-
-                    <!-- Meta Row -->
-                    <div class="flex flex-wrap items-center gap-6 mb-8 text-sm text-gray-600">
-                        <div class="flex items-center gap-2">
+                    <!-- Meta row (style Skool) -->
+                    <div class="px-8 pb-6 flex flex-wrap items-center gap-5 text-sm text-gray-600">
+                        <div class="flex items-center gap-1.5">
                             <i data-lucide="<?= $isPrivee ? 'lock' : 'globe' ?>" class="w-4 h-4 text-gray-400"></i>
                             <span><?= $isPrivee ? 'Privée' : 'Publique' ?></span>
                         </div>
-                        <div class="flex items-center gap-2">
+                        <div class="flex items-center gap-1.5">
                             <i data-lucide="users" class="w-4 h-4 text-gray-400"></i>
                             <span><?= number_format($totalMembres) ?> membre(s)</span>
                         </div>
-                        <div class="flex items-center gap-2">
+                        <div class="flex items-center gap-1.5">
                             <i data-lucide="tag" class="w-4 h-4 text-gray-400"></i>
                             <span>Gratuit</span>
                         </div>
                         <?php if ($proprietaire): ?>
-                        <div class="flex items-center gap-2">
+                        <div class="flex items-center gap-1.5">
                             <?php if (!empty($proprietaire['avatar'])): ?>
                             <img src="<?= htmlspecialchars($proprietaire['avatar']) ?>" class="w-5 h-5 object-cover" alt="">
                             <?php else: ?>
@@ -133,21 +127,23 @@ if ($estConnecte) {
                         <?php endif; ?>
                     </div>
 
-                    <!-- Description -->
-                    <div class="prose prose-gray max-w-none">
+                    <!-- Description complète -->
+                    <div class="px-8 pb-8 border-t border-gray-100 pt-6">
                         <?php if (!empty($communaute['description'])): ?>
-                            <?= nl2br(htmlspecialchars($communaute['description'])) ?>
+                            <div class="text-sm text-gray-700 leading-relaxed whitespace-pre-line"><?= htmlspecialchars($communaute['description']) ?></div>
                         <?php else: ?>
-                            <p class="text-gray-400 italic">Aucune description pour le moment.</p>
+                            <p class="text-gray-400 italic text-sm">Aucune description pour le moment.</p>
                         <?php endif; ?>
                     </div>
+
                 </div>
             </div>
 
-            <!-- Right Sidebar -->
+            <!-- ===== SIDEBAR DROITE (résumé compact) ===== -->
             <aside class="hidden lg:block w-72 flex-shrink-0">
-                <div class="sticky top-24 space-y-0">
-                    <!-- Cover Thumbnail -->
+                <div class="sticky top-20">
+
+                    <!-- Cover thumbnail -->
                     <?php if ($coverUrl): ?>
                     <div class="overflow-hidden border border-gray-200">
                         <img src="<?= htmlspecialchars($coverUrl) ?>" alt="" class="w-full h-32 object-cover">
@@ -157,15 +153,16 @@ if ($estConnecte) {
                     <?php endif; ?>
 
                     <div class="bg-white border border-t-0 border-gray-200 p-5 space-y-4">
-                        <!-- Community Name -->
-                        <h2 class="font-bold text-gray-900 text-lg"><?= htmlspecialchars($communaute['nom']) ?></h2>
+
+                        <!-- Nom -->
+                        <h2 class="font-bold text-gray-900 text-lg leading-tight"><?= htmlspecialchars($communaute['nom']) ?></h2>
 
                         <!-- URL -->
-                        <p class="text-xs text-gray-400">cado.me/c/<?= htmlspecialchars($communaute['slug']) ?></p>
+                        <p class="text-xs text-gray-400">cado.me/<?= htmlspecialchars($communaute['slug']) ?></p>
 
-                        <!-- Short Description -->
+                        <!-- Description courte -->
                         <?php if (!empty($communaute['description'])): ?>
-                        <p class="text-sm text-gray-600 leading-relaxed">
+                        <p class="text-sm text-gray-500 leading-relaxed">
                             <?= htmlspecialchars(mb_strimwidth($communaute['description'], 0, 150, '...')) ?>
                         </p>
                         <?php endif; ?>
@@ -174,24 +171,24 @@ if ($estConnecte) {
                         <div class="grid grid-cols-3 gap-3 text-center py-3 border-y border-gray-100">
                             <div>
                                 <div class="text-lg font-bold text-gray-900"><?= number_format($totalMembres) ?></div>
-                                <div class="text-[10px] text-gray-500 uppercase tracking-wide">Membres</div>
+                                <div class="text-[10px] text-gray-400 uppercase tracking-wider">Membres</div>
                             </div>
                             <div>
                                 <div class="text-lg font-bold text-gray-900">—</div>
-                                <div class="text-[10px] text-gray-500 uppercase tracking-wide">En ligne</div>
+                                <div class="text-[10px] text-gray-400 uppercase tracking-wider">En ligne</div>
                             </div>
                             <div>
                                 <div class="text-lg font-bold text-gray-900">1</div>
-                                <div class="text-[10px] text-gray-500 uppercase tracking-wide">Admin</div>
+                                <div class="text-[10px] text-gray-400 uppercase tracking-wider">Admin</div>
                             </div>
                         </div>
 
-                        <!-- Member Avatars -->
+                        <!-- Avatars membres -->
                         <?php if (!empty($derniersMembres)): ?>
                         <div class="flex -space-x-2">
                             <?php foreach (array_slice($derniersMembres, 0, 8) as $membre): ?>
                             <?php if (!empty($membre['avatar'])): ?>
-                            <img src="<?= htmlspecialchars($membre['avatar']) ?>" class="w-8 h-8 border-2 border-white object-cover" alt="<?= htmlspecialchars($membre['prenom']) ?>">
+                            <img src="<?= htmlspecialchars($membre['avatar']) ?>" class="w-8 h-8 border-2 border-white object-cover" alt="">
                             <?php else: ?>
                             <div class="w-8 h-8 border-2 border-white flex items-center justify-center text-[10px] font-bold text-white" style="background: <?= $commColor ?>;">
                                 <?= strtoupper(substr($membre['prenom'] ?? 'U', 0, 1)) ?>
@@ -206,10 +203,10 @@ if ($estConnecte) {
                         </div>
                         <?php endif; ?>
 
-                        <!-- Bouton selon le statut -->
+                        <!-- Bouton -->
                         <?php if ($estConnecte && $estMembre): ?>
                         <a href="/c/<?= htmlspecialchars($communaute['slug']) ?>/feed"
-                           class="block w-full text-center py-2.5 text-sm font-semibold text-white transition"
+                           class="block w-full text-center py-2.5 text-sm font-bold text-white transition"
                            style="background: <?= $commColor ?>;">
                             ENTRER
                         </a>
@@ -217,24 +214,25 @@ if ($estConnecte) {
                         <form method="POST" action="/c/<?= htmlspecialchars($communaute['slug']) ?>/rejoindre">
                             <?= \App\Core\Csrf::field() ?>
                             <button type="submit"
-                                    class="block w-full text-center py-2.5 text-sm font-semibold text-white transition"
+                                    class="block w-full text-center py-2.5 text-sm font-bold text-white transition"
                                     style="background: <?= $commColor ?>;">
                                 REJOINDRE
                             </button>
                         </form>
                         <?php else: ?>
                         <a href="/inscription"
-                           class="block w-full text-center py-2.5 text-sm font-semibold text-white bg-violet-500 hover:bg-violet-600 transition">
+                           class="block w-full text-center py-2.5 text-sm font-bold text-white transition"
+                           style="background: <?= $commColor ?>;">
                             REJOINDRE
                         </a>
                         <?php endif; ?>
 
-                        <?php if (!$estMembre): ?>
-                        <p class="text-center text-xs text-gray-400">Powered by <span class="font-semibold">Cado.me</span></p>
-                        <?php endif; ?>
+                        <!-- Powered by -->
+                        <p class="text-center text-[11px] text-gray-400 pt-1">Powered by <span class="font-semibold text-gray-500">Cado.me</span></p>
                     </div>
                 </div>
             </aside>
+
         </div>
     </main>
 

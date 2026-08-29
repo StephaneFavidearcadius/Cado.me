@@ -8,27 +8,10 @@ $commColorLight = $commColor . '18';
 $isPrivee = $communaute['visibilite'] === 'privee';
 ?>
 
-<!-- About Page -->
+<!-- Page À propos -->
 <div class="max-w-6xl mx-auto">
-    <!-- Tabs Navigation (Skool-style) -->
-    <div class="border-b border-gray-200 mb-8">
-        <nav class="flex gap-0 -mb-px">
-            <a href="/c/<?= $slug ?>/feed" class="px-6 py-3 text-sm font-medium text-gray-500 hover:text-gray-700 border-b-2 border-transparent hover:border-gray-300 transition">
-                Communauté
-            </a>
-            <a href="/c/<?= $slug ?>/formations" class="px-6 py-3 text-sm font-medium text-gray-500 hover:text-gray-700 border-b-2 border-transparent hover:border-gray-300 transition">
-                Classe
-            </a>
-            <a href="/c/<?= $slug ?>/evenements" class="px-6 py-3 text-sm font-medium text-gray-500 hover:text-gray-700 border-b-2 border-transparent hover:border-gray-300 transition">
-                Calendrier
-            </a>
-            <a href="/c/<?= $slug ?>/membres" class="px-6 py-3 text-sm font-medium text-gray-500 hover:text-gray-700 border-b-2 border-transparent hover:border-gray-300 transition">
-                Membres
-            </a>
-            <a href="/c/<?= $slug ?>/a-propos" class="px-6 py-3 text-sm font-medium border-b-2 transition" style="color: <?= $commColor ?>; border-color: <?= $commColor ?>;">
-                À propos
-            </a>
-        </nav>
+    <div class="mb-6">
+        <h1 class="text-2xl font-bold text-gray-900">À propos de <?= htmlspecialchars($communaute['nom']) ?></h1>
     </div>
 
     <div class="flex gap-8">

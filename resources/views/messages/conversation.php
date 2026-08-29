@@ -128,7 +128,7 @@ if (!empty($messageIds)) {
             </template>
         </div>
 
-        <form id="chatForm" method="POST" action="/c/<?= $slug ?>/messages/<?= $conversationId ?>"
+        <form id="chatForm" method="POST" action="/c/<?= $slug ?>/messages/<?= $conversation_id ?>"
               enctype="multipart/form-data" class="flex items-end gap-2" @submit.prevent="sendMessage">
             <?= \App\Core\Csrf::field() ?>
 

@@ -13,6 +13,7 @@ use App\Controllers\NotificationController;
 use App\Controllers\PlateformeController;
 use App\Controllers\ProfilController;
 use App\Controllers\RessourceController;
+use App\Controllers\AbonnementController;
 use App\Middleware\AuthMiddleware;
 use App\Middleware\CommunauteMiddleware;
 use App\Middleware\CsrfMiddleware;
@@ -45,6 +46,11 @@ $router->get('/app', [DashboardController::class, 'index']);
 $router->get('/app/communautes', [CommunauteController::class, 'liste']);
 $router->get('/app/communautes/creer', [CommunauteController::class, 'formulaireCreation']);
 $router->post('/app/communautes', [CommunauteController::class, 'creer']);
+
+// ===== ABONNEMENT =====
+$router->middleware([AuthMiddleware::class, CsrfMiddleware::class]);
+$router->get('/abonnement', [AbonnementController::class, 'index']);
+$router->post('/abonnement/souscrire', [AbonnementController::class, 'souscrire']);
 
 // ===== COMMUNAUTÉS (publiques, sans auth) =====
 $router->middleware([CommunauteMiddleware::class]);
