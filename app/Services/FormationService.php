@@ -15,7 +15,7 @@ class FormationService
 
     // ===== FORMATIONS =====
 
-    public function creer(int $communauteId, array $data): array
+    public function creer(int $communauteId, array $data, ?array $fichierImage = null): array
     {
         if (empty($data['titre'])) {
             return ['success' => false, 'errors' => ['Le titre est requis.']];
@@ -24,19 +24,41 @@ class FormationService
         $slug = $this->genererSlug($data['titre']);
 
         $stmt = $this->db->prepare(
-            'INSERT INTO formations (communaute_id, titre, slug, description, statut, ordre, date_creation, date_modification)
-             VALUES (:cid, :titre, :slug, :desc, :statut, :ordre, NOW(), NOW())'
+            'INSERT INTO formations (communaute_id, titre, slug, description, image_couverture, statut, ordre, date_creation, date_modification)
+             VALUES (:cid, :titre, :slug, :desc, :image, :statut, :ordre, NOW(), NOW())'
         );
         $stmt->execute([
             'cid' => $communauteId,
             'titre' => htmlspecialchars(trim($data['titre'])),
             'slug' => $slug,
             'desc' => htmlspecialchars(trim($data['description'] ?? '')),
+            'image' => null,
             'statut' => $data['statut'] ?? 'active',
             'ordre' => (int)($data['ordre'] ?? 0),
         ]);
+        $formationId = $this->db->lastInsertId();
 
-        return ['success' => true, 'formation_id' => $this->db->lastInsertId(), 'slug' => $slug];
+        // Upload image couverture
+        if ($fichierImage && isset($fichierImage['tmp_name']) && is_uploaded_file($fichierImage['tmp_name'])) {
+            $extension = strtolower(pathinfo($fichierImage['name'], PATHINFO_EXTENSION));
+            $extensionsValides = ['jpg', 'jpeg', 'png', 'webp', 'gif'];
+            $tailleMax = 5 * 1024 * 1024; // 5 Mo
+
+            if (in_array($extension, $extensionsValides) && $fichierImage['size'] <= $tailleMax) {
+                $nomFichier = bin2hex(random_bytes(16)) . '.' . $extension;
+                $dossier = __DIR__ . '/../../public/uploads/' . $communauteId . '/formations/';
+                if (!is_dir($dossier)) {
+                    mkdir($dossier, 0755, true);
+                }
+                if (move_uploaded_file($fichierImage['tmp_name'], $dossier . $nomFichier)) {
+                    $chemin = 'uploads/' . $communauteId . '/formations/' . $nomFichier;
+                    $stmt = $this->db->prepare('UPDATE formations SET image_couverture = :img WHERE id = :id');
+                    $stmt->execute(['img' => $chemin, 'id' => $formationId]);
+                }
+            }
+        }
+
+        return ['success' => true, 'formation_id' => $formationId, 'slug' => $slug];
     }
 
     public function modifier(int $formationId, array $data): array

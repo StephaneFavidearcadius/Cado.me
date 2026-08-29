@@ -81,7 +81,8 @@ class FormationController extends Controller
         if (!$communaute) return $this->redirect('/app');
 
         $formationService = new FormationService();
-        $resultat = $formationService->creer($communaute['id'], $_POST);
+        $fichierImage = $_FILES['image_couverture'] ?? null;
+        $resultat = $formationService->creer($communaute['id'], $_POST, $fichierImage);
 
         if ($resultat['success']) {
             Session::flash('success', 'Formation créée !');
