@@ -10,14 +10,13 @@ use App\Services\FormationService;
 
 class FormationController extends Controller
 {
+    // ===== FORMATIONS =====
+
     public function index(string $slug): Response
     {
         $communauteService = new CommunauteService();
         $communaute = $communauteService->recupererParSlug($slug);
-
-        if (!$communaute) {
-            return $this->view('errors.404', [], 404);
-        }
+        if (!$communaute) return $this->view('errors.404', [], 404);
 
         $formationService = new FormationService();
         $formations = $formationService->lister($communaute['id']);
@@ -33,10 +32,7 @@ class FormationController extends Controller
     {
         $communauteService = new CommunauteService();
         $communaute = $communauteService->recupererParSlug($slug);
-
-        if (!$communaute) {
-            return $this->view('errors.404', [], 404);
-        }
+        if (!$communaute) return $this->view('errors.404', [], 404);
 
         $formationService = new FormationService();
         $formations = $formationService->lister($communaute['id']);
@@ -52,24 +48,28 @@ class FormationController extends Controller
     {
         $communauteService = new CommunauteService();
         $communaute = $communauteService->recupererParSlug($slug);
-
-        if (!$communaute) {
-            return $this->view('errors.404', [], 404);
-        }
+        if (!$communaute) return $this->view('errors.404', [], 404);
 
         $formationService = new FormationService();
         $formationData = $formationService->recupererParSlug($communaute['id'], $formation);
+        if (!$formationData) return $this->view('errors.404', [], 404);
 
-        if (!$formationData) {
-            return $this->view('errors.404', [], 404);
+        $modules = $formationService->listerModules($formationData['id']);
+        // Charger les leçons pour chaque module
+        foreach ($modules as &$mod) {
+            $mod['lecons'] = $formationService->listerLeconsParModule($mod['id']);
         }
+        unset($mod);
 
-        $lecons = $formationService->listerLecons($communaute['id'], $formationData['id']);
+        // Leçons sans module
+        $leconsSansModule = $formationService->listerLecons($communaute['id'], $formationData['id']);
+        $leconsSansModule = array_filter($leconsSansModule, fn($l) => empty($l['module_id']));
 
         return $this->viewCommunity('formations.detail', [
             'communaute' => $communaute,
             'formation' => $formationData,
-            'lecons' => $lecons,
+            'modules' => $modules,
+            'lecons' => $leconsSansModule,
             'titre' => $formationData['titre'],
         ]);
     }
@@ -84,13 +84,88 @@ class FormationController extends Controller
         $resultat = $formationService->creer($communaute['id'], $_POST);
 
         if ($resultat['success']) {
-            \App\Core\Session::flash('success', 'Formation créée !');
+            Session::flash('success', 'Formation créée !');
+            return $this->redirect("/c/{$slug}/formations/{$resultat['slug']}");
+        }
+
+        Session::flash('error', $resultat['errors'][0] ?? 'Erreur.');
+        return $this->redirect("/c/{$slug}/formations");
+    }
+
+    public function modifier(string $slug, string $formation): Response
+    {
+        $communauteService = new CommunauteService();
+        $communaute = $communauteService->recupererParSlug($slug);
+        if (!$communaute) return $this->redirect('/app');
+
+        $formationService = new FormationService();
+        $formationData = $formationService->recupererParSlug($communaute['id'], $formation);
+        if (!$formationData) return $this->redirect("/c/{$slug}/formations");
+
+        $resultat = $formationService->modifier($formationData['id'], $_POST);
+
+        if ($resultat['success']) {
+            Session::flash('success', 'Formation modifiée !');
         } else {
-            \App\Core\Session::flash('error', $resultat['errors'][0] ?? 'Erreur.');
+            Session::flash('error', $resultat['errors'][0] ?? 'Erreur.');
+        }
+
+        return $this->redirect("/c/{$slug}/formations/{$formation}");
+    }
+
+    public function supprimer(string $slug, string $formation): Response
+    {
+        $communauteService = new CommunauteService();
+        $communaute = $communauteService->recupererParSlug($slug);
+        if (!$communaute) return $this->redirect('/app');
+
+        $formationService = new FormationService();
+        $formationData = $formationService->recupererParSlug($communaute['id'], $formation);
+        if ($formationData) {
+            $formationService->supprimer($formationData['id']);
+            Session::flash('success', 'Formation supprimée.');
         }
 
         return $this->redirect("/c/{$slug}/formations");
     }
+
+    // ===== MODULES =====
+
+    public function creerModule(string $slug, string $formation): Response
+    {
+        $communauteService = new CommunauteService();
+        $communaute = $communauteService->recupererParSlug($slug);
+        if (!$communaute) return $this->redirect('/app');
+
+        $formationService = new FormationService();
+        $formationData = $formationService->recupererParSlug($communaute['id'], $formation);
+        if (!$formationData) return $this->redirect("/c/{$slug}/formations");
+
+        $resultat = $formationService->creerModule($formationData['id'], $_POST);
+
+        if ($resultat['success']) {
+            Session::flash('success', 'Module ajouté !');
+        } else {
+            Session::flash('error', $resultat['errors'][0] ?? 'Erreur.');
+        }
+
+        return $this->redirect("/c/{$slug}/formations/{$formation}/modifier");
+    }
+
+    public function supprimerModule(string $slug, string $formation, int $moduleId): Response
+    {
+        $communauteService = new CommunauteService();
+        $communaute = $communauteService->recupererParSlug($slug);
+        if (!$communaute) return $this->redirect('/app');
+
+        $formationService = new FormationService();
+        $formationService->supprimerModule($moduleId);
+        Session::flash('success', 'Module supprimé.');
+
+        return $this->redirect("/c/{$slug}/formations/{$formation}/modifier");
+    }
+
+    // ===== LEÇONS =====
 
     public function ajouterLecon(string $slug, string $formation): Response
     {
@@ -102,14 +177,39 @@ class FormationController extends Controller
         $formationData = $formationService->recupererParSlug($communaute['id'], $formation);
         if (!$formationData) return $this->redirect("/c/{$slug}/formations");
 
-        $resultat = $formationService->ajouterLecon($communaute['id'], $formationData['id'], $_POST);
+        $fichierVideo = $_FILES['video_fichier'] ?? null;
+        $resultat = $formationService->ajouterLecon($communaute['id'], $formationData['id'], $_POST, $fichierVideo);
 
         if ($resultat['success']) {
-            \App\Core\Session::flash('success', 'Leçon ajoutée !');
+            Session::flash('success', 'Leçon ajoutée !');
         } else {
-            \App\Core\Session::flash('error', $resultat['errors'][0] ?? 'Erreur.');
+            Session::flash('error', $resultat['errors'][0] ?? 'Erreur.');
         }
 
-        return $this->redirect("/c/{$slug}/formations/{$formation}");
+        return $this->redirect("/c/{$slug}/formations/{$formation}/modifier");
+    }
+
+    public function formulaireModifier(string $slug, string $formation): Response
+    {
+        $communauteService = new CommunauteService();
+        $communaute = $communauteService->recupererParSlug($slug);
+        if (!$communaute) return $this->redirect('/app');
+
+        $formationService = new FormationService();
+        $formationData = $formationService->recupererParSlug($communaute['id'], $formation);
+        if (!$formationData) return $this->redirect("/c/{$slug}/formations");
+
+        $modules = $formationService->listerModules($formationData['id']);
+        foreach ($modules as &$mod) {
+            $mod['lecons'] = $formationService->listerLeconsParModule($mod['id']);
+        }
+        unset($mod);
+
+        return $this->viewCommunity('formations.modifier', [
+            'communaute' => $communaute,
+            'formation' => $formationData,
+            'modules' => $modules,
+            'titre' => 'Modifier : ' . $formationData['titre'],
+        ]);
     }
 }

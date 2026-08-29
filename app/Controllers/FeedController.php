@@ -111,6 +111,30 @@ class FeedController extends Controller
         return $this->redirect("/c/{$slug}/feed");
     }
 
+    public function epingle(string $slug, string $id): Response
+    {
+        $communaute = $this->getCommunaute($slug);
+        if (!$communaute) return $this->view('errors.404', [], 404);
+
+        $db = \App\Core\Database::getInstance();
+        $stmt = $db->prepare('SELECT epinglee FROM publications WHERE id = :id AND communaute_id = :cid');
+        $stmt->execute(['id' => (int)$id, 'cid' => $communaute['id']]);
+        $pub = $stmt->fetch();
+
+        if ($pub) {
+            $newState = $pub['epinglee'] ? 0 : 1;
+            $stmt = $db->prepare('UPDATE publications SET epinglee = :val WHERE id = :id AND communaute_id = :cid');
+            $stmt->execute(['val' => $newState, 'id' => (int)$id, 'cid' => $communaute['id']]);
+            Session::flash('success', $newState ? 'Publication épinglée.' : 'Publication désépinglée.');
+        }
+
+        if ((new \App\Core\Request())->isAjax()) {
+            return $this->json(['success' => true, 'epinglee' => $newState ?? 0]);
+        }
+
+        return $this->redirect("/c/{$slug}/feed");
+    }
+
     private function getCommunaute(string $slug): ?array
     {
         $communauteService = new \App\Services\CommunauteService();

@@ -40,15 +40,42 @@ class ProfilController extends Controller
         }
 
         $db = Database::getInstance();
-        $stmt = $db->prepare(
-            'UPDATE utilisateurs SET prenom = :prenom, nom = :nom, biographie = :bio, date_modification = NOW() WHERE id = :id'
-        );
-        $stmt->execute([
+        $userId = Session::get('utilisateur_id');
+
+        // Upload photo profil
+        $photoProfil = null;
+        if (!empty($_FILES['photo_profil']['tmp_name']) && $_FILES['photo_profil']['error'] === UPLOAD_ERR_OK) {
+            $storage = new \App\Services\StorageService();
+            $photoProfil = $storage->stocker($_FILES['photo_profil'], (int)$userId, 'profil');
+        }
+
+        // Supprimer photo profil
+        if (!empty($_POST['supprimer_photo'])) {
+            $photoProfil = '';
+        }
+
+        $sql = 'UPDATE utilisateurs SET prenom = :prenom, nom = :nom, biographie = :bio, whatsapp = :whatsapp, date_modification = NOW()';
+        $params = [
             'prenom' => htmlspecialchars(trim($_POST['prenom'] ?? '')),
             'nom' => htmlspecialchars(trim($_POST['nom'] ?? '')),
             'bio' => htmlspecialchars(trim($_POST['biographie'] ?? '')),
-            'id' => Session::get('utilisateur_id'),
-        ]);
+            'whatsapp' => trim($_POST['whatsapp'] ?? '') ?: null,
+            'id' => $userId,
+        ];
+
+        if ($photoProfil !== null) {
+            $sql .= ', photo_profil = :photo';
+            $params['photo'] = $photoProfil;
+        }
+
+        $sql .= ' WHERE id = :id';
+        $stmt = $db->prepare($sql);
+        $stmt->execute($params);
+
+        // Mettre à jour la session
+        if ($photoProfil !== null) {
+            Session::set('utilisateur_avatar', $photoProfil ?: $_SESSION['utilisateur_avatar'] ?? null);
+        }
 
         Session::flash('success', 'Profil mis à jour.');
         return $this->redirect("/c/{$slug}/profil");

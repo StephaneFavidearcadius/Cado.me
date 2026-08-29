@@ -131,8 +131,11 @@ foreach ($evenements as $evt) {
                 <?php if ($hasEvents): ?>
                 <div class="mt-1 space-y-0.5">
                     <?php foreach (array_slice($evenementsParJour[$jour], 0, 2) as $evt): ?>
-                    <div class="text-[10px] px-1 py-0.5 truncate font-medium text-white" style="background: var(--comm-color);">
+                    <div class="text-[10px] px-1 py-0.5 truncate font-medium text-white relative group cursor-pointer" style="background: var(--comm-color);">
                         <?= htmlspecialchars(mb_strimwidth($evt['titre'], 0, 20, '...')) ?>
+                        <?php if (!empty($evt['lien'])): ?>
+                        <span class="absolute -top-0.5 -right-0.5 w-2 h-2 bg-emerald-400"></span>
+                        <?php endif; ?>
                     </div>
                     <?php endforeach; ?>
                     <?php if (count($evenementsParJour[$jour]) > 2): ?>

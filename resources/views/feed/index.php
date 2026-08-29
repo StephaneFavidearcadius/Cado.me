@@ -157,8 +157,15 @@ $derniersMembres = $stmt3->fetchAll();
                 </div>
                 <?php endif; ?>
 
+                <!-- Épinglé badge -->
+                <?php if (!empty($pub['epinglee'])): ?>
+                <div class="flex items-center gap-1.5 text-xs font-medium text-amber-600 mb-2">
+                    <i data-lucide="pin" class="w-3.5 h-3.5"></i> Épinglée
+                </div>
+                <?php endif; ?>
+
                 <!-- Actions bar -->
-                <div class="flex items-center gap-5 pt-3 border-t border-gray-100">
+                <div class="flex items-center gap-4 pt-3 border-t border-gray-100">
                     <!-- Like -->
                     <button @click="toggleLike()" class="flex items-center gap-1.5 text-sm transition"
                             :class="liked ? 'text-violet-600 font-medium' : 'text-gray-500 hover:text-violet-600'">
@@ -174,16 +181,24 @@ $derniersMembres = $stmt3->fetchAll();
                     </button>
 
                     <!-- Share -->
-                    <button class="flex items-center gap-1.5 text-sm text-gray-500 hover:text-violet-600 transition">
+                    <button @click="sharePub()" class="flex items-center gap-1.5 text-sm text-gray-500 hover:text-violet-600 transition">
                         <i data-lucide="share-2" class="w-4 h-4"></i>
                     </button>
 
-                    <!-- Bookmark -->
-                    <button class="flex items-center gap-1.5 text-sm text-gray-500 hover:text-violet-600 transition">
-                        <i data-lucide="bookmark" class="w-4 h-4"></i>
+                    <!-- Bookmark (Favori) -->
+                    <button @click="toggleFavori()" class="flex items-center gap-1.5 text-sm transition"
+                            :class="isFavori ? 'text-amber-500 font-medium' : 'text-gray-500 hover:text-amber-500'">
+                        <i data-lucide="bookmark" class="w-4 h-4" :class="isFavori ? 'fill-amber-500' : ''"></i>
                     </button>
 
                     <?php if ($estAdmin): ?>
+                    <!-- Épingler -->
+                    <button @click="toggleEpingle()" class="flex items-center gap-1.5 text-sm transition"
+                            :class="isEpinglee ? 'text-amber-600 font-medium' : 'text-gray-500 hover:text-amber-600'">
+                        <i data-lucide="pin" class="w-4 h-4"></i>
+                    </button>
+
+                    <!-- Supprimer -->
                     <form method="POST" action="/c/<?= $slug ?>/publications/<?= $pub['id'] ?>/supprimer" class="ml-auto" onsubmit="return confirm('Supprimer cette publication ?')">
                         <?= \App\Core\Csrf::field() ?>
                         <button type="submit" class="flex items-center gap-1.5 text-sm text-red-400 hover:text-red-600 transition">
@@ -387,6 +402,8 @@ function publication(pubId, nbLikes, nbComments, pubSlug) {
         liked: false,
         likeCount: nbLikes,
         commentCount: nbComments,
+        isFavori: false,
+        isEpinglee: <?= !empty($pub['epinglee']) ? 'true' : 'false' ?>,
         showComments: false,
         comments: [],
         newComment: '',
@@ -467,6 +484,57 @@ function publication(pubId, nbLikes, nbComments, pubSlug) {
             } catch(err) {
                 console.error('Load comments error:', err);
             }
+        },
+
+        async toggleFavori() {
+            try {
+                const csrfEl = document.querySelector('input[name="_token"]');
+                const csrfToken = csrfEl ? csrfEl.value : '';
+                const resp = await fetch('/c/' + this.slug + '/publications/' + this.id + '/favori', {
+                    method: 'POST',
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest',
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                        'X-CSRF-Token': csrfToken
+                    },
+                    body: '_token=' + encodeURIComponent(csrfToken)
+                });
+                const data = await resp.json();
+                if (data.success) {
+                    this.isFavori = data.action === 'add';
+                }
+            } catch(err) {}
+        },
+
+        sharePub() {
+            const url = window.location.origin + '/c/' + this.slug + '/feed#pub-' + this.id;
+            if (navigator.share) {
+                navigator.share({ title: 'Publication Cado.me', url: url });
+            } else {
+                navigator.clipboard.writeText(url).then(() => {
+                    alert('Lien copié !');
+                });
+            }
+        },
+
+        async toggleEpingle() {
+            try {
+                const csrfEl = document.querySelector('input[name="_token"]');
+                const csrfToken = csrfEl ? csrfEl.value : '';
+                const resp = await fetch('/c/' + this.slug + '/publications/' + this.id + '/epingle', {
+                    method: 'POST',
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest',
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                        'X-CSRF-Token': csrfToken
+                    },
+                    body: '_token=' + encodeURIComponent(csrfToken)
+                });
+                const data = await resp.json();
+                if (data.success) {
+                    this.isEpinglee = data.epinglee === 1;
+                }
+            } catch(err) {}
         }
     }
 }

@@ -130,7 +130,7 @@ if ($estConnecte) {
                     <!-- Description complète -->
                     <div class="px-8 pb-8 border-t border-gray-100 pt-6">
                         <?php if (!empty($communaute['description'])): ?>
-                            <div class="text-sm text-gray-700 leading-relaxed whitespace-pre-line"><?= htmlspecialchars($communaute['description']) ?></div>
+                            <div class="text-sm text-gray-700 leading-relaxed whitespace-pre-line"><?= nl2br(htmlspecialchars_decode(htmlspecialchars($communaute['description'], ENT_QUOTES | ENT_SUBSTITUTE), ENT_QUOTES | ENT_SUBSTITUTE)) ?></div>
                         <?php else: ?>
                             <p class="text-gray-400 italic text-sm">Aucune description pour le moment.</p>
                         <?php endif; ?>
@@ -158,7 +158,7 @@ if ($estConnecte) {
                         <h2 class="font-bold text-gray-900 text-lg leading-tight"><?= htmlspecialchars($communaute['nom']) ?></h2>
 
                         <!-- URL -->
-                        <p class="text-xs text-gray-400">cado.me/<?= htmlspecialchars($communaute['slug']) ?></p>
+                        <p class="text-xs text-gray-400 select-all cursor-pointer" onclick="navigator.clipboard.writeText('cado.me/<?= htmlspecialchars($communaute['slug']) ?>').then(()=>{this.textContent='Lien copié !';setTimeout(()=>this.textContent='cado.me/<?= htmlspecialchars($communaute['slug']) ?>',2000)})">cado.me/<?= htmlspecialchars($communaute['slug']) ?></p>
 
                         <!-- Description courte -->
                         <?php if (!empty($communaute['description'])): ?>

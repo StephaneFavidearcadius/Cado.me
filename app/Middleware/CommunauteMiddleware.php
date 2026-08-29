@@ -47,8 +47,27 @@ class CommunauteMiddleware
                 }
             }
 
-            // Stocker le contexte communautaire en session
-            Session::set('communaute_courante', $communaute);
+            // Récupérer le rôle de l'utilisateur dans cette communauté
+            $role = 'visiteur';
+            if (Session::has('utilisateur_id')) {
+                $stmtRole = $db->prepare(
+                    'SELECT role FROM membres_communautes WHERE communaute_id = :cid AND utilisateur_id = :uid AND statut = :statut'
+                );
+                $stmtRole->execute([
+                    'cid' => $communaute['id'],
+                    'uid' => Session::get('utilisateur_id'),
+                    'statut' => 'actif',
+                ]);
+                $rowRole = $stmtRole->fetch();
+                if ($rowRole) {
+                    $role = $rowRole['role'];
+                }
+            }
+
+            // Stocker le contexte communautaire en session avec le rôle
+            $contexte = $communaute;
+            $contexte['role'] = $role;
+            Session::set('communaute_courante', $contexte);
         }
 
         return null;

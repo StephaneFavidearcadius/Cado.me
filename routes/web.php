@@ -14,6 +14,7 @@ use App\Controllers\PlateformeController;
 use App\Controllers\ProfilController;
 use App\Controllers\RessourceController;
 use App\Controllers\AbonnementController;
+use App\Controllers\FavoriController;
 use App\Middleware\AuthMiddleware;
 use App\Middleware\CommunauteMiddleware;
 use App\Middleware\CsrfMiddleware;
@@ -79,6 +80,16 @@ $router->post('/c/{slug}/publications/{id}/commentaires', [FeedController::class
 $router->middleware([AuthMiddleware::class, CommunauteMiddleware::class, AdministrateurMiddleware::class, CsrfMiddleware::class]);
 $router->post('/c/{slug}/publications/{id}/supprimer', [FeedController::class, 'supprimer']);
 
+// Favoris
+$router->middleware([AuthMiddleware::class, CommunauteMiddleware::class, CsrfMiddleware::class]);
+$router->post('/c/{slug}/publications/{id}/favori', [FavoriController::class, 'toggle']);
+$router->middleware([AuthMiddleware::class, CommunauteMiddleware::class, CsrfMiddleware::class]);
+$router->get('/c/{slug}/favoris', [FavoriController::class, 'index']);
+
+// Épinglage
+$router->middleware([AuthMiddleware::class, CommunauteMiddleware::class, AdministrateurMiddleware::class, CsrfMiddleware::class]);
+$router->post('/c/{slug}/publications/{id}/epingle', [FeedController::class, 'epingle']);
+
 $router->middleware([AuthMiddleware::class, CommunauteMiddleware::class]);
 $router->get('/c/{slug}/publications/{id}/commentaires', [FeedController::class, 'listerCommentaires']);
 
@@ -105,6 +116,15 @@ $router->post('/c/{slug}/formations', [FormationController::class, 'creer']);
 
 $router->middleware([AuthMiddleware::class, CommunauteMiddleware::class, AdministrateurMiddleware::class, CsrfMiddleware::class]);
 $router->post('/c/{slug}/formations/{formation}/lecons', [FormationController::class, 'ajouterLecon']);
+
+$router->middleware([AuthMiddleware::class, CommunauteMiddleware::class, AdministrateurMiddleware::class, CsrfMiddleware::class]);
+$router->post('/c/{slug}/formations/{formation}/modules', [FormationController::class, 'creerModule']);
+
+$router->middleware([AuthMiddleware::class, CommunauteMiddleware::class, AdministrateurMiddleware::class, CsrfMiddleware::class]);
+$router->post('/c/{slug}/formations/{formation}/modules/{moduleId}/supprimer', [FormationController::class, 'supprimerModule']);
+
+$router->middleware([AuthMiddleware::class, CommunauteMiddleware::class, CsrfMiddleware::class]);
+$router->get('/c/{slug}/formations/{formation}/modifier', [FormationController::class, 'formulaireModifier']);
 
 // Ressources
 $router->middleware([AuthMiddleware::class, CommunauteMiddleware::class, CsrfMiddleware::class]);

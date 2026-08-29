@@ -84,6 +84,12 @@
                         <span class="bg-gray-100 text-gray-500 px-2 py-0.5 text-xs">
                             <?= ucfirst(htmlspecialchars($evenement['type'])) ?>
                         </span>
+                        <?php if (!empty($evenement['lien'])): ?>
+                        <a href="<?= htmlspecialchars($evenement['lien']) ?>" target="_blank" class="flex items-center gap-1 px-3 py-1 bg-emerald-50 text-emerald-600 text-xs font-medium hover:bg-emerald-100 transition">
+                            <i data-lucide="video" class="w-3.5 h-3.5"></i>
+                            Rejoindre
+                        </a>
+                        <?php endif; ?>
                     </div>
                 </div>
             </div>

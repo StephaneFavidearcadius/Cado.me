@@ -13,9 +13,8 @@ class FormationService
         $this->db = Database::getInstance();
     }
 
-    /**
-     * Créer une formation
-     */
+    // ===== FORMATIONS =====
+
     public function creer(int $communauteId, array $data): array
     {
         if (empty($data['titre'])) {
@@ -26,42 +25,55 @@ class FormationService
 
         $stmt = $this->db->prepare(
             'INSERT INTO formations (communaute_id, titre, slug, description, statut, ordre, date_creation, date_modification)
-             VALUES (:cid, :titre, :slug, :description, :statut, :ordre, NOW(), NOW())'
+             VALUES (:cid, :titre, :slug, :desc, :statut, :ordre, NOW(), NOW())'
         );
-
         $stmt->execute([
             'cid' => $communauteId,
             'titre' => htmlspecialchars(trim($data['titre'])),
             'slug' => $slug,
-            'description' => htmlspecialchars(trim($data['description'] ?? '')),
-            'statut' => 'brouillon',
-            'ordre' => $data['ordre'] ?? 0,
+            'desc' => htmlspecialchars(trim($data['description'] ?? '')),
+            'statut' => $data['statut'] ?? 'active',
+            'ordre' => (int)($data['ordre'] ?? 0),
         ]);
 
         return ['success' => true, 'formation_id' => $this->db->lastInsertId(), 'slug' => $slug];
     }
 
-    /**
-     * Lister les formations d'une communauté
-     */
+    public function modifier(int $formationId, array $data): array
+    {
+        $stmt = $this->db->prepare(
+            'UPDATE formations SET titre = :titre, description = :desc, statut = :statut, date_modification = NOW() WHERE id = :id'
+        );
+        $stmt->execute([
+            'titre' => htmlspecialchars(trim($data['titre'])),
+            'desc' => htmlspecialchars(trim($data['description'] ?? '')),
+            'statut' => $data['statut'] ?? 'active',
+            'id' => $formationId,
+        ]);
+
+        return ['success' => true];
+    }
+
+    public function supprimer(int $formationId): void
+    {
+        $stmt = $this->db->prepare('UPDATE formations SET statut = :statut WHERE id = :id');
+        $stmt->execute(['statut' => 'supprimee', 'id' => $formationId]);
+    }
+
     public function lister(int $communauteId): array
     {
         $stmt = $this->db->prepare(
-            'SELECT f.*, COUNT(l.id) as nombre_lecons
+            'SELECT f.*,
+                    (SELECT COUNT(*) FROM modules_formation WHERE formation_id = f.id) as nb_modules,
+                    (SELECT COUNT(*) FROM lecons WHERE formation_id = f.id) as nombre_lecons
              FROM formations f
-             LEFT JOIN lecons l ON l.formation_id = f.id AND l.communaute_id = :cid2
              WHERE f.communaute_id = :cid AND f.statut != :statut
-             GROUP BY f.id
              ORDER BY f.ordre ASC, f.date_creation DESC'
         );
-
-        $stmt->execute(['cid' => $communauteId, 'cid2' => $communauteId, 'statut' => 'supprimee']);
+        $stmt->execute(['cid' => $communauteId, 'statut' => 'supprimee']);
         return $stmt->fetchAll();
     }
 
-    /**
-     * Récupérer une formation par slug
-     */
     public function recupererParSlug(int $communauteId, string $slug): ?array
     {
         $stmt = $this->db->prepare(
@@ -71,52 +83,141 @@ class FormationService
         return $stmt->fetch() ?: null;
     }
 
-    /**
-     * Ajouter une leçon
-     */
-    public function ajouterLecon(int $communauteId, int $formationId, array $data): array
-    {
-        // Vérifier la formation
-        $stmt = $this->db->prepare(
-            'SELECT id FROM formations WHERE id = :fid AND communaute_id = :cid'
-        );
-        $stmt->execute(['fid' => $formationId, 'cid' => $communauteId]);
+    // ===== MODULES =====
 
-        if (!$stmt->fetch()) {
-            return ['success' => false, 'errors' => ['Formation introuvable.']];
+    public function creerModule(int $formationId, array $data): array
+    {
+        if (empty($data['titre'])) {
+            return ['success' => false, 'errors' => ['Le titre du module est requis.']];
         }
 
-        $slug = $this->genererSlug($data['titre'] ?? 'lecon');
+        $stmt = $this->db->prepare(
+            'INSERT INTO modules_formation (formation_id, titre, description, ordre, date_creation)
+             VALUES (:fid, :titre, :desc, :ordre, NOW())'
+        );
+        $stmt->execute([
+            'fid' => $formationId,
+            'titre' => htmlspecialchars(trim($data['titre'])),
+            'desc' => htmlspecialchars(trim($data['description'] ?? '')),
+            'ordre' => (int)($data['ordre'] ?? 0),
+        ]);
+
+        return ['success' => true, 'module_id' => $this->db->lastInsertId()];
+    }
+
+    public function modifierModule(int $moduleId, array $data): array
+    {
+        $stmt = $this->db->prepare('UPDATE modules_formation SET titre = :titre, description = :desc WHERE id = :id');
+        $stmt->execute([
+            'titre' => htmlspecialchars(trim($data['titre'])),
+            'desc' => htmlspecialchars(trim($data['description'] ?? '')),
+            'id' => $moduleId,
+        ]);
+        return ['success' => true];
+    }
+
+    public function supprimerModule(int $moduleId): void
+    {
+        // Supprimer les leçons liées
+        $stmt = $this->db->prepare('UPDATE lecons SET statut = :statut WHERE module_id = :id');
+        $stmt->execute(['statut' => 'supprimee', 'id' => $moduleId]);
+        // Supprimer le module
+        $stmt = $this->db->prepare('DELETE FROM modules_formation WHERE id = :id');
+        $stmt->execute(['id' => $moduleId]);
+    }
+
+    public function listerModules(int $formationId): array
+    {
+        $stmt = $this->db->prepare(
+            'SELECT m.*,
+                    (SELECT COUNT(*) FROM lecons WHERE module_id = m.id AND statut = :statut) as nb_lecons
+             FROM modules_formation m
+             WHERE m.formation_id = :fid
+             ORDER BY m.ordre ASC, m.date_creation ASC'
+        );
+        $stmt->execute(['fid' => $formationId, 'statut' => 'active']);
+        return $stmt->fetchAll();
+    }
+
+    public function getModule(int $moduleId): ?array
+    {
+        $stmt = $this->db->prepare('SELECT * FROM modules_formation WHERE id = :id');
+        $stmt->execute(['id' => $moduleId]);
+        return $stmt->fetch() ?: null;
+    }
+
+    // ===== LEÇONS =====
+
+    public function ajouterLecon(int $communauteId, int $formationId, array $data, ?array $fichierVideo = null): array
+    {
+        if (empty($data['titre'])) {
+            return ['success' => false, 'errors' => ['Le titre est requis.']];
+        }
+
+        $slug = $this->genererSlug($data['titre']);
+        $moduleId = !empty($data['module_id']) ? (int)$data['module_id'] : null;
+
+        // Gérer l'upload de vidéo
+        $videoFichier = null;
+        if ($fichierVideo && isset($fichierVideo['tmp_name']) && is_uploaded_file($fichierVideo['tmp_name'])) {
+            $extension = strtolower(pathinfo($fichierVideo['name'], PATHINFO_EXTENSION));
+            $extensionsValides = ['mp4', 'webm', 'mov', 'avi', 'mkv'];
+            $tailleMax = 100 * 1024 * 1024; // 100 Mo
+
+            if (in_array($extension, $extensionsValides) && $fichierVideo['size'] <= $tailleMax) {
+                $nomFichier = bin2hex(random_bytes(16)) . '.' . $extension;
+                $dossier = __DIR__ . '/../../public/uploads/' . $communauteId . '/videos/lecons/';
+
+                if (!is_dir($dossier)) {
+                    mkdir($dossier, 0755, true);
+                }
+
+                if (move_uploaded_file($fichierVideo['tmp_name'], $dossier . $nomFichier)) {
+                    $videoFichier = 'uploads/' . $communauteId . '/videos/lecons/' . $nomFichier;
+                }
+            }
+        }
 
         $stmt = $this->db->prepare(
-            'INSERT INTO lecons (communaute_id, formation_id, titre, slug, description, contenu, video_url, ordre, statut, date_creation)
-             VALUES (:cid, :fid, :titre, :slug, :description, :contenu, :video_url, :ordre, :statut, NOW())'
+            'INSERT INTO lecons (communaute_id, formation_id, module_id, titre, slug, description, contenu, video_url, video_fichier, ordre, statut, date_creation)
+             VALUES (:cid, :fid, :mid, :titre, :slug, :desc, :contenu, :video, :vfichier, :ordre, :statut, NOW())'
         );
-
         $stmt->execute([
             'cid' => $communauteId,
             'fid' => $formationId,
-            'titre' => htmlspecialchars(trim($data['titre'] ?? '')),
+            'mid' => $moduleId,
+            'titre' => htmlspecialchars(trim($data['titre'])),
             'slug' => $slug,
-            'description' => htmlspecialchars(trim($data['description'] ?? '')),
+            'desc' => htmlspecialchars(trim($data['description'] ?? '')),
             'contenu' => $data['contenu'] ?? '',
-            'video_url' => $data['video_url'] ?? null,
-            'ordre' => $data['ordre'] ?? 0,
+            'video' => trim($data['video_url'] ?? '') ?: null,
+            'vfichier' => $videoFichier,
+            'ordre' => (int)($data['ordre'] ?? 0),
             'statut' => 'active',
         ]);
 
         return ['success' => true, 'lecon_id' => $this->db->lastInsertId()];
     }
 
-    /**
-     * Lister les leçons d'une formation
-     */
     public function listerLecons(int $communauteId, int $formationId): array
     {
         $stmt = $this->db->prepare(
-            'SELECT * FROM lecons WHERE communaute_id = :cid AND formation_id = :fid AND statut = :statut ORDER BY ordre ASC'
+            'SELECT l.*, m.titre as module_titre
+             FROM lecons l
+             LEFT JOIN modules_formation m ON m.id = l.module_id
+             WHERE l.communaute_id = :cid AND l.formation_id = :fid AND l.statut = :statut
+             ORDER BY l.ordre ASC, l.date_creation ASC'
         );
         $stmt->execute(['cid' => $communauteId, 'fid' => $formationId, 'statut' => 'active']);
+        return $stmt->fetchAll();
+    }
+
+    public function listerLeconsParModule(int $moduleId): array
+    {
+        $stmt = $this->db->prepare(
+            'SELECT * FROM lecons WHERE module_id = :mid AND statut = :statut ORDER BY ordre ASC, date_creation ASC'
+        );
+        $stmt->execute(['mid' => $moduleId, 'statut' => 'active']);
         return $stmt->fetchAll();
     }
 

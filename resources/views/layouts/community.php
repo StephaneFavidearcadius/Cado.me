@@ -21,9 +21,21 @@
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
     <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
     <base href="/">
-    <style>[x-cloak] { display: none !important; } *, *::before, *::after { border-radius: 0 !important; }</style>
+    <style>
+        [x-cloak] { display: none !important; }
+        *, *::before, *::after { border-radius: 0 !important; }
+        /* Grille éditoriale subtile */
+        .editorial-grid { background-image: linear-gradient(rgba(120,48,224,0.04) 1px, transparent 1px), linear-gradient(90deg, rgba(120,48,224,0.04) 1px, transparent 1px); background-size: 60px 60px; }
+    </style>
+    <script>
+    // Fonction pour afficher du texte sans entités HTML doubles
+    function safeText(str) {
+        if (!str) return '';
+        return str.replace(/&amp;/g, '&').replace(/&#039;/g, "'").replace(/&quot;/g, '"').replace(/&lt;/g, '<').replace(/&gt;/g, '>');
+    }
+    </script>
 </head>
-<body class="font-sora bg-gray-50 text-gray-900 min-h-screen">
+<body class="font-sora bg-gray-50 text-gray-900 min-h-screen editorial-grid">
 
     <!-- Flash Messages -->
     <?php if (!empty($flash['success'])): ?>
@@ -110,6 +122,12 @@
                 </div>
 
                 <div class="flex items-center gap-3">
+                    <!-- Découvrir -->
+                    <a href="/decouvrir" class="hidden md:flex items-center gap-1.5 text-sm text-gray-500 hover:text-violet-600 transition font-medium">
+                        <i data-lucide="compass" class="w-4 h-4"></i>
+                        Découvrir
+                    </a>
+
                     <!-- Barre de recherche -->
                     <div class="hidden md:flex items-center bg-gray-100 px-3 py-2 w-64">
                         <i data-lucide="search" class="w-4 h-4 text-gray-400 mr-2"></i>
@@ -206,6 +224,7 @@
                             ['slug' => '/leaderboards', 'label' => 'Classement', 'icon' => 'trophy', 'match' => fn($p) => str_contains($p, '/leaderboards')],
                             ['slug' => '/messages', 'label' => 'Messages', 'icon' => 'message-circle', 'match' => fn($p) => str_contains($p, '/messages')],
                             ['slug' => '/notifications', 'label' => 'Notifications', 'icon' => 'bell', 'match' => fn($p) => str_contains($p, '/notifications')],
+                            ['slug' => '/favoris', 'label' => 'Favoris', 'icon' => 'bookmark', 'match' => fn($p) => str_contains($p, '/favoris')],
                         ];
                         foreach ($navItems as $nav):
                             $active = $nav['match']($currentPath);

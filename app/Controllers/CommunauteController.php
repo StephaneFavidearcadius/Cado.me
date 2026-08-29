@@ -19,9 +19,9 @@ class CommunauteController extends Controller
         $stmt = $db->prepare(
             'SELECT a.id FROM abonnements a
              JOIN plans p ON p.id = a.plan_id
-             WHERE a.statut = :statut AND a.periode_fin >= CURDATE() AND p.prix_mensuel > 0'
+             WHERE a.utilisateur_id = :user_id AND a.statut = :statut AND a.periode_fin >= CURDATE() AND p.prix_mensuel > 0'
         );
-        $stmt->execute(['statut' => 'actif']);
+        $stmt->execute(['user_id' => Session::get('utilisateur_id'), 'statut' => 'actif']);
         return (bool) $stmt->fetch();
     }
 

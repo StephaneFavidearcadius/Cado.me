@@ -48,9 +48,10 @@
     <style>
         [x-cloak] { display: none !important; }
         *, *::before, *::after { border-radius: 0 !important; }
+        .editorial-grid { background-image: linear-gradient(rgba(120,48,224,0.04) 1px, transparent 1px), linear-gradient(90deg, rgba(120,48,224,0.04) 1px, transparent 1px); background-size: 60px 60px; }
     </style>
 </head>
-<body class="font-sora bg-gray-50 text-gray-900 min-h-screen">
+<body class="font-sora bg-gray-50 text-gray-900 min-h-screen editorial-grid">
 
     <!-- Flash Messages -->
     <?php if (!empty($flash['success'])): ?>

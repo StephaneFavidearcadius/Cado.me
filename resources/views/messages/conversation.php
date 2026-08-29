@@ -226,6 +226,12 @@ function chatApp() {
                 form.append('fichiers[]', f.file);
             });
 
+            // Sauvegarder le message et les fichiers pour affichage optimiste
+            const msgText = this.newMessage;
+            const filesSnapshot = [...this.selectedFiles];
+            this.newMessage = '';
+            this.selectedFiles = [];
+
             try {
                 const resp = await fetch(window.location.pathname, {
                     method: 'POST',
@@ -234,8 +240,6 @@ function chatApp() {
                 });
                 const data = await resp.json();
                 if (data.success) {
-                    this.newMessage = '';
-                    this.selectedFiles = [];
                     window.location.reload();
                 }
             } catch (e) {

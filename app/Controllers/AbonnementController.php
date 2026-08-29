@@ -14,6 +14,7 @@ class AbonnementController extends Controller
      */
     public function index(): Response
     {
+        $userId = Session::get('utilisateur_id');
         $db = \App\Core\Database::getInstance();
 
         // Récupérer l'abonnement actif de l'utilisateur
@@ -21,10 +22,10 @@ class AbonnementController extends Controller
             'SELECT a.*, p.nom as plan_nom, p.prix_mensuel
              FROM abonnements a
              JOIN plans p ON p.id = a.plan_id
-             WHERE a.statut = :statut AND a.periode_fin >= CURDATE()
+             WHERE a.utilisateur_id = :user_id AND a.statut = :statut AND a.periode_fin >= CURDATE()
              ORDER BY a.date_creation DESC LIMIT 1'
         );
-        $stmt->execute(['statut' => 'actif']);
+        $stmt->execute(['user_id' => $userId, 'statut' => 'actif']);
         $abonnement = $stmt->fetch();
 
         // Récupérer tous les plans actifs
@@ -63,16 +64,17 @@ class AbonnementController extends Controller
             return $this->redirect('/abonnement');
         }
 
-        // Désactiver les anciens abonnements
-        $stmt = $db->prepare('UPDATE abonnements SET statut = :statut WHERE statut = :statut2');
-        $stmt->execute(['statut' => 'annule', 'statut2' => 'actif']);
+        // Désactiver les anciens abonnements de cet utilisateur
+        $stmt = $db->prepare('UPDATE abonnements SET statut = :statut WHERE utilisateur_id = :user_id AND statut = :statut2');
+        $stmt->execute(['statut' => 'annule', 'user_id' => $userId, 'statut2' => 'actif']);
 
-        // Créer le nouvel abonnement (1 an par défaut)
+        // Créer le nouvel abonnement (1 an par défaut) — abonnement utilisateur
         $stmt = $db->prepare(
-            'INSERT INTO abonnements (communaute_id, plan_id, statut, periode_debut, periode_fin, date_creation, date_modification)
-             VALUES (0, :plan_id, :statut, CURDATE(), DATE_ADD(CURDATE(), INTERVAL 1 YEAR), NOW(), NOW())'
+            'INSERT INTO abonnements (utilisateur_id, communaute_id, plan_id, statut, periode_debut, periode_fin, date_creation, date_modification)
+             VALUES (:user_id, NULL, :plan_id, :statut, CURDATE(), DATE_ADD(CURDATE(), INTERVAL 1 YEAR), NOW(), NOW())'
         );
         $stmt->execute([
+            'user_id' => $userId,
             'plan_id' => $planId,
             'statut' => 'actif',
         ]);

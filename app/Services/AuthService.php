@@ -24,9 +24,11 @@ class AuthService
             return ['success' => false, 'errors' => $errors];
         }
 
+        $whatsapp = !empty($data['whatsapp']) ? trim($data['whatsapp']) : null;
+
         $stmt = $this->db->prepare(
-            'INSERT INTO utilisateurs (prenom, nom, identifiant, email, mot_de_passe, role_plateforme, statut, email_verifie, date_creation, date_modification)
-             VALUES (:prenom, :nom, :identifiant, :email, :mot_de_passe, :role_plateforme, :statut, :email_verifie, NOW(), NOW())'
+            'INSERT INTO utilisateurs (prenom, nom, identifiant, email, mot_de_passe, whatsapp, role_plateforme, statut, email_verifie, date_creation, date_modification)
+             VALUES (:prenom, :nom, :identifiant, :email, :mot_de_passe, :whatsapp, :role_plateforme, :statut, :email_verifie, NOW(), NOW())'
         );
 
         $hash = password_hash($data['mot_de_passe'], PASSWORD_BCRYPT, ['cost' => 12]);
@@ -37,6 +39,7 @@ class AuthService
             'identifiant' => $this->genererIdentifiant($data['prenom'], $data['nom']),
             'email' => strtolower(trim($data['email'])),
             'mot_de_passe' => $hash,
+            'whatsapp' => $whatsapp,
             'role_plateforme' => 'aucun',
             'statut' => 'actif',
             'email_verifie' => 0,

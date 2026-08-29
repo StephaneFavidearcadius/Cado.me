@@ -118,6 +118,38 @@
                 <?php endif; ?>
             </div>
 
+            <!-- WhatsApp avec indicatif pays -->
+            <div x-data="phoneSelector()">
+                <label class="block text-sm font-medium text-gray-700 mb-1.5">Numéro WhatsApp</label>
+                <div class="flex">
+                    <div x-data="{ open: false }" class="relative flex-shrink-0">
+                        <button type="button" @click="open = !open" class="flex items-center gap-1.5 px-3 py-3 border border-r-0 border-gray-200 bg-gray-50 text-sm hover:bg-gray-100 transition">
+                            <span x-text="selectedFlag" class="text-lg">🇨🇮</span>
+                            <span x-text="selectedCode" class="text-gray-700 font-medium">+225</span>
+                            <svg class="w-3 h-3 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="square" stroke-linejoin="miter" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+                        </button>
+                        <div x-show="open" @click.away="open = false" x-cloak
+                             class="absolute top-full left-0 mt-1 w-64 bg-white border border-gray-200 shadow-lg z-50 max-h-60 overflow-y-auto">
+                            <div class="p-2">
+                                <input type="text" x-model="search" placeholder="Rechercher..." class="w-full px-3 py-1.5 border border-gray-200 text-sm outline-none focus:ring-1 focus:ring-violet-500">
+                            </div>
+                            <template x-for="c in filteredCountries" :key="c.code">
+                                <button type="button" @click="selectCountry(c); open = false"
+                                        class="w-full flex items-center gap-2.5 px-3 py-2 hover:bg-violet-50 transition text-left text-sm">
+                                    <span class="text-lg" x-text="c.flag"></span>
+                                    <span class="text-gray-700" x-text="c.name"></span>
+                                    <span class="text-gray-400 ml-auto" x-text="c.dial"></span>
+                                </button>
+                            </template>
+                        </div>
+                    </div>
+                    <input type="tel" name="whatsapp" x-model="number"
+                           class="flex-1 px-4 py-3 border border-gray-200 text-sm focus:ring-2 focus:ring-violet-500 focus:border-transparent outline-none transition placeholder-gray-400"
+                           placeholder="07 08 09 10">
+                </div>
+                <input type="hidden" name="whatsapp" :value="selectedCode + number">
+            </div>
+
             <!-- Mot de passe avec toggle -->
             <div>
                 <label for="mot_de_passe_ins" class="block text-sm font-medium text-gray-700 mb-1.5">Mot de passe</label>
@@ -181,3 +213,66 @@
     <!-- Lien dispatch pour le switch depuis connexion -->
     <div x-data @switch-to-register.window="activeTab = 'inscription'"></div>
 </div>
+
+<script>
+function phoneSelector() {
+    return {
+        search: '',
+        number: '',
+        selectedCode: '+225',
+        selectedFlag: '🇨🇮',
+        countries: [
+            { flag: '🇨🇮', name: 'Côte d\'Ivoire', dial: '+225', code: 'CI' },
+            { flag: '🇫🇷', name: 'France', dial: '+33', code: 'FR' },
+            { flag: '🇨🇲', name: 'Cameroun', dial: '+237', code: 'CM' },
+            { flag: '🇸🇳', name: 'Sénégal', dial: '+221', code: 'SN' },
+            { flag: '🇲🇱', name: 'Mali', dial: '+223', code: 'ML' },
+            { flag: '🇧🇫', name: 'Burkina Faso', dial: '+226', code: 'BF' },
+            { flag: '🇳🇪', name: 'Niger', dial: '+227', code: 'NE' },
+            { flag: '🇬🇳', name: 'Guinée', dial: '+224', code: 'GN' },
+            { flag: '🇨🇩', name: 'RD Congo', dial: '+243', code: 'CD' },
+            { flag: '🇨🇬', name: 'Congo', dial: '+242', code: 'CG' },
+            { flag: '🇬🇦', name: 'Gabon', dial: '+241', code: 'GA' },
+            { flag: '🇹🇬', name: 'Togo', dial: '+228', code: 'TG' },
+            { flag: '🇧🇯', name: 'Bénin', dial: '+229', code: 'BJ' },
+            { flag: '🇲🇬', name: 'Madagascar', dial: '+261', code: 'MG' },
+            { flag: '🇷🇼', name: 'Rwanda', dial: '+250', code: 'RW' },
+            { flag: '🇧🇮', name: 'Burundi', dial: '+257', code: 'BI' },
+            { flag: '🇹🇩', name: 'Tchad', dial: '+235', code: 'TD' },
+            { flag: '🇨🇫', name: 'Centrafrique', dial: '+236', code: 'CF' },
+            { flag: '🇲🇷', name: 'Mauritanie', dial: '+222', code: 'MR' },
+            { flag: '🇩🇿', name: 'Algérie', dial: '+213', code: 'DZ' },
+            { flag: '🇲🇦', name: 'Maroc', dial: '+212', code: 'MA' },
+            { flag: '🇹🇳', name: 'Tunisie', dial: '+216', code: 'TN' },
+            { flag: '🇪🇬', name: 'Égypte', dial: '+20', code: 'EG' },
+            { flag: '🇳🇬', name: 'Nigeria', dial: '+234', code: 'NG' },
+            { flag: '🇬🇭', name: 'Ghana', dial: '+233', code: 'GH' },
+            { flag: '🇰🇪', name: 'Kenya', dial: '+254', code: 'KE' },
+            { flag: '🇿🇦', name: 'Afrique du Sud', dial: '+27', code: 'ZA' },
+            { flag: '🇪🇹', name: 'Éthiopie', dial: '+251', code: 'ET' },
+            { flag: '🇺🇬', name: 'Ouganda', dial: '+256', code: 'UG' },
+            { flag: '🇹🇿', name: 'Tanzanie', dial: '+255', code: 'TZ' },
+            { flag: '🇧🇪', name: 'Belgique', dial: '+32', code: 'BE' },
+            { flag: '🇨🇭', name: 'Suisse', dial: '+41', code: 'CH' },
+            { flag: '🇨🇦', name: 'Canada', dial: '+1', code: 'CA' },
+            { flag: '🇺🇸', name: 'États-Unis', dial: '+1', code: 'US' },
+            { flag: '🇬🇧', name: 'Royaume-Uni', dial: '+44', code: 'GB' },
+            { flag: '🇩🇪', name: 'Allemagne', dial: '+49', code: 'DE' },
+            { flag: '🇪🇸', name: 'Espagne', dial: '+34', code: 'ES' },
+            { flag: '🇮🇹', name: 'Italie', dial: '+39', code: 'IT' },
+            { flag: '🇵🇹', name: 'Portugal', dial: '+351', code: 'PT' },
+            { flag: '🇧🇷', name: 'Brésil', dial: '+55', code: 'BR' },
+        ],
+        get filteredCountries() {
+            if (!this.search) return this.countries;
+            const q = this.search.toLowerCase();
+            return this.countries.filter(c => c.name.toLowerCase().includes(q) || c.dial.includes(q));
+        },
+        selectCountry(c) {
+            this.selectedCode = c.dial;
+            this.selectedFlag = c.flag;
+            this.search = '';
+        }
+    }
+}
+</script>

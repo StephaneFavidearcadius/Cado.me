@@ -210,7 +210,7 @@ class MessageService
                 $dossier = "uploads/{$communauteId}/messages/{$conversationId}";
                 $nomUnique = uniqid() . '.' . $ext;
                 $cheminRelatif = $dossier . '/' . $nomUnique;
-                $cheminComplet = $_SERVER['DOCUMENT_ROOT'] . '/' . $cheminRelatif;
+                $cheminComplet = dirname(__DIR__, 2) . '/public/' . $cheminRelatif;
 
                 @mkdir(dirname($cheminComplet), 0755, true);
                 if (move_uploaded_file($fichier['tmp_name'], $cheminComplet)) {
