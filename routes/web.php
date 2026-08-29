@@ -131,7 +131,13 @@ $router->middleware([AuthMiddleware::class, CommunauteMiddleware::class, CsrfMid
 $router->post('/c/{slug}/messages', [MessageController::class, 'creerConversation']);
 
 $router->middleware([AuthMiddleware::class, CommunauteMiddleware::class, CsrfMiddleware::class]);
+$router->get('/c/{slug}/messages/{conversation}', [MessageController::class, 'voir']);
+
+$router->middleware([AuthMiddleware::class, CommunauteMiddleware::class, CsrfMiddleware::class]);
 $router->post('/c/{slug}/messages/{conversation}', [MessageController::class, 'envoyer']);
+
+$router->middleware([AuthMiddleware::class, CommunauteMiddleware::class, CsrfMiddleware::class]);
+$router->get('/c/{slug}/membres/{membreId}/chat', [MessageController::class, 'ouvrir']);
 
 // Profil
 $router->middleware([AuthMiddleware::class, CommunauteMiddleware::class, CsrfMiddleware::class]);

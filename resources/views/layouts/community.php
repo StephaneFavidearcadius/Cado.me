@@ -84,7 +84,7 @@
                                     $cColor = $comm['couleur_principale'] ?? '#7830E0';
                                     $isActive = ($comm['slug'] ?? '') === ($commActive['slug'] ?? '');
                                 ?>
-                            <a href="/c/<?= htmlspecialchars($comm['slug']) ?>/app"
+                            <a href="/c/<?= htmlspecialchars($comm['slug']) ?>/feed"
                                class="flex items-center gap-3 px-4 py-2 transition" style="<?= $isActive ? 'background:' . $cColor . '12;' : '' ?>">
                                 <?php if (!empty($comm['logo'])): ?>
                                 <img src="<?= htmlspecialchars((new \App\Services\StorageService())->url($comm['logo'])) ?>" class="w-8 h-8 object-cover" alt="">
@@ -109,16 +109,37 @@
                     <?php endif; ?>
                 </div>
 
-                <div class="flex items-center gap-4">
+                <div class="flex items-center gap-3">
+                    <!-- Barre de recherche -->
+                    <div class="hidden md:flex items-center bg-gray-100 px-3 py-2 w-64">
+                        <i data-lucide="search" class="w-4 h-4 text-gray-400 mr-2"></i>
+                        <input type="text" placeholder="Rechercher..." class="bg-transparent text-sm outline-none w-full text-gray-700 placeholder-gray-400">
+                    </div>
+
                     <?php if ($slug):
                         $notifService = new \App\Services\NotificationService();
                         $nbNotifs = $notifService->compterNonLues($commActive['id'] ?? 0, $_SESSION['utilisateur_id'] ?? 0);
+                        $msgService = new \App\Services\MessageService();
+                        $convs = $msgService->listerConversations($commActive['id'] ?? 0, $_SESSION['utilisateur_id'] ?? 0);
+                        $nbMsgs = 0;
+                        foreach ($convs as $c) { $nbMsgs += (int)($c['non_lus'] ?? 0); }
                     ?>
-                    <a href="/c/<?= $slug ?>/notifications" class="relative p-2 rounded-lg hover:bg-gray-100 transition">
+                    <!-- Messages icon -->
+                    <a href="/c/<?= $slug ?>/messages" class="relative p-2 hover:bg-gray-100 transition">
+                        <svg class="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="square" stroke-linejoin="miter" stroke-width="1.5" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/></svg>
+                        <?php if ($nbMsgs > 0): ?>
+                        <span class="absolute -top-0.5 -right-0.5 min-w-[18px] h-[18px] bg-red-500 text-white text-[10px] font-bold flex items-center justify-center px-1">
+                            <?= $nbMsgs > 99 ? '99+' : $nbMsgs ?>
+                        </span>
+                        <?php endif; ?>
+                    </a>
+
+                    <!-- Notifications icon -->
+                    <a href="/c/<?= $slug ?>/notifications" class="relative p-2 hover:bg-gray-100 transition">
                         <i data-lucide="bell" class="w-5 h-5 text-gray-500"></i>
                         <?php if ($nbNotifs > 0): ?>
-                        <span class="absolute -top-0.5 -right-0.5 w-4 h-4 bg-red-500 text-white text-[10px] font-bold flex items-center justify-center">
-                            <?= $nbNotifs > 9 ? '9+' : $nbNotifs ?>
+                        <span class="absolute -top-0.5 -right-0.5 min-w-[18px] h-[18px] bg-red-500 text-white text-[10px] font-bold flex items-center justify-center px-1">
+                            <?= $nbNotifs > 99 ? '99+' : $nbNotifs ?>
                         </span>
                         <?php endif; ?>
                     </a>
@@ -178,12 +199,11 @@
                     <nav class="space-y-1">
                         <?php
                         $navItems = [
-                            ['slug' => '/app', 'label' => 'Accueil', 'icon' => 'home', 'match' => fn($p) => str_ends_with($p, '/app')],
-                            ['slug' => '/feed', 'label' => 'Feed', 'icon' => 'layout-dashboard', 'match' => fn($p) => str_ends_with($p, '/feed')],
-                            ['slug' => '/classroom', 'label' => 'Classroom', 'icon' => 'graduation-cap', 'match' => fn($p) => str_contains($p, '/classroom')],
+                            ['slug' => '/feed', 'label' => 'Communauté', 'icon' => 'layout-dashboard', 'match' => fn($p) => str_ends_with($p, '/feed') || str_ends_with($p, '/app')],
+                            ['slug' => '/classroom', 'label' => 'Classe', 'icon' => 'graduation-cap', 'match' => fn($p) => str_contains($p, '/classroom')],
                             ['slug' => '/calendrier', 'label' => 'Calendrier', 'icon' => 'calendar', 'match' => fn($p) => str_contains($p, '/calendrier')],
-                            ['slug' => '/membres', 'label' => 'Membres', 'icon' => 'users', 'match' => fn($p) => str_contains($p, '/membres')],
-                            ['slug' => '/leaderboards', 'label' => 'Leaderboards', 'icon' => 'trophy', 'match' => fn($p) => str_contains($p, '/leaderboards')],
+                            ['slug' => '/membres', 'label' => 'Membres', 'icon' => 'users', 'match' => fn($p) => str_contains($p, '/membres') && !str_contains($p, '/leaderboards')],
+                            ['slug' => '/leaderboards', 'label' => 'Classement', 'icon' => 'trophy', 'match' => fn($p) => str_contains($p, '/leaderboards')],
                             ['slug' => '/messages', 'label' => 'Messages', 'icon' => 'message-circle', 'match' => fn($p) => str_contains($p, '/messages')],
                             ['slug' => '/notifications', 'label' => 'Notifications', 'icon' => 'bell', 'match' => fn($p) => str_contains($p, '/notifications')],
                         ];
@@ -203,7 +223,7 @@
                         </a>
                         <?php if (in_array(($commActive['role'] ?? ''), ['proprietaire', 'administrateur'])): ?>
                         <a href="/c/<?= $slug ?>/gestion" class="flex items-center gap-3 px-3 py-2.5 text-sm transition" style="<?= str_contains($currentPath, '/gestion') ? 'background: var(--comm-color-light); color: var(--comm-color); font-weight: 600;' : 'color: #4B5563;' ?>">
-                            <i data-lucide="settings" class="w-5 h-5"></i> Gestion
+                            <i data-lucide="settings" class="w-5 h-5"></i> Paramètres
                         </a>
                         <?php endif; ?>
                     </nav>
@@ -220,9 +240,9 @@
     <!-- Mobile Bottom Nav -->
     <nav class="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 lg:hidden z-40">
         <div class="flex items-center justify-around py-2">
-            <a href="/c/<?= $slug ?>/feed" class="flex flex-col items-center gap-1 p-2 <?= str_ends_with($currentPath, '/feed') ? 'text-violet-600' : 'text-gray-500' ?>">
+            <a href="/c/<?= $slug ?>/feed" class="flex flex-col items-center gap-1 p-2 <?= (str_ends_with($currentPath, '/feed') || str_ends_with($currentPath, '/app')) ? 'text-violet-600' : 'text-gray-500' ?>">
                 <i data-lucide="layout-dashboard" class="w-5 h-5"></i>
-                <span class="text-xs">Feed</span>
+                <span class="text-xs">Communauté</span>
             </a>
             <a href="/c/<?= $slug ?>/membres" class="flex flex-col items-center gap-1 p-2 <?= str_contains($currentPath, '/membres') ? 'text-violet-600' : 'text-gray-500' ?>">
                 <i data-lucide="users" class="w-5 h-5"></i>

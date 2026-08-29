@@ -13,7 +13,7 @@ class DashboardController extends Controller
         $db = \App\Core\Database::getInstance();
         $uid = Session::get('utilisateur_id');
 
-        // Recharger depuis la DB pour avoir les données à jour (logo, cover, etc.)
+        // Recharger depuis la DB pour avoir les données à jour
         $stmt = $db->prepare(
             'SELECT mc.*, c.nom, c.slug, c.logo, c.couleur_principale, c.image_couverture
              FROM membres_communautes mc
@@ -27,15 +27,16 @@ class DashboardController extends Controller
         // Mettre à jour la session
         Session::set('mes_communautes', $mesCommunautes);
 
-        // Si l'utilisateur a des communautés, rediriger vers le feed de la première
+        // Rediriger toujours vers le feed de la première communauté
         if (!empty($mesCommunautes)) {
             Session::set('communaute_courante', $mesCommunautes[0]);
             return $this->redirect("/c/{$mesCommunautes[0]['slug']}/feed");
         }
 
+        // Sinon formulaire de création
         return $this->view('createur.dashboard', [
             'mesCommunautes' => $mesCommunautes,
-            'titre' => 'Mon tableau de bord',
+            'titre' => 'Créer votre première communauté',
         ]);
     }
 }

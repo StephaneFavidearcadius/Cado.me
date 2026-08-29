@@ -4,7 +4,7 @@
 <div class="max-w-6xl mx-auto" x-data="{ showForm: false }">
     <div class="flex items-center justify-between mb-8">
         <div>
-            <h1 class="text-2xl font-bold text-gray-900">Classroom</h1>
+            <h1 class="text-2xl font-bold text-gray-900">Classe</h1>
             <p class="text-gray-500 mt-1"><?= count($formations) ?> cours</p>
         </div>
         <?php if ($estAdmin): ?>

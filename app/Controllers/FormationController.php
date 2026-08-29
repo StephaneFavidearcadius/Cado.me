@@ -44,7 +44,7 @@ class FormationController extends Controller
         return $this->viewCommunity('formations.classroom', [
             'communaute' => $communaute,
             'formations' => $formations,
-            'titre' => 'Classroom',
+            'titre' => 'Classe',
         ]);
     }
 

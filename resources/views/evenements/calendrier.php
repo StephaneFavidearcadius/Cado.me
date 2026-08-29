@@ -96,13 +96,13 @@ foreach ($evenements as $evt) {
     <!-- Calendar Navigation -->
     <div class="bg-white border border-gray-100 p-6">
         <div class="flex items-center justify-between mb-6">
-            <a href="?mois=<?= $prevMois ?>&annee=<?= $prevAnnee ?>" class="flex items-center gap-1 text-sm text-gray-500 hover:text-violet-600 transition">
+            <a href="/c/<?= $slug ?>/calendrier?mois=<?= $prevMois ?>&annee=<?= $prevAnnee ?>" class="flex items-center gap-1 text-sm text-gray-500 hover:text-violet-600 transition">
                 <i data-lucide="chevron-left" class="w-4 h-4"></i>
             </a>
             <div class="text-center">
                 <h2 class="text-xl font-bold text-gray-900"><?= $moisNoms[$mois - 1] ?> <?= $annee ?></h2>
             </div>
-            <a href="?mois=<?= $nextMois ?>&annee=<?= $nextAnnee ?>" class="flex items-center gap-1 text-sm text-gray-500 hover:text-violet-600 transition">
+            <a href="/c/<?= $slug ?>/calendrier?mois=<?= $nextMois ?>&annee=<?= $nextAnnee ?>" class="flex items-center gap-1 text-sm text-gray-500 hover:text-violet-600 transition">
                 <i data-lucide="chevron-right" class="w-4 h-4"></i>
             </a>
         </div>

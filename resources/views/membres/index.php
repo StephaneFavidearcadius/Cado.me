@@ -65,10 +65,12 @@
             </div>
 
             <!-- Bouton CHAT -->
-            <a href="/c/<?= $slug ?>/messages" class="flex items-center gap-1.5 px-4 py-2 border border-gray-200 text-sm font-medium text-gray-700 hover:border-gray-400 transition flex-shrink-0">
-                CHAT
+            <?php if ((int)$membre['utilisateur_id'] !== (int)($_SESSION['utilisateur_id'] ?? 0)): ?>
+            <a href="/c/<?= $slug ?>/membres/<?= $membre['utilisateur_id'] ?>/chat" class="flex items-center gap-1.5 px-4 py-2 border border-gray-200 text-sm font-medium text-gray-700 hover:border-gray-400 transition flex-shrink-0">
+                DISCUTER
                 <i data-lucide="message-circle" class="w-4 h-4"></i>
             </a>
+            <?php endif; ?>
         </div>
         <?php endforeach; ?>
     </div>

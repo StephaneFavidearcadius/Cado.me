@@ -14,10 +14,10 @@ $isPrivee = $communaute['visibilite'] === 'privee';
     <div class="border-b border-gray-200 mb-8">
         <nav class="flex gap-0 -mb-px">
             <a href="/c/<?= $slug ?>/feed" class="px-6 py-3 text-sm font-medium text-gray-500 hover:text-gray-700 border-b-2 border-transparent hover:border-gray-300 transition">
-                Community
+                Communauté
             </a>
             <a href="/c/<?= $slug ?>/formations" class="px-6 py-3 text-sm font-medium text-gray-500 hover:text-gray-700 border-b-2 border-transparent hover:border-gray-300 transition">
-                Classroom
+                Classe
             </a>
             <a href="/c/<?= $slug ?>/evenements" class="px-6 py-3 text-sm font-medium text-gray-500 hover:text-gray-700 border-b-2 border-transparent hover:border-gray-300 transition">
                 Calendrier

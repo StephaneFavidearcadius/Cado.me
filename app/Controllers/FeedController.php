@@ -26,7 +26,7 @@ class FeedController extends Controller
             'total' => $data['total'],
             'page' => $data['page'],
             'lastPage' => $data['last_page'],
-            'titre' => 'Feed',
+            'titre' => 'Communauté',
         ]);
     }
 

@@ -1,202 +1,333 @@
-<div class="max-w-3xl mx-auto" x-data="feedApp()">
+<?php
+$slug = htmlspecialchars($communaute['slug']);
+$userId = $_SESSION['utilisateur_id'] ?? 0;
+$estAdmin = in_array(($_SESSION['communaute_courante']['role'] ?? ''), ['proprietaire', 'administrateur']);
 
-    <!-- Nouvelle publication -->
-    <div class="bg-white border border-gray-100 p-5 mb-6">
-        <form id="pubForm" method="POST" action="/c/<?= htmlspecialchars($communaute['slug']) ?>/publications"
-              enctype="multipart/form-data" class="space-y-4">
-            <?= \App\Core\Csrf::field() ?>
-            <div class="flex items-start gap-3">
-                <div class="w-10 h-10 bg-violet-100 flex items-center justify-center flex-shrink-0">
-                    <span class="text-violet-600 text-sm font-bold"><?= strtoupper(substr($_SESSION['utilisateur_prenom'] ?? 'U', 0, 1)) ?></span>
-                </div>
-                <textarea name="contenu" rows="3"
-                          class="flex-1 px-4 py-3 bg-gray-50 border border-gray-200 text-sm focus:ring-2 focus:ring-violet-500 focus:border-transparent outline-none transition resize-none placeholder-gray-400"
-                          placeholder="Partagez quelque chose avec votre communauté..."></textarea>
-            </div>
+// Compter les membres en ligne (activité récente)
+$db = \App\Core\Database::getInstance();
+$stmt = $db->prepare('SELECT COUNT(*) FROM membres_communautes WHERE communaute_id = :cid AND statut = :s');
+$stmt->execute(['cid' => $communaute['id'], 's' => 'actif']);
+$nbMembres = $stmt->fetchColumn();
 
-            <!-- File inputs (hidden, using x-ref) -->
-            <input type="file" name="images[]" x-ref="imageInput" accept="image/*" multiple class="hidden" @change="previewFiles($event, 'images')">
-            <input type="file" name="videos[]" x-ref="videoInput" accept="video/*" multiple class="hidden" @change="previewFiles($event, 'videos')">
-            <input type="file" name="fichiers[]" x-ref="fileInput" multiple class="hidden" @change="previewFiles($event, 'fichiers')">
+$stmt2 = $db->prepare('SELECT COUNT(*) FROM membres_communautes WHERE communaute_id = :cid AND statut = :s AND date_derniere_activite > DATE_SUB(NOW(), INTERVAL 15 MINUTE)');
+$stmt2->execute(['cid' => $communaute['id'], 's' => 'actif']);
+$nbOnline = $stmt2->fetchColumn();
 
-            <!-- File previews -->
-            <div x-show="previews.length > 0" class="flex flex-wrap gap-2 pl-13">
-                <template x-for="(file, idx) in previews" :key="idx">
-                    <div class="relative group">
-                        <template x-if="file.type === 'image'">
-                            <img :src="file.url" class="w-20 h-20 object-cover border border-gray-200">
-                        </template>
-                        <template x-if="file.type === 'video'">
-                            <video :src="file.url" class="w-20 h-20 object-cover border border-gray-200"></video>
-                        </template>
-                        <template x-if="file.type === 'file'">
-                            <div class="w-20 h-20 bg-gray-50 border border-gray-200 flex items-center justify-center p-1">
-                                <span class="text-[10px] text-gray-500 text-center truncate" x-text="file.name"></span>
-                            </div>
-                        </template>
-                        <button type="button" @click="removePreview(idx)"
-                                class="absolute -top-1 -right-1 w-5 h-5 bg-red-500 text-white flex items-center justify-center text-xs opacity-0 group-hover:opacity-100 transition">
-                            &times;
-                        </button>
+// Derniers membres (pour les avatars)
+$stmt3 = $db->prepare('SELECT u.prenom, u.nom, u.avatar FROM membres_communautes mc JOIN utilisateurs u ON u.id = mc.utilisateur_id WHERE mc.communaute_id = :cid AND mc.statut = :s ORDER BY mc.date_adhesion DESC LIMIT 10');
+$stmt3->execute(['cid' => $communaute['id'], 's' => 'actif']);
+$derniersMembres = $stmt3->fetchAll();
+?>
+
+<div class="flex gap-6 max-w-6xl mx-auto" x-data="feedApp()">
+
+    <!-- ===== FIL D'ACTUALITÉ (gauche) ===== -->
+    <div class="flex-1 min-w-0">
+
+        <!-- Nouvelle publication -->
+        <div class="bg-white border border-gray-100 p-4 mb-4">
+            <form id="pubForm" method="POST" action="/c/<?= $slug ?>/publications"
+                  enctype="multipart/form-data" class="space-y-3">
+                <?= \App\Core\Csrf::field() ?>
+                <div class="flex items-start gap-3">
+                    <div class="w-10 h-10 bg-violet-100 flex items-center justify-center flex-shrink-0">
+                        <span class="text-violet-600 text-sm font-bold"><?= strtoupper(substr($_SESSION['utilisateur_prenom'] ?? 'U', 0, 1)) ?></span>
                     </div>
-                </template>
-            </div>
-
-            <div class="flex items-center justify-between pl-13">
-                <div class="flex items-center gap-2">
-                    <button type="button" @click="$refs.imageInput.click()" class="p-2 hover:bg-violet-50 transition text-gray-400 hover:text-violet-600">
-                        <i data-lucide="image" class="w-5 h-5"></i>
-                    </button>
-                    <button type="button" @click="$refs.videoInput.click()" class="p-2 hover:bg-violet-50 transition text-gray-400 hover:text-violet-600">
-                        <i data-lucide="video" class="w-5 h-5"></i>
-                    </button>
-                    <button type="button" @click="$refs.fileInput.click()" class="p-2 hover:bg-violet-50 transition text-gray-400 hover:text-violet-600">
-                        <i data-lucide="paperclip" class="w-5 h-5"></i>
-                    </button>
+                    <textarea name="contenu" rows="2"
+                              class="flex-1 px-4 py-3 bg-gray-50 border border-gray-200 text-sm focus:ring-2 focus:ring-violet-500 focus:border-transparent outline-none transition resize-none placeholder-gray-400"
+                              placeholder="Écrivez quelque chose..."></textarea>
                 </div>
-                <button type="submit" :disabled="publishing"
-                        class="bg-violet-500 hover:bg-violet-600 text-white font-semibold px-5 py-2 text-sm transition disabled:opacity-50">
-                    <span x-show="!publishing">Publier</span>
-                    <span x-show="publishing">Publication...</span>
-                </button>
-            </div>
-        </form>
-    </div>
 
-    <!-- Publications -->
-    <?php if (!empty($publications)): ?>
-    <div class="space-y-4" id="publications-list">
-        <?php foreach ($publications as $pub): ?>
-        <div class="bg-white border border-gray-100 p-5" x-data="publication(<?= (int)$pub['id'] ?>, <?= (int)$pub['nb_likes'] ?>, <?= (int)$pub['nb_commentaires'] ?>, '<?= htmlspecialchars(addslashes($communaute['slug'])) ?>')" id="pub-<?= $pub['id'] ?>">
-            <!-- En-tête -->
-            <div class="flex items-center gap-3 mb-4">
-                <div class="w-10 h-10 bg-violet-100 flex items-center justify-center">
-                    <span class="text-violet-600 text-sm font-bold"><?= strtoupper(substr($pub['prenom'], 0, 1)) ?></span>
-                </div>
-                <div>
-                    <p class="font-semibold text-gray-900 text-sm"><?= htmlspecialchars($pub['prenom'] . ' ' . $pub['nom']) ?></p>
-                    <p class="text-xs text-gray-400"><?= date('d M à H:i', strtotime($pub['date_creation'])) ?></p>
-                </div>
-            </div>
+                <!-- File inputs -->
+                <input type="file" name="images[]" x-ref="imageInput" accept="image/*" multiple class="hidden" @change="previewFiles($event, 'images')">
+                <input type="file" name="videos[]" x-ref="videoInput" accept="video/*" multiple class="hidden" @change="previewFiles($event, 'videos')">
+                <input type="file" name="fichiers[]" x-ref="fileInput" multiple class="hidden" @change="previewFiles($event, 'fichiers')">
 
-            <!-- Contenu -->
-            <?php if (!empty($pub['contenu'])): ?>
-            <p class="text-gray-700 mb-4 leading-relaxed"><?= nl2br(htmlspecialchars($pub['contenu'])) ?></p>
-            <?php endif; ?>
-
-            <!-- Médias -->
-            <?php if (!empty($pub['medias'])): ?>
-            <div class="mb-4 flex flex-wrap gap-2">
-                <?php foreach ($pub['medias'] as $media): ?>
-                    <?php if ($media['type'] === 'image'): ?>
-                    <img src="/<?= htmlspecialchars(ltrim($media['chemin'], '/')) ?>" alt="" class="max-w-full max-h-96 object-cover border border-gray-100">
-                    <?php elseif ($media['type'] === 'video'): ?>
-                    <video controls class="max-w-full max-h-96 border border-gray-100">
-                        <source src="/<?= htmlspecialchars(ltrim($media['chemin'], '/')) ?>" type="video/mp4">
-                    </video>
-                    <?php else: ?>
-                    <a href="/<?= htmlspecialchars(ltrim($media['chemin'], '/')) ?>" target="_blank"
-                       class="flex items-center gap-2 px-4 py-3 bg-gray-50 border border-gray-200 text-sm text-gray-700 hover:bg-gray-100 transition">
-                        <i data-lucide="file" class="w-4 h-4"></i>
-                        <?= htmlspecialchars($media['nom_fichier'] ?? 'Fichier') ?>
-                    </a>
-                    <?php endif; ?>
-                <?php endforeach; ?>
-            </div>
-            <?php endif; ?>
-
-            <!-- Actions -->
-            <div class="flex items-center gap-6 pt-3 border-t border-gray-100">
-                <!-- Like AJAX -->
-                <button @click="toggleLike()" class="flex items-center gap-1.5 text-sm transition"
-                        :class="liked ? 'text-violet-600 font-medium' : 'text-gray-500 hover:text-violet-600'">
-                    <i data-lucide="heart" class="w-4 h-4" :class="liked ? 'fill-violet-600' : ''"></i>
-                    <span x-text="likeCount"></span>
-                </button>
-
-                <!-- Comment toggle -->
-                <button @click="showComments = !showComments; if (showComments && comments.length === 0 && commentCount > 0) loadComments()" class="flex items-center gap-1.5 text-sm text-gray-500 hover:text-violet-600 transition">
-                    <i data-lucide="message-circle" class="w-4 h-4"></i>
-                    <span x-text="commentCount"></span>
-                </button>
-
-                <button class="flex items-center gap-1.5 text-sm text-gray-500 hover:text-violet-600 transition">
-                    <i data-lucide="share-2" class="w-4 h-4"></i>
-                </button>
-
-                <button class="flex items-center gap-1.5 text-sm text-gray-500 hover:text-violet-600 transition">
-                    <i data-lucide="bookmark" class="w-4 h-4"></i>
-                </button>
-
-                <?php if (in_array($_SESSION['communaute_courante']['role'] ?? '', ['proprietaire', 'administrateur'])): ?>
-                <form method="POST" action="/c/<?= htmlspecialchars($communaute['slug']) ?>/publications/<?= $pub['id'] ?>/supprimer" class="ml-auto" onsubmit="return confirm('Supprimer cette publication ?')">
-                    <?= \App\Core\Csrf::field() ?>
-                    <button type="submit" class="flex items-center gap-1.5 text-sm text-red-400 hover:text-red-600 transition">
-                        <i data-lucide="trash-2" class="w-4 h-4"></i>
-                    </button>
-                </form>
-                <?php endif; ?>
-            </div>
-
-            <!-- Commentaires -->
-            <div x-show="showComments" x-cloak x-transition class="mt-4 pt-4 border-t border-gray-100">
-                <!-- Liste commentaires chargés -->
-                <div class="space-y-3 mb-3">
-                    <template x-for="c in comments" :key="c.id">
-                        <div class="flex items-start gap-2">
-                            <div class="w-7 h-7 bg-violet-100 flex items-center justify-center flex-shrink-0">
-                                <span class="text-violet-600 text-[10px] font-bold" x-text="c.prenom.charAt(0)"></span>
-                            </div>
-                            <div class="bg-gray-50 border border-gray-100 px-3 py-2 flex-1">
-                                <p class="text-xs font-semibold text-gray-900" x-text="c.prenom + ' ' + c.nom"></p>
-                                <p class="text-sm text-gray-700" x-text="c.contenu"></p>
-                            </div>
+                <!-- File previews -->
+                <div x-show="previews.length > 0" class="flex flex-wrap gap-2 pl-13">
+                    <template x-for="(file, idx) in previews" :key="idx">
+                        <div class="relative group">
+                            <template x-if="file.type === 'image'">
+                                <img :src="file.url" class="w-20 h-20 object-cover border border-gray-200">
+                            </template>
+                            <template x-if="file.type === 'video'">
+                                <video :src="file.url" class="w-20 h-20 object-cover border border-gray-200"></video>
+                            </template>
+                            <template x-if="file.type === 'file'">
+                                <div class="w-20 h-20 bg-gray-50 border border-gray-200 flex items-center justify-center p-1">
+                                    <span class="text-[10px] text-gray-500 text-center truncate" x-text="file.name"></span>
+                                </div>
+                            </template>
+                            <button type="button" @click="removePreview(idx)"
+                                    class="absolute -top-1 -right-1 w-5 h-5 bg-red-500 text-white flex items-center justify-center text-xs opacity-0 group-hover:opacity-100 transition">
+                                &times;
+                            </button>
                         </div>
                     </template>
                 </div>
 
-                <!-- Formulaire commentaire AJAX -->
-                <form @submit.prevent="sendComment()" class="flex gap-2">
-                    <input type="text" x-model="newComment" placeholder="Écrire un commentaire..."
-                           class="flex-1 px-4 py-2 bg-gray-50 border border-gray-200 text-sm focus:ring-2 focus:ring-violet-500 focus:border-transparent outline-none">
-                    <button type="submit" :disabled="!newComment.trim()"
-                            class="px-4 py-2 bg-violet-500 text-white text-sm font-medium hover:bg-violet-600 transition disabled:opacity-50">
-                        <i data-lucide="send" class="w-4 h-4"></i>
+                <!-- Upload confirmation -->
+                <div x-show="previews.length > 0" class="pl-13 flex items-center gap-2 text-xs text-emerald-600 font-medium">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="square" stroke-linejoin="miter" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                    <span x-text="previews.length + ' fichier(s) prêt(s) à publier'"></span>
+                </div>
+
+                <div class="flex items-center justify-between pl-13 pt-1 border-t border-gray-50">
+                    <div class="flex items-center gap-1">
+                        <button type="button" @click="$refs.imageInput.click()" class="p-2 hover:bg-violet-50 transition text-gray-400 hover:text-violet-600" title="Image">
+                            <i data-lucide="image" class="w-5 h-5"></i>
+                        </button>
+                        <button type="button" @click="$refs.videoInput.click()" class="p-2 hover:bg-violet-50 transition text-gray-400 hover:text-violet-600" title="Vidéo">
+                            <i data-lucide="video" class="w-5 h-5"></i>
+                        </button>
+                        <button type="button" @click="$refs.fileInput.click()" class="p-2 hover:bg-violet-50 transition text-gray-400 hover:text-violet-600" title="Fichier">
+                            <i data-lucide="paperclip" class="w-5 h-5"></i>
+                        </button>
+                        <!-- Emoji -->
+                        <div class="relative" x-data="{ emojiOpen: false }">
+                            <button type="button" @click="emojiOpen = !emojiOpen" class="p-2 hover:bg-violet-50 transition text-gray-400 hover:text-violet-600" title="Emoji">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="square" stroke-linejoin="miter" stroke-width="1.5" d="M14.828 14.828a4 4 0 01-5.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                            </button>
+                            <div x-show="emojiOpen" @click.outside="emojiOpen = false" x-cloak
+                                 class="absolute bottom-full left-0 mb-2 bg-white border border-gray-200 shadow-lg p-3 w-72 z-50">
+                                <div class="grid grid-cols-8 gap-1 max-h-48 overflow-y-auto">
+                                    <?php
+                                    $emojis = ['😀','😂','😍','🥰','😎','🤩','🥳','😇','🤗','🤔','😏','😢','😤','😱','🥺','😴','🤡','💀','👻','❤️','🧡','💛','💚','💙','💜','🖤','🤍','💯','🔥','✨','🎉','🎊','💪','👍','👎','👏','🙌','🤝','🙏','💕','💖','💝','🏆','⭐','🌟','💫','🎯','🚀','💡','📌','✅','❌','⚡','💎','🎵','🎶','📸','🎬','🎓','💻','📱','☕','🍕','🍔'];
+                                    foreach ($emojis as $emoji):
+                                    ?>
+                                    <button type="button" onclick="insertEmojiPub('<?= $emoji ?>'); this.closest('[x-data]').__x.$data.emojiOpen = false"
+                                            class="w-8 h-8 flex items-center justify-center hover:bg-gray-100 transition text-lg"><?= $emoji ?></button>
+                                    <?php endforeach; ?>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <button type="submit" :disabled="publishing"
+                            class="bg-violet-500 hover:bg-violet-600 text-white font-semibold px-5 py-2 text-sm transition disabled:opacity-50">
+                        <span x-show="!publishing">Publier</span>                            <span x-show="publishing">Publication en cours...</span>
                     </button>
-                </form>
+                </div>
+            </form>
+        </div>
+
+        <!-- Publications -->
+        <?php if (!empty($publications)): ?>
+        <div class="space-y-3" id="publications-list">
+            <?php foreach ($publications as $pub): ?>
+            <div class="bg-white border border-gray-100 p-5" x-data="publication(<?= (int)$pub['id'] ?>, <?= (int)$pub['nb_likes'] ?>, <?= (int)$pub['nb_commentaires'] ?>, '<?= htmlspecialchars(addslashes($communaute['slug'])) ?>')" id="pub-<?= $pub['id'] ?>">
+                <!-- Author header -->
+                <div class="flex items-center gap-3 mb-3">
+                    <div class="w-10 h-10 bg-violet-100 flex items-center justify-center flex-shrink-0">
+                        <span class="text-violet-600 text-sm font-bold"><?= strtoupper(substr($pub['prenom'], 0, 1)) ?></span>
+                    </div>
+                    <div>
+                        <div class="flex items-center gap-2">
+                            <p class="font-semibold text-gray-900 text-sm"><?= htmlspecialchars($pub['prenom'] . ' ' . $pub['nom']) ?></p>
+                            <?php if (($pub['role'] ?? '') === 'proprietaire'): ?>
+                            <span class="text-[10px] font-bold px-1.5 py-0.5 text-white" style="background: var(--comm-color);">ADMIN</span>
+                            <?php endif; ?>
+                        </div>
+                        <p class="text-xs text-gray-400"><?= date('d M', strtotime($pub['date_creation'])) ?> · <?= htmlspecialchars($communaute['nom']) ?></p>
+                    </div>
+                </div>
+
+                <!-- Contenu -->
+                <?php if (!empty($pub['contenu'])): ?>
+                <p class="text-gray-800 mb-3 leading-relaxed text-[15px]"><?= nl2br(htmlspecialchars($pub['contenu'])) ?></p>
+                <?php endif; ?>
+
+                <!-- Médias -->
+                <?php if (!empty($pub['medias'])): ?>
+                <div class="mb-3">
+                    <?php foreach ($pub['medias'] as $media): ?>
+                        <?php if ($media['type'] === 'image'): ?>
+                        <img src="/<?= htmlspecialchars(ltrim($media['chemin'], '/')) ?>" alt="" class="w-full max-h-[500px] object-cover border border-gray-100">
+                        <?php elseif ($media['type'] === 'video'): ?>
+                        <video controls class="w-full max-h-[500px] border border-gray-100">
+                            <source src="/<?= htmlspecialchars(ltrim($media['chemin'], '/')) ?>" type="video/mp4">
+                        </video>
+                        <?php else: ?>
+                        <a href="/<?= htmlspecialchars(ltrim($media['chemin'], '/')) ?>" target="_blank"
+                           class="flex items-center gap-2 px-4 py-3 bg-gray-50 border border-gray-200 text-sm text-gray-700 hover:bg-gray-100 transition">
+                            <i data-lucide="file" class="w-4 h-4"></i>
+                            <?= htmlspecialchars($media['nom_fichier'] ?? 'Fichier') ?>
+                        </a>
+                        <?php endif; ?>
+                    <?php endforeach; ?>
+                </div>
+                <?php endif; ?>
+
+                <!-- Actions bar -->
+                <div class="flex items-center gap-5 pt-3 border-t border-gray-100">
+                    <!-- Like -->
+                    <button @click="toggleLike()" class="flex items-center gap-1.5 text-sm transition"
+                            :class="liked ? 'text-violet-600 font-medium' : 'text-gray-500 hover:text-violet-600'">
+                        <i data-lucide="heart" class="w-4 h-4" :class="liked ? 'fill-violet-600' : ''"></i>
+                        <span x-text="likeCount"></span>
+                    </button>
+
+                    <!-- Comments -->
+                    <button @click="showComments = !showComments; if (showComments && comments.length === 0 && commentCount > 0) loadComments()"
+                            class="flex items-center gap-1.5 text-sm text-gray-500 hover:text-violet-600 transition">
+                        <i data-lucide="message-circle" class="w-4 h-4"></i>
+                        <span x-text="commentCount"></span>
+                    </button>
+
+                    <!-- Share -->
+                    <button class="flex items-center gap-1.5 text-sm text-gray-500 hover:text-violet-600 transition">
+                        <i data-lucide="share-2" class="w-4 h-4"></i>
+                    </button>
+
+                    <!-- Bookmark -->
+                    <button class="flex items-center gap-1.5 text-sm text-gray-500 hover:text-violet-600 transition">
+                        <i data-lucide="bookmark" class="w-4 h-4"></i>
+                    </button>
+
+                    <?php if ($estAdmin): ?>
+                    <form method="POST" action="/c/<?= $slug ?>/publications/<?= $pub['id'] ?>/supprimer" class="ml-auto" onsubmit="return confirm('Supprimer cette publication ?')">
+                        <?= \App\Core\Csrf::field() ?>
+                        <button type="submit" class="flex items-center gap-1.5 text-sm text-red-400 hover:text-red-600 transition">
+                            <i data-lucide="trash-2" class="w-4 h-4"></i>
+                        </button>
+                    </form>
+                    <?php endif; ?>
+                </div>
+
+                <!-- Comments section -->
+                <div x-show="showComments" x-cloak x-transition class="mt-3 pt-3 border-t border-gray-100">
+                    <div class="space-y-2 mb-3">
+                        <template x-for="c in comments" :key="c.id">
+                            <div class="flex items-start gap-2">
+                                <div class="w-7 h-7 bg-violet-100 flex items-center justify-center flex-shrink-0">
+                                    <span class="text-violet-600 text-[10px] font-bold" x-text="c.prenom.charAt(0)"></span>
+                                </div>
+                                <div class="bg-gray-50 border border-gray-100 px-3 py-2 flex-1">
+                                    <p class="text-xs font-semibold text-gray-900" x-text="c.prenom + ' ' + c.nom"></p>
+                                    <p class="text-sm text-gray-700" x-text="c.contenu"></p>
+                                </div>
+                            </div>
+                        </template>
+                    </div>
+                    <form @submit.prevent="sendComment()" class="flex gap-2">
+                        <input type="text" x-model="newComment" placeholder="Écrire un commentaire..."
+                               class="flex-1 px-4 py-2 bg-gray-50 border border-gray-200 text-sm focus:ring-2 focus:ring-violet-500 focus:border-transparent outline-none">
+                        <button type="submit" :disabled="!newComment.trim()"
+                                class="px-4 py-2 text-white text-sm font-medium hover:opacity-90 transition disabled:opacity-50" style="background: var(--comm-color);">
+                            <i data-lucide="send" class="w-4 h-4"></i>
+                        </button>
+                    </form>
+                </div>
             </div>
+            <?php endforeach; ?>
         </div>
-        <?php endforeach; ?>
-    </div>
 
-    <!-- Pagination -->
-    <?php if ($lastPage > 1): ?>
-    <div class="flex items-center justify-center gap-1 mt-8">
-        <?php if ($page > 1): ?>
-        <a href="?page=<?= $page - 1 ?>" class="px-3 py-2 text-sm font-medium text-gray-500 hover:bg-violet-50 transition">&larr; Précédent</a>
+        <!-- Pagination -->
+        <?php if ($lastPage > 1): ?>
+        <div class="flex items-center justify-center gap-1 mt-8 mb-8">
+            <?php if ($page > 1): ?>
+            <a href="/c/<?= $slug ?>/feed?page=<?= $page - 1 ?>" class="px-3 py-2 text-sm font-medium text-gray-500 hover:bg-violet-50 transition">&larr; Précédent</a>
+            <?php endif; ?>
+            <?php for ($i = max(1, $page - 2); $i <= min($lastPage, $page + 2); $i++): ?>
+            <?php if ($i === $page): ?>
+            <span class="px-3 py-2 text-sm font-medium text-white" style="background: var(--comm-color);"><?= $i ?></span>
+            <?php else: ?>
+            <a href="/c/<?= $slug ?>/feed?page=<?= $i ?>" class="px-3 py-2 text-sm font-medium text-gray-500 hover:bg-violet-50 transition"><?= $i ?></a>
+            <?php endif; ?>
+            <?php endfor; ?>
+            <?php if ($page < $lastPage): ?>
+            <a href="/c/<?= $slug ?>/feed?page=<?= $page + 1 ?>" class="px-3 py-2 text-sm font-medium text-gray-500 hover:bg-violet-50 transition">Suivant &rarr;</a>
+            <?php endif; ?>
+        </div>
         <?php endif; ?>
-        <?php for ($i = max(1, $page - 2); $i <= min($lastPage, $page + 2); $i++): ?>
-        <?php if ($i === $page): ?>
-        <span class="px-3 py-2 text-sm font-medium bg-violet-500 text-white"><?= $i ?></span>
+
         <?php else: ?>
-        <a href="?page=<?= $i ?>" class="px-3 py-2 text-sm font-medium text-gray-500 hover:bg-violet-50 transition"><?= $i ?></a>
-        <?php endif; ?>
-        <?php endfor; ?>
-        <?php if ($page < $lastPage): ?>
-        <a href="?page=<?= $page + 1 ?>" class="px-3 py-2 text-sm font-medium text-gray-500 hover:bg-violet-50 transition">Suivant &rarr;</a>
-        <?php endif; ?>
-    </div>
-    <?php endif; ?>
-
-    <?php else: ?>
-    <div class="bg-white border border-gray-100 p-12 text-center">
-        <div class="w-16 h-16 bg-violet-100 flex items-center justify-center mx-auto mb-5">
-            <i data-lucide="message-square" class="w-8 h-8 text-violet-500"></i>
+        <div class="bg-white border border-gray-100 p-12 text-center">
+            <div class="w-16 h-16 bg-violet-100 flex items-center justify-center mx-auto mb-5">
+                <i data-lucide="message-square" class="w-8 h-8 text-violet-500"></i>
+            </div>
+            <h3 class="text-lg font-semibold text-gray-900 mb-2">Aucune publication</h3>
+            <p class="text-gray-500">Soyez le premier à publier quelque chose !</p>
         </div>
-        <h3 class="text-lg font-semibold text-gray-900 mb-2">Aucune publication</h3>
-        <p class="text-gray-500">Soyez le premier à publier quelque chose !</p>
+        <?php endif; ?>
     </div>
-    <?php endif; ?>
+
+    <!-- ===== SIDEBAR DROITE (Info communauté) ===== -->
+    <aside class="hidden lg:block w-72 flex-shrink-0">
+        <div class="sticky top-24 space-y-0">
+
+            <!-- Community card -->
+            <div class="bg-white border border-gray-100 overflow-hidden">
+                <!-- Cover -->
+                <?php if (!empty($communaute['image_couverture'])): ?>
+                <div class="h-32 bg-gray-200">
+                    <img src="/<?= htmlspecialchars(ltrim($communaute['image_couverture'], '/')) ?>" class="w-full h-full object-cover" alt="">
+                </div>
+                <?php else: ?>
+                <div class="h-32" style="background: var(--comm-color);"></div>
+                <?php endif; ?>
+
+                <div class="px-5 pb-5 -mt-10 relative">
+                    <!-- Logo -->
+                    <?php if (!empty($communaute['logo'])): ?>
+                    <img src="/<?= htmlspecialchars(ltrim($communaute['logo'], '/')) ?>" class="w-20 h-20 border-4 border-white object-cover mb-3" alt="">
+                    <?php else: ?>
+                    <div class="w-20 h-20 border-4 border-white flex items-center justify-center mb-3" style="background: var(--comm-color);">
+                        <span class="text-white font-bold text-2xl"><?= strtoupper(substr($communaute['nom'], 0, 1)) ?></span>
+                    </div>
+                    <?php endif; ?>
+
+                    <h3 class="font-bold text-gray-900 text-lg"><?= htmlspecialchars($communaute['nom']) ?></h3>
+                    <p class="text-xs text-gray-400 mb-3">cado.me/<?= htmlspecialchars($communaute['slug']) ?></p>
+
+                    <?php if (!empty($communaute['description'])): ?>
+                    <p class="text-sm text-gray-600 mb-4 leading-relaxed"><?= htmlspecialchars(mb_strimwidth($communaute['description'], 0, 200, '...')) ?></p>
+                    <?php endif; ?>
+
+                    <!-- Stats -->
+                    <div class="flex items-center gap-4 mb-4 text-center">
+                        <div class="flex-1">
+                            <p class="font-bold text-gray-900"><?= $nbMembres ?></p>
+                            <p class="text-[11px] text-gray-400">Membres</p>
+                        </div>
+                        <div class="flex-1 border-x border-gray-100">
+                            <p class="font-bold text-gray-900"><?= $nbOnline ?></p>
+                            <p class="text-[11px] text-gray-400">En ligne</p>
+                        </div>
+                        <div class="flex-1">
+                            <p class="font-bold text-gray-900">1</p>
+                            <p class="text-[11px] text-gray-400">Admin</p>
+                        </div>
+                    </div>
+
+                    <!-- Member avatars -->
+                    <div class="flex -space-x-2 mb-4">
+                        <?php foreach (array_slice($derniersMembres, 0, 8) as $m): ?>
+                        <?php if (!empty($m['avatar'])): ?>
+                        <img src="/<?= htmlspecialchars(ltrim($m['avatar'], '/')) ?>" class="w-8 h-8 border-2 border-white object-cover">
+                        <?php else: ?>
+                        <div class="w-8 h-8 border-2 border-white bg-violet-100 flex items-center justify-center">
+                            <span class="text-violet-600 text-[10px] font-bold"><?= strtoupper(substr($m['prenom'], 0, 1)) ?></span>
+                        </div>
+                        <?php endif; ?>
+                        <?php endforeach; ?>
+                        <?php if ($nbMembres > 8): ?>
+                        <div class="w-8 h-8 border-2 border-white bg-gray-100 flex items-center justify-center">
+                            <span class="text-gray-500 text-[10px] font-bold">+<?= $nbMembres - 8 ?></span>
+                        </div>
+                        <?php endif; ?>
+                    </div>
+
+                    <?php if ($estAdmin): ?>
+                    <a href="/c/<?= $slug ?>/gestion/parametres" class="block w-full text-center py-2.5 border text-sm font-semibold text-white hover:opacity-90 transition" style="background: var(--comm-color);">
+                        PARAMÈTRES
+                    </a>
+                    <?php endif; ?>
+                </div>
+            </div>
+
+        </div>
+    </aside>
+
 </div>
 
 <script>
@@ -315,8 +446,6 @@ function publication(pubId, nbLikes, nbComments, pubSlug) {
                     });
                     this.commentCount++;
                     this.newComment = '';
-                } else {
-                    console.error('Comment failed:', data);
                 }
             } catch(err) {
                 console.error('Comment error:', err);
@@ -339,6 +468,17 @@ function publication(pubId, nbLikes, nbComments, pubSlug) {
                 console.error('Load comments error:', err);
             }
         }
+    }
+}
+
+function insertEmojiPub(emoji) {
+    const textarea = document.querySelector('#pubForm textarea[name="contenu"]');
+    if (textarea) {
+        const start = textarea.selectionStart;
+        const end = textarea.selectionEnd;
+        textarea.value = textarea.value.substring(0, start) + emoji + textarea.value.substring(end);
+        textarea.selectionStart = textarea.selectionEnd = start + emoji.length;
+        textarea.focus();
     }
 }
 </script>

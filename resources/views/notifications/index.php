@@ -18,8 +18,8 @@
     <?php if (!empty($notifications)): ?>
     <div class="space-y-2">
         <?php foreach ($notifications as $notif): ?>
-        <div class="bg-white rounded-xl border border-gray-100 p-4 flex items-center gap-4 <?= !$notif['lue'] ? 'border-l-4 border-l-violet-500' : '' ?>">
-            <div class="w-10 h-10 bg-violet-100 rounded-full flex items-center justify-center flex-shrink-0">
+        <div class="bg-white border border-gray-100 p-4 flex items-center gap-4 <?= !$notif['lue'] ? 'border-l-4 border-l-violet-500' : '' ?>">
+            <div class="w-10 h-10 bg-violet-100 flex items-center justify-center flex-shrink-0">
                 <i data-lucide="bell" class="w-5 h-5 text-violet-500"></i>
             </div>
             <div class="flex-1 min-w-0">
@@ -30,9 +30,8 @@
         </div>
         <?php endforeach; ?>
     </div>
-    <?php else: ?>
-    <div class="bg-white rounded-2xl border border-gray-100 p-12 text-center">
-        <div class="w-16 h-16 bg-violet-100 rounded-2xl flex items-center justify-center mx-auto mb-5">
+    <?php else: ?>        <div class="bg-white border border-gray-100 p-12 text-center">
+        <div class="w-16 h-16 bg-violet-100 flex items-center justify-center mx-auto mb-5">
             <i data-lucide="bell" class="w-8 h-8 text-violet-500"></i>
         </div>
         <h3 class="text-lg font-semibold text-gray-900 mb-2">Aucune notification</h3>
