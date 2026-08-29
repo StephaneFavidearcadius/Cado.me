@@ -10,8 +10,28 @@ use App\Services\MembreCommunauteService;
 
 class CommunauteController extends Controller
 {
+    /**
+     * Vérifier si l'utilisateur a un abonnement actif (plan payant)
+     */
+    private function verifierAbonnement(): bool
+    {
+        $db = \App\Core\Database::getInstance();
+        $stmt = $db->prepare(
+            'SELECT a.id FROM abonnements a
+             JOIN plans p ON p.id = a.plan_id
+             WHERE a.statut = :statut AND a.periode_fin >= CURDATE() AND p.prix_mensuel > 0'
+        );
+        $stmt->execute(['statut' => 'actif']);
+        return (bool) $stmt->fetch();
+    }
+
     public function formulaireCreation(): Response
     {
+        if (!$this->verifierAbonnement()) {
+            \App\Core\Session::flash('error', 'Un abonnement est requis pour créer une communauté.');
+            return $this->redirect('/abonnement');
+        }
+
         return $this->view('communaute.creer', [
             'titre' => 'Créer une communauté',
         ]);
@@ -19,6 +39,11 @@ class CommunauteController extends Controller
 
     public function creer(): Response
     {
+        if (!$this->verifierAbonnement()) {
+            \App\Core\Session::flash('error', 'Un abonnement est requis pour créer une communauté.');
+            return $this->redirect('/abonnement');
+        }
+
         $communauteService = new CommunauteService();
         $resultat = $communauteService->creer($_POST, Session::get('utilisateur_id'));
 
