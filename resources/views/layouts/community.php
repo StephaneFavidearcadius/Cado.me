@@ -201,9 +201,11 @@
                         <a href="/c/<?= $slug ?>/a-propos" class="flex items-center gap-3 px-3 py-2.5 text-sm transition <?= str_contains($currentPath, '/a-propos') ? 'font-semibold' : '' ?>" style="<?= str_contains($currentPath, '/a-propos') ? 'background: var(--comm-color-light); color: var(--comm-color);' : 'color: #4B5563;' ?>">
                             <i data-lucide="info" class="w-5 h-5"></i> À propos
                         </a>
+                        <?php if (in_array(($commActive['role'] ?? ''), ['proprietaire', 'administrateur'])): ?>
                         <a href="/c/<?= $slug ?>/gestion" class="flex items-center gap-3 px-3 py-2.5 text-sm transition" style="<?= str_contains($currentPath, '/gestion') ? 'background: var(--comm-color-light); color: var(--comm-color); font-weight: 600;' : 'color: #4B5563;' ?>">
                             <i data-lucide="settings" class="w-5 h-5"></i> Gestion
                         </a>
+                        <?php endif; ?>
                     </nav>
                 </div>
             </aside>
