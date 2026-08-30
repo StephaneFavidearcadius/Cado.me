@@ -8,7 +8,7 @@
             <p class="text-gray-500 mt-1"><?= count($formations) ?> cours</p>
         </div>
         <?php if ($estAdmin): ?>
-        <button @click="showForm = !showForm" class="bg-violet-500 hover:bg-violet-600 text-white font-semibold px-5 py-2 text-sm transition">
+        <button @click="showForm = !showForm" class="text-white font-semibold px-5 py-2 text-sm transition" style="background: var(--comm-color);">
             <span x-show="!showForm">+ Nouveau cours</span>
             <span x-show="showForm">Annuler</span>
         </button>
@@ -51,7 +51,7 @@
                 <label class="block text-sm font-medium text-gray-700 mb-1">Description</label>
                 <textarea name="description" rows="2" class="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 text-sm focus:ring-2 focus:ring-violet-500 focus:border-transparent outline-none resize-none" placeholder="Décrivez ce que les membres vont apprendre..."></textarea>
             </div>
-            <button type="submit" class="bg-violet-500 hover:bg-violet-600 text-white font-semibold px-6 py-2 text-sm transition">Créer le cours</button>
+            <button type="submit" class="text-white font-semibold px-6 py-2 text-sm transition" style="background: var(--comm-color);">Créer le cours</button>
         </form>
     </div>
     <?php endif; ?>
@@ -92,13 +92,13 @@
     </div>
     <?php else: ?>
     <div class="bg-white border border-gray-100 p-16 text-center">
-        <div class="w-20 h-20 bg-violet-100 flex items-center justify-center mx-auto mb-6">
-            <i data-lucide="book-open" class="w-10 h-10 text-violet-400"></i>
+        <div class="w-20 h-20 flex items-center justify-center mx-auto mb-6" style="background: var(--comm-color-light);">
+            <i data-lucide="book-open" class="w-10 h-10" style="color: var(--comm-color); opacity: 0.6;"></i>
         </div>
         <h3 class="text-xl font-bold text-gray-900 mb-2">Aucun cours</h3>
         <p class="text-gray-500 mb-6">Créez votre premier cours pour structurer l'apprentissage de vos membres.</p>
         <?php if ($estAdmin): ?>
-        <button @click="showForm = true" class="bg-violet-500 hover:bg-violet-600 text-white font-semibold px-6 py-2.5 text-sm transition">
+        <button @click="showForm = true" class="text-white font-semibold px-6 py-2.5 text-sm transition" style="background: var(--comm-color);">
             + Créer un cours
         </button>
         <?php endif; ?>

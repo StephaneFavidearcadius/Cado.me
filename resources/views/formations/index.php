@@ -8,7 +8,7 @@
             <p class="text-gray-500 mt-1"><?= count($formations) ?> formation(s)</p>
         </div>
         <?php if ($estAdmin): ?>
-        <button @click="showForm = !showForm" class="bg-violet-500 hover:bg-violet-600 text-white font-semibold px-5 py-2 text-sm transition">
+        <button @click="showForm = !showForm" class="text-white font-semibold px-5 py-2 text-sm transition" style="background: var(--comm-color);">
             <span x-show="!showForm">+ Nouvelle formation</span>
             <span x-show="showForm">Annuler</span>
         </button>
@@ -29,7 +29,7 @@
                 <label class="block text-sm font-medium text-gray-700 mb-1">Description</label>
                 <textarea name="description" rows="3" class="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 text-sm focus:ring-2 focus:ring-violet-500 focus:border-transparent outline-none resize-none"></textarea>
             </div>
-            <button type="submit" class="bg-violet-500 hover:bg-violet-600 text-white font-semibold px-6 py-2 text-sm transition">Créer</button>
+            <button type="submit" class="text-white font-semibold px-6 py-2 text-sm transition" style="background: var(--comm-color);">Créer</button>
         </form>
     </div>
     <?php endif; ?>
@@ -39,11 +39,11 @@
         <?php foreach ($formations as $formation): ?>
         <a href="/c/<?= $slug ?>/formations/<?= htmlspecialchars($formation['slug']) ?>"
            class="bg-white border border-gray-100 overflow-hidden hover:shadow-lg transition group">
-            <div class="h-32 bg-gradient-to-br from-violet-500 to-violet-400 relative flex items-center justify-center">
+            <div class="h-32 relative flex items-center justify-center" style="background: var(--comm-color);">
                 <i data-lucide="book-open" class="w-10 h-10 text-white/80"></i>
             </div>
             <div class="p-5">
-                <h3 class="font-semibold text-gray-900 group-hover:text-violet-600 transition"><?= htmlspecialchars($formation['titre']) ?></h3>
+                <h3 class="font-semibold text-gray-900 transition" onmouseover="this.style.color='var(--comm-color)'" onmouseout="this.style.color=''"  ><?= htmlspecialchars($formation['titre']) ?></h3>
                 <?php if (!empty($formation['description'])): ?>
                 <p class="text-sm text-gray-500 mt-1 line-clamp-2"><?= htmlspecialchars($formation['description']) ?></p>
                 <?php endif; ?>
@@ -61,8 +61,8 @@
     </div>
     <?php else: ?>
     <div class="bg-white border border-gray-100 p-12 text-center">
-        <div class="w-16 h-16 bg-violet-100 flex items-center justify-center mx-auto mb-5">
-            <i data-lucide="book-open" class="w-8 h-8 text-violet-500"></i>
+        <div class="w-16 h-16 flex items-center justify-center mx-auto mb-5" style="background: var(--comm-color-light);">
+            <i data-lucide="book-open" class="w-8 h-8" style="color: var(--comm-color);"></i>
         </div>
         <h3 class="text-lg font-semibold text-gray-900 mb-2">Aucune formation</h3>
         <p class="text-gray-500">Les formations apparaîtront ici.</p>

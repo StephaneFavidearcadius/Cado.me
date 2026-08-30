@@ -30,11 +30,11 @@ $derniersMembres = $stmt3->fetchAll();
                   enctype="multipart/form-data" class="space-y-3">
                 <?= \App\Core\Csrf::field() ?>
                 <div class="flex items-start gap-3">
-                    <div class="w-10 h-10 bg-violet-100 flex items-center justify-center flex-shrink-0">
-                        <span class="text-violet-600 text-sm font-bold"><?= strtoupper(substr($_SESSION['utilisateur_prenom'] ?? 'U', 0, 1)) ?></span>
+                    <div class="w-10 h-10 flex items-center justify-center flex-shrink-0" style="background: var(--comm-color-light);">
+                        <span class="text-sm font-bold" style="color: var(--comm-color);"><?= strtoupper(substr($_SESSION['utilisateur_prenom'] ?? 'U', 0, 1)) ?></span>
                     </div>
                     <textarea name="contenu" rows="2"
-                              class="flex-1 px-4 py-3 bg-gray-50 border border-gray-200 text-sm focus:ring-2 focus:ring-violet-500 focus:border-transparent outline-none transition resize-none placeholder-gray-400"
+                              class="flex-1 px-4 py-3 bg-gray-50 border border-gray-200 text-sm focus:ring-2 focus:border-transparent outline-none transition resize-none placeholder-gray-400" style="--tw-ring-color: var(--comm-color);"
                               placeholder="Écrivez quelque chose..."></textarea>
                 </div>
 
@@ -74,18 +74,18 @@ $derniersMembres = $stmt3->fetchAll();
 
                 <div class="flex items-center justify-between pl-13 pt-1 border-t border-gray-50">
                     <div class="flex items-center gap-1">
-                        <button type="button" @click="$refs.imageInput.click()" class="p-2 hover:bg-violet-50 transition text-gray-400 hover:text-violet-600" title="Image">
+                        <button type="button" @click="$refs.imageInput.click()" class="p-2 transition text-gray-400" title="Image" onmouseover="this.style.color='var(--comm-color)'" onmouseout="this.style.color=''">
                             <i data-lucide="image" class="w-5 h-5"></i>
                         </button>
-                        <button type="button" @click="$refs.videoInput.click()" class="p-2 hover:bg-violet-50 transition text-gray-400 hover:text-violet-600" title="Vidéo">
+                        <button type="button" @click="$refs.videoInput.click()" class="p-2 transition text-gray-400" title="Vidéo" onmouseover="this.style.color='var(--comm-color)'" onmouseout="this.style.color=''">
                             <i data-lucide="video" class="w-5 h-5"></i>
                         </button>
-                        <button type="button" @click="$refs.fileInput.click()" class="p-2 hover:bg-violet-50 transition text-gray-400 hover:text-violet-600" title="Fichier">
+                        <button type="button" @click="$refs.fileInput.click()" class="p-2 transition text-gray-400" title="Fichier" onmouseover="this.style.color='var(--comm-color)'" onmouseout="this.style.color=''">
                             <i data-lucide="paperclip" class="w-5 h-5"></i>
                         </button>
                         <!-- Emoji -->
                         <div class="relative" x-data="{ emojiOpen: false }">
-                            <button type="button" @click="emojiOpen = !emojiOpen" class="p-2 hover:bg-violet-50 transition text-gray-400 hover:text-violet-600" title="Emoji">
+                            <button type="button" @click="emojiOpen = !emojiOpen" class="p-2 transition text-gray-400" title="Emoji" onmouseover="this.style.color='var(--comm-color)'" onmouseout="this.style.color=''">
                                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="square" stroke-linejoin="miter" stroke-width="1.5" d="M14.828 14.828a4 4 0 01-5.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
                             </button>
                             <div x-show="emojiOpen" @click.outside="emojiOpen = false" x-cloak
@@ -103,7 +103,7 @@ $derniersMembres = $stmt3->fetchAll();
                         </div>
                     </div>
                     <button type="submit" :disabled="publishing"
-                            class="bg-violet-500 hover:bg-violet-600 text-white font-semibold px-5 py-2 text-sm transition disabled:opacity-50">
+                            class="text-white font-semibold px-5 py-2 text-sm transition disabled:opacity-50" style="background: var(--comm-color);" onmouseover="this.style.opacity='0.9'" onmouseout="this.style.opacity='1'">
                         <span x-show="!publishing">Publier</span>                            <span x-show="publishing">Publication en cours...</span>
                     </button>
                 </div>
@@ -117,8 +117,8 @@ $derniersMembres = $stmt3->fetchAll();
             <div class="bg-white border border-gray-100 p-5" x-data="publication(<?= (int)$pub['id'] ?>, <?= (int)$pub['nb_likes'] ?>, <?= (int)$pub['nb_commentaires'] ?>, '<?= htmlspecialchars(addslashes($communaute['slug'])) ?>')" id="pub-<?= $pub['id'] ?>">
                 <!-- Author header -->
                 <div class="flex items-center gap-3 mb-3">
-                    <div class="w-10 h-10 bg-violet-100 flex items-center justify-center flex-shrink-0">
-                        <span class="text-violet-600 text-sm font-bold"><?= strtoupper(substr($pub['prenom'], 0, 1)) ?></span>
+                    <div class="w-10 h-10 flex items-center justify-center flex-shrink-0" style="background: var(--comm-color-light);">
+                        <span class="text-sm font-bold" style="color: var(--comm-color);"><?= strtoupper(substr($pub['prenom'], 0, 1)) ?></span>
                     </div>
                     <div>
                         <div class="flex items-center gap-2">
@@ -168,20 +168,20 @@ $derniersMembres = $stmt3->fetchAll();
                 <div class="flex items-center gap-4 pt-3 border-t border-gray-100">
                     <!-- Like -->
                     <button @click="toggleLike()" class="flex items-center gap-1.5 text-sm transition"
-                            :class="liked ? 'text-violet-600 font-medium' : 'text-gray-500 hover:text-violet-600'">
-                        <i data-lucide="heart" class="w-4 h-4" :class="liked ? 'fill-violet-600' : ''"></i>
+                            :style="liked ? 'color: var(--comm-color); font-weight: 500' : 'color: #6B7280'">
+                        <i data-lucide="heart" class="w-4 h-4" :style="liked ? 'fill: var(--comm-color)' : ''"></i>
                         <span x-text="likeCount"></span>
                     </button>
 
                     <!-- Comments -->
                     <button @click="showComments = !showComments; if (showComments && comments.length === 0 && commentCount > 0) loadComments()"
-                            class="flex items-center gap-1.5 text-sm text-gray-500 hover:text-violet-600 transition">
+                            class="flex items-center gap-1.5 text-sm transition" style="color: #6B7280;">
                         <i data-lucide="message-circle" class="w-4 h-4"></i>
                         <span x-text="commentCount"></span>
                     </button>
 
                     <!-- Share -->
-                    <button @click="sharePub()" class="flex items-center gap-1.5 text-sm text-gray-500 hover:text-violet-600 transition">
+                    <button @click="sharePub()" class="flex items-center gap-1.5 text-sm transition" style="color: #6B7280;">
                         <i data-lucide="share-2" class="w-4 h-4"></i>
                     </button>
 
@@ -213,8 +213,8 @@ $derniersMembres = $stmt3->fetchAll();
                     <div class="space-y-2 mb-3">
                         <template x-for="c in comments" :key="c.id">
                             <div class="flex items-start gap-2">
-                                <div class="w-7 h-7 bg-violet-100 flex items-center justify-center flex-shrink-0">
-                                    <span class="text-violet-600 text-[10px] font-bold" x-text="c.prenom.charAt(0)"></span>
+                                <div class="w-7 h-7 flex items-center justify-center flex-shrink-0" style="background: var(--comm-color-light);">
+                                    <span class="text-[10px] font-bold" style="color: var(--comm-color);" x-text="c.prenom.charAt(0)"></span>
                                 </div>
                                 <div class="bg-gray-50 border border-gray-100 px-3 py-2 flex-1">
                                     <p class="text-xs font-semibold text-gray-900" x-text="c.prenom + ' ' + c.nom"></p>
@@ -225,7 +225,7 @@ $derniersMembres = $stmt3->fetchAll();
                     </div>
                     <form @submit.prevent="sendComment()" class="flex gap-2">
                         <input type="text" x-model="newComment" placeholder="Écrire un commentaire..."
-                               class="flex-1 px-4 py-2 bg-gray-50 border border-gray-200 text-sm focus:ring-2 focus:ring-violet-500 focus:border-transparent outline-none">
+                               class="flex-1 px-4 py-2 bg-gray-50 border border-gray-200 text-sm focus:ring-2 focus:border-transparent outline-none" style="--tw-ring-color: var(--comm-color);">
                         <button type="submit" :disabled="!newComment.trim()"
                                 class="px-4 py-2 text-white text-sm font-medium hover:opacity-90 transition disabled:opacity-50" style="background: var(--comm-color);">
                             <i data-lucide="send" class="w-4 h-4"></i>
@@ -240,25 +240,25 @@ $derniersMembres = $stmt3->fetchAll();
         <?php if ($lastPage > 1): ?>
         <div class="flex items-center justify-center gap-1 mt-8 mb-8">
             <?php if ($page > 1): ?>
-            <a href="/c/<?= $slug ?>/feed?page=<?= $page - 1 ?>" class="px-3 py-2 text-sm font-medium text-gray-500 hover:bg-violet-50 transition">&larr; Précédent</a>
+            <a href="/c/<?= $slug ?>/feed?page=<?= $page - 1 ?>" class="px-3 py-2 text-sm font-medium text-gray-500 transition">&larr; Précédent</a>
             <?php endif; ?>
             <?php for ($i = max(1, $page - 2); $i <= min($lastPage, $page + 2); $i++): ?>
             <?php if ($i === $page): ?>
             <span class="px-3 py-2 text-sm font-medium text-white" style="background: var(--comm-color);"><?= $i ?></span>
             <?php else: ?>
-            <a href="/c/<?= $slug ?>/feed?page=<?= $i ?>" class="px-3 py-2 text-sm font-medium text-gray-500 hover:bg-violet-50 transition"><?= $i ?></a>
+            <a href="/c/<?= $slug ?>/feed?page=<?= $i ?>" class="px-3 py-2 text-sm font-medium text-gray-500 transition"><?= $i ?></a>
             <?php endif; ?>
             <?php endfor; ?>
             <?php if ($page < $lastPage): ?>
-            <a href="/c/<?= $slug ?>/feed?page=<?= $page + 1 ?>" class="px-3 py-2 text-sm font-medium text-gray-500 hover:bg-violet-50 transition">Suivant &rarr;</a>
+            <a href="/c/<?= $slug ?>/feed?page=<?= $page + 1 ?>" class="px-3 py-2 text-sm font-medium text-gray-500 transition">Suivant &rarr;</a>
             <?php endif; ?>
         </div>
         <?php endif; ?>
 
         <?php else: ?>
         <div class="bg-white border border-gray-100 p-12 text-center">
-            <div class="w-16 h-16 bg-violet-100 flex items-center justify-center mx-auto mb-5">
-                <i data-lucide="message-square" class="w-8 h-8 text-violet-500"></i>
+            <div class="w-16 h-16 flex items-center justify-center mx-auto mb-5" style="background: var(--comm-color-light);">
+                <i data-lucide="message-square" class="w-8 h-8" style="color: var(--comm-color);"></i>
             </div>
             <h3 class="text-lg font-semibold text-gray-900 mb-2">Aucune publication</h3>
             <p class="text-gray-500">Soyez le premier à publier quelque chose !</p>
@@ -320,8 +320,8 @@ $derniersMembres = $stmt3->fetchAll();
                         <?php if (!empty($m['avatar'])): ?>
                         <img src="/<?= htmlspecialchars(ltrim($m['avatar'], '/')) ?>" class="w-8 h-8 border-2 border-white object-cover">
                         <?php else: ?>
-                        <div class="w-8 h-8 border-2 border-white bg-violet-100 flex items-center justify-center">
-                            <span class="text-violet-600 text-[10px] font-bold"><?= strtoupper(substr($m['prenom'], 0, 1)) ?></span>
+                        <div class="w-8 h-8 border-2 border-white flex items-center justify-center" style="background: var(--comm-color-light);">
+                            <span class="text-[10px] font-bold" style="color: var(--comm-color);"><?= strtoupper(substr($m['prenom'], 0, 1)) ?></span>
                         </div>
                         <?php endif; ?>
                         <?php endforeach; ?>

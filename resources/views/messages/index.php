@@ -6,7 +6,7 @@
             <h1 class="text-2xl font-bold text-gray-900">Messages</h1>
             <p class="text-gray-500 mt-1"><?= count($conversations) ?> conversation(s)</p>
         </div>
-        <button @click="showNew = !showNew" class="bg-violet-500 hover:bg-violet-600 text-white font-semibold px-5 py-2 text-sm transition">
+        <button @click="showNew = !showNew" class="text-white font-semibold px-5 py-2 text-sm transition" style="background: var(--comm-color);">
             <span x-show="!showNew">+ Nouveau message</span>
             <span x-show="showNew">Annuler</span>
         </button>
@@ -25,8 +25,8 @@
                     <?php if ((int)$membre['utilisateur_id'] !== (int)($_SESSION['utilisateur_id'] ?? 0)): ?>
                     <label class="flex items-center gap-3 p-2 hover:bg-white transition cursor-pointer">
                         <input type="checkbox" name="participants[]" value="<?= $membre['utilisateur_id'] ?>" class="w-4 h-4 text-violet-600">
-                        <div class="w-8 h-8 bg-violet-100 flex items-center justify-center flex-shrink-0">
-                            <span class="text-violet-600 text-xs font-bold"><?= strtoupper(substr($membre['prenom'], 0, 1)) ?></span>
+                        <div class="w-8 h-8 flex items-center justify-center flex-shrink-0" style="background: var(--comm-color-light);">
+                            <span class="text-xs font-bold" style="color: var(--comm-color);"><?= strtoupper(substr($membre['prenom'], 0, 1)) ?></span>
                         </div>
                         <div>
                             <p class="text-sm font-medium text-gray-900"><?= htmlspecialchars($membre['prenom'] . ' ' . $membre['nom']) ?></p>
@@ -44,7 +44,7 @@
                 <label class="block text-sm font-medium text-gray-700 mb-1">Premier message *</label>
                 <textarea name="premier_message" rows="3" required class="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 text-sm focus:ring-2 focus:ring-violet-500 focus:border-transparent outline-none resize-none" placeholder="Bonjour..."></textarea>
             </div>
-            <button type="submit" class="bg-violet-500 hover:bg-violet-600 text-white font-semibold px-6 py-2 text-sm transition">Envoyer</button>
+            <button type="submit" class="text-white font-semibold px-6 py-2 text-sm transition" style="background: var(--comm-color);">Envoyer</button>
         </form>
     </div>
 
@@ -65,14 +65,14 @@
             }
         ?>
         <a href="/c/<?= $slug ?>/messages/<?= $conv['id'] ?>" class="bg-white border border-gray-100 p-4 hover:shadow-md transition cursor-pointer flex items-center gap-4 block">
-            <div class="w-12 h-12 bg-violet-100 flex items-center justify-center flex-shrink-0">
-                <span class="text-violet-600 font-bold text-sm"><?= strtoupper(substr($autreNom, 0, 1)) ?></span>
+            <div class="w-12 h-12 flex items-center justify-center flex-shrink-0" style="background: var(--comm-color-light);">
+                <span class="font-bold text-sm" style="color: var(--comm-color);"><?= strtoupper(substr($autreNom, 0, 1)) ?></span>
             </div>
             <div class="flex-1 min-w-0">
                 <div class="flex items-center justify-between">
                     <p class="font-medium text-gray-900 text-sm"><?= htmlspecialchars($autreNom) ?></p>
                     <?php if ($conv['non_lus'] > 0): ?>
-                    <span class="bg-violet-500 text-white text-xs font-bold px-2 py-1">
+                    <span class="text-white text-xs font-bold px-2 py-1" style="background: var(--comm-color);">
                         <?= $conv['non_lus'] ?>
                     </span>
                     <?php endif; ?>
@@ -84,8 +84,8 @@
     </div>
     <?php else: ?>
     <div class="bg-white border border-gray-100 p-12 text-center">
-        <div class="w-16 h-16 bg-violet-100 flex items-center justify-center mx-auto mb-5">
-            <i data-lucide="message-circle" class="w-8 h-8 text-violet-500"></i>
+        <div class="w-16 h-16 flex items-center justify-center mx-auto mb-5" style="background: var(--comm-color-light);">
+            <i data-lucide="message-circle" class="w-8 h-8" style="color: var(--comm-color);"></i>
         </div>
         <h3 class="text-lg font-semibold text-gray-900 mb-2">Aucune conversation</h3>
         <p class="text-gray-500">Commencez à discuter avec les membres.</p>

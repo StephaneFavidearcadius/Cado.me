@@ -6,12 +6,12 @@
     <div class="flex items-center justify-between mb-8">
         <div class="flex items-center gap-3">
             <h1 class="text-2xl font-bold text-gray-900">Membres</h1>
-            <span class="bg-violet-100 text-violet-600 text-xs font-bold px-2.5 py-1">
+            <span class="text-xs font-bold px-2.5 py-1" style="background: var(--comm-color-light); color: var(--comm-color);">
                 <?= count($membres) ?>
             </span>
         </div>
         <?php if ($estAdmin): ?>
-        <button class="bg-violet-500 hover:bg-violet-600 text-white font-semibold px-5 py-2 text-sm transition">
+        <button class="text-white font-semibold px-5 py-2 text-sm transition" style="background: var(--comm-color);">
             INVITER
         </button>
         <?php endif; ?>
@@ -33,8 +33,8 @@
                 <?php if (!empty($membre['avatar'])): ?>
                 <img src="<?= htmlspecialchars($membre['avatar']) ?>" class="w-12 h-12 object-cover" alt="">
                 <?php else: ?>
-                <div class="w-12 h-12 bg-violet-100 flex items-center justify-center">
-                    <span class="text-violet-600 font-bold"><?= strtoupper(substr($membre['prenom'], 0, 1)) ?></span>
+                <div class="w-12 h-12 flex items-center justify-center" style="background: var(--comm-color-light);">
+                    <span class="font-bold" style="color: var(--comm-color);"><?= strtoupper(substr($membre['prenom'], 0, 1)) ?></span>
                 </div>
                 <?php endif; ?>
             </a>
@@ -76,8 +76,8 @@
     </div>
     <?php else: ?>
     <div class="bg-white border border-gray-100 p-12 text-center">
-        <div class="w-16 h-16 bg-violet-100 flex items-center justify-center mx-auto mb-5">
-            <i data-lucide="users" class="w-8 h-8 text-violet-500"></i>
+        <div class="w-16 h-16 flex items-center justify-center mx-auto mb-5" style="background: var(--comm-color-light);">
+            <i data-lucide="users" class="w-8 h-8" style="color: var(--comm-color);"></i>
         </div>
         <h3 class="text-lg font-semibold text-gray-900 mb-2">Aucun membre</h3>
         <p class="text-gray-500">Les membres apparaîtront ici.</p>

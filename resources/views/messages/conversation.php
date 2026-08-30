@@ -30,8 +30,8 @@ if (!empty($messageIds)) {
         <a href="/c/<?= $slug ?>/messages" class="text-gray-400 hover:text-gray-600 transition">
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="square" stroke-linejoin="miter" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
         </a>
-        <div class="w-10 h-10 bg-violet-100 flex items-center justify-center flex-shrink-0">
-            <span class="text-violet-600 font-bold text-sm"><?= strtoupper(substr($otherName, 0, 1)) ?></span>
+        <div class="w-10 h-10 flex items-center justify-center flex-shrink-0" style="background: var(--comm-color-light);">
+            <span class="font-bold text-sm" style="color: var(--comm-color);"><?= strtoupper(substr($otherName, 0, 1)) ?></span>
         </div>
         <div>
             <h2 class="font-bold text-gray-900 text-sm"><?= htmlspecialchars($otherName ?: 'Conversation') ?></h2>
@@ -43,8 +43,8 @@ if (!empty($messageIds)) {
     <div class="flex-1 overflow-y-auto px-6 py-4 space-y-4 bg-gray-50" id="messagesContainer">
         <?php if (empty($messages)): ?>
         <div class="text-center py-12">
-            <div class="w-16 h-16 bg-violet-100 flex items-center justify-center mx-auto mb-4">
-                <svg class="w-8 h-8 text-violet-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="square" stroke-linejoin="miter" stroke-width="1.5" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/></svg>
+            <div class="w-16 h-16 flex items-center justify-center mx-auto mb-4" style="background: var(--comm-color-light);">
+                <svg class="w-8 h-8" style="color: var(--comm-color); opacity: 0.6;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="square" stroke-linejoin="miter" stroke-width="1.5" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/></svg>
             </div>
             <p class="text-gray-500 text-sm">Pas encore de messages. Envoyez le premier !</p>
         </div>
@@ -85,7 +85,7 @@ if (!empty($messageIds)) {
                 <?php endif; ?>
 
                 <?php if (!empty(trim($msg['contenu']))): ?>
-                <div class="<?= $isMine ? 'bg-violet-500 text-white' : 'bg-white border border-gray-100 text-gray-900' ?> px-4 py-2.5 text-sm">
+                <div class="px-4 py-2.5 text-sm" style="<?= $isMine ? 'background: var(--comm-color); color: white;' : 'background: white; border: 1px solid #f3f4f6; color: #111827;' ?>">
                     <?= nl2br(htmlspecialchars($msg['contenu'])) ?>
                 </div>
                 <?php endif; ?>
@@ -93,7 +93,7 @@ if (!empty($messageIds)) {
                 <p class="text-xs text-gray-400 mt-1 <?= $isMine ? 'text-right mr-1' : 'ml-1' ?>">
                     <?= date('H:i', strtotime($msg['date_creation'])) ?>
                     <?php if ($isMine && $msg['lu']): ?>
-                    <span class="text-violet-400">✓✓</span>
+                    <span style="color: var(--comm-color); opacity: 0.6;">✓✓</span>
                     <?php elseif ($isMine): ?>
                     <span class="text-gray-300">✓</span>
                     <?php endif; ?>
@@ -170,14 +170,14 @@ if (!empty($messageIds)) {
             <!-- Input texte -->
             <div class="flex-1 relative">
                 <textarea name="contenu" x-model="newMessage" x-ref="msgInput" @keydown.enter.prevent="sendMessage"
-                          rows="1" class="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 text-sm focus:ring-2 focus:ring-violet-500 focus:border-transparent outline-none resize-none overflow-hidden"
+                          rows="1" class="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 text-sm focus:ring-2 focus:border-transparent outline-none resize-none overflow-hidden" style="--tw-ring-color: var(--comm-color);"
                           placeholder="Écrivez un message..." @input="autoResize($event)"></textarea>
             </div>
 
             <!-- Bouton envoyer -->
             <button type="submit" :disabled="!newMessage.trim() && selectedFiles.length === 0"
                     class="p-2.5 transition flex-shrink-0 disabled:opacity-30 disabled:cursor-not-allowed"
-                    :class="newMessage.trim() || selectedFiles.length > 0 ? 'text-violet-600 hover:bg-violet-50' : 'text-gray-300'">
+                    :style="(newMessage.trim() || selectedFiles.length > 0) ? 'color: var(--comm-color)' : 'color: #d1d5db'">
                 <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
             </button>
         </form>

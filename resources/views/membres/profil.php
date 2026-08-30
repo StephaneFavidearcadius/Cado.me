@@ -21,11 +21,11 @@
                         <?php if (!empty($photo)): ?>
                         <img src="<?= htmlspecialchars($photo) ?>" class="w-full h-full object-cover" alt="">
                         <?php else: ?>
-                        <span class="text-violet-600 font-bold text-3xl"><?= strtoupper(substr($membre['prenom'], 0, 1)) ?></span>
+                        <span class="font-bold text-3xl" style="color: var(--comm-color);"><?= strtoupper(substr($membre['prenom'], 0, 1)) ?></span>
                         <?php endif; ?>
                     </div>
                     <?php if ($estMoi): ?>
-                    <label class="absolute bottom-0 right-0 w-8 h-8 bg-violet-500 text-white flex items-center justify-center cursor-pointer shadow-md opacity-0 group-hover:opacity-100 transition">
+                    <label class="absolute bottom-0 right-0 w-8 h-8 text-white flex items-center justify-center cursor-pointer shadow-md opacity-0 group-hover:opacity-100 transition" style="background: var(--comm-color);">
                         <i data-lucide="camera" class="w-4 h-4"></i>
                         <input type="file" name="photo_profil" accept="image/*" class="hidden" onchange="this.closest('form').submit()">
                     </label>
@@ -77,7 +77,7 @@
                 </label>
                 <?php endif; ?>
 
-                <button type="submit" class="bg-violet-500 hover:bg-violet-600 text-white font-semibold px-6 py-2.5 text-sm transition">
+                <button type="submit" class="text-white font-semibold px-6 py-2.5 text-sm transition" style="background: var(--comm-color);">
                     Enregistrer
                 </button>
             </form>

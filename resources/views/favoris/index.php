@@ -15,8 +15,8 @@ $estAdmin = in_array(($_SESSION['communaute_courante']['role'] ?? ''), ['proprie
         <div class="bg-white border border-gray-100 p-5">
             <!-- Author header -->
             <div class="flex items-center gap-3 mb-3">
-                <div class="w-10 h-10 bg-violet-100 flex items-center justify-center flex-shrink-0">
-                    <span class="text-violet-600 text-sm font-bold"><?= strtoupper(substr($pub['prenom'], 0, 1)) ?></span>
+                <div class="w-10 h-10 flex items-center justify-center flex-shrink-0" style="background: var(--comm-color-light);">
+                    <span class="text-sm font-bold" style="color: var(--comm-color);"><?= strtoupper(substr($pub['prenom'], 0, 1)) ?></span>
                 </div>
                 <div>
                     <div class="flex items-center gap-2">
@@ -50,15 +50,15 @@ $estAdmin = in_array(($_SESSION['communaute_courante']['role'] ?? ''), ['proprie
             <div class="flex items-center gap-4 pt-3 border-t border-gray-100 text-sm text-gray-500">
                 <span class="flex items-center gap-1.5"><i data-lucide="heart" class="w-4 h-4"></i> <?= $pub['nb_likes'] ?? 0 ?></span>
                 <span class="flex items-center gap-1.5"><i data-lucide="message-circle" class="w-4 h-4"></i> <?= $pub['nb_commentaires'] ?? 0 ?></span>
-                <a href="/c/<?= $slug ?>/feed" class="ml-auto text-violet-500 hover:text-violet-600 font-medium transition text-xs">Voir dans le feed →</a>
+                <a href="/c/<?= $slug ?>/feed" class="ml-auto font-medium transition text-xs" style="color: var(--comm-color);">Voir dans le feed →</a>
             </div>
         </div>
         <?php endforeach; ?>
     </div>
     <?php else: ?>
     <div class="bg-white border border-gray-100 p-12 text-center">
-        <div class="w-16 h-16 bg-violet-100 flex items-center justify-center mx-auto mb-5">
-            <i data-lucide="bookmark" class="w-8 h-8 text-violet-500"></i>
+        <div class="w-16 h-16 flex items-center justify-center mx-auto mb-5" style="background: var(--comm-color-light);">
+            <i data-lucide="bookmark" class="w-8 h-8" style="color: var(--comm-color);"></i>
         </div>
         <h3 class="text-lg font-semibold text-gray-900 mb-2">Aucun favori</h3>
         <p class="text-gray-500">Enregistrez des publications pour les retrouver ici.</p>

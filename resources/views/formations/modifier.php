@@ -12,7 +12,7 @@
                 <p class="text-gray-500 mt-1"><?= count($modules) ?> module(s)</p>
             </div>
             <?php if ($estAdmin): ?>
-            <button @click="showNewModule = !showNewModule" class="bg-violet-500 hover:bg-violet-600 text-white font-semibold px-5 py-2 text-sm transition">
+            <button @click="showNewModule = !showNewModule" class="text-white font-semibold px-5 py-2 text-sm transition" style="background: var(--comm-color);">
                 <span x-show="!showNewModule">+ Nouveau module</span>
                 <span x-show="showNewModule">Annuler</span>
             </button>
@@ -40,7 +40,7 @@
                 <label class="block text-sm font-medium text-gray-700 mb-1">Description</label>
                 <textarea name="description" rows="2" class="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 text-sm focus:ring-2 focus:ring-violet-500 focus:border-transparent outline-none resize-none"></textarea>
             </div>
-            <button type="submit" class="bg-violet-500 hover:bg-violet-600 text-white font-semibold px-6 py-2 text-sm transition">Créer le module</button>
+            <button type="submit" class="text-white font-semibold px-6 py-2 text-sm transition" style="background: var(--comm-color);">Créer le module</button>
         </form>
     </div>
     <?php endif; ?>
@@ -53,8 +53,8 @@
             <!-- En-tête module -->
             <div class="bg-gray-50 border-b border-gray-100 px-6 py-4 flex items-center justify-between">
                 <div class="flex items-center gap-3">
-                    <div class="w-8 h-8 bg-violet-100 flex items-center justify-center flex-shrink-0">
-                        <span class="text-violet-600 font-bold text-sm"><?= $modIndex + 1 ?></span>
+                    <div class="w-8 h-8 flex items-center justify-center flex-shrink-0" style="background: var(--comm-color-light);">
+                        <span class="font-bold text-sm" style="color: var(--comm-color);"><?= $modIndex + 1 ?></span>
                     </div>
                     <div>
                         <h3 class="font-bold text-gray-900"><?= htmlspecialchars($module['titre']) ?></h3>
@@ -66,7 +66,7 @@
                 <div class="flex items-center gap-2">
                     <span class="text-xs text-gray-400"><?= $module['nb_lecons'] ?> leçon(s)</span>
                     <?php if ($estAdmin): ?>
-                    <button @click="showNewLecon = showNewLecon === <?= $module['id'] ?> ? null : <?= $module['id'] ?>" class="text-xs bg-violet-500 hover:bg-violet-600 text-white px-3 py-1 font-medium transition">
+                    <button @click="showNewLecon = showNewLecon === <?= $module['id'] ?> ? null : <?= $module['id'] ?>" class="text-xs text-white px-3 py-1 font-medium transition" style="background: var(--comm-color);">
                         + Leçon
                     </button>
                     <form method="POST" action="/c/<?= $slug ?>/formations/<?= htmlspecialchars($formation['slug']) ?>/modules/<?= $module['id'] ?>/supprimer" class="inline" onsubmit="return confirm('Supprimer ce module et ses leçons ?')">
@@ -113,7 +113,7 @@
                         <label class="block text-xs font-medium text-gray-600 mb-1">Contenu de la leçon</label>
                         <textarea name="contenu" rows="4" class="w-full px-3 py-2 bg-white border border-gray-200 text-sm focus:ring-2 focus:ring-violet-500 focus:border-transparent outline-none resize-none font-mono text-xs" placeholder="Contenu texte, HTML, ou notes..."></textarea>
                     </div>
-                    <button type="submit" class="bg-violet-500 hover:bg-violet-600 text-white font-semibold px-4 py-1.5 text-xs transition">Ajouter la leçon</button>
+                    <button type="submit" class="text-white font-semibold px-4 py-1.5 text-xs transition" style="background: var(--comm-color);">Ajouter la leçon</button>
                 </form>
             </div>
             <?php endif; ?>
@@ -154,13 +154,13 @@
     </div>
     <?php else: ?>
     <div class="bg-white border border-gray-100 p-12 text-center">
-        <div class="w-16 h-16 bg-violet-100 flex items-center justify-center mx-auto mb-5">
-            <i data-lucide="layers" class="w-8 h-8 text-violet-500"></i>
+        <div class="w-16 h-16 flex items-center justify-center mx-auto mb-5" style="background: var(--comm-color-light);">
+            <i data-lucide="layers" class="w-8 h-8" style="color: var(--comm-color);"></i>
         </div>
         <h3 class="text-lg font-semibold text-gray-900 mb-2">Aucun module</h3>
         <p class="text-gray-500 mb-4">Créez des modules pour structurer votre cours.</p>
         <?php if ($estAdmin): ?>
-        <button @click="showNewModule = true" class="bg-violet-500 hover:bg-violet-600 text-white font-semibold px-5 py-2 text-sm transition">
+        <button @click="showNewModule = true" class="text-white font-semibold px-5 py-2 text-sm transition" style="background: var(--comm-color);">
             + Créer un module
         </button>
         <?php endif; ?>

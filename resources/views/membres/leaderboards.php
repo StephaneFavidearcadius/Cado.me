@@ -26,11 +26,11 @@
 
             <!-- Avatar + Nom -->
             <a href="/c/<?= $slug ?>/membres/<?= htmlspecialchars($membre['identifiant']) ?>" class="flex items-center gap-3 flex-1 min-w-0">
-                <div class="w-10 h-10 bg-violet-100 flex items-center justify-center flex-shrink-0">
+                <div class="w-10 h-10 flex items-center justify-center flex-shrink-0" style="background: var(--comm-color-light);">
                     <?php if (!empty($membre['avatar'])): ?>
                     <img src="<?= htmlspecialchars($membre['avatar']) ?>" class="w-10 h-10 object-cover" alt="">
                     <?php else: ?>
-                    <span class="text-violet-600 font-bold text-sm"><?= strtoupper(substr($membre['prenom'], 0, 1)) ?></span>
+                    <span class="font-bold text-sm" style="color: var(--comm-color);"><?= strtoupper(substr($membre['prenom'], 0, 1)) ?></span>
                     <?php endif; ?>
                 </div>
                 <div class="min-w-0">
@@ -49,8 +49,8 @@
     </div>
     <?php else: ?>
     <div class="bg-white border border-gray-100 p-12 text-center">
-        <div class="w-16 h-16 bg-violet-100 flex items-center justify-center mx-auto mb-5">
-            <i data-lucide="trophy" class="w-8 h-8 text-violet-500"></i>
+        <div class="w-16 h-16 flex items-center justify-center mx-auto mb-5" style="background: var(--comm-color-light);">
+            <i data-lucide="trophy" class="w-8 h-8" style="color: var(--comm-color);"></i>
         </div>
         <h3 class="text-lg font-semibold text-gray-900 mb-2">Pas encore de classement</h3>
         <p class="text-gray-500">Le classement apparaîtra quand les membres seront actifs.</p>
