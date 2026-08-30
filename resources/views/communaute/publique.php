@@ -130,7 +130,7 @@ if ($estConnecte) {
                     <!-- Description complète -->
                     <div class="px-8 pb-8 border-t border-gray-100 pt-6">
                         <?php if (!empty($communaute['description'])): ?>
-                            <div class="text-sm text-gray-700 leading-relaxed whitespace-pre-line"><?= nl2br(htmlspecialchars_decode(htmlspecialchars($communaute['description'], ENT_QUOTES | ENT_SUBSTITUTE), ENT_QUOTES | ENT_SUBSTITUTE)) ?></div>
+                            <div class="text-sm text-gray-700 leading-relaxed whitespace-pre-line"><?= nl2br(htmlspecialchars($communaute['description'])) ?></div>
                         <?php else: ?>
                             <p class="text-gray-400 italic text-sm">Aucune description pour le moment.</p>
                         <?php endif; ?>

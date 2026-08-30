@@ -55,7 +55,7 @@ class CommentaireService
             'pid' => $publicationId,
             'uid' => $utilisateurId,
             'parent_id' => $parentId,
-            'contenu' => htmlspecialchars($contenu),
+            'contenu' => $contenu,
             'statut' => 'actif',
         ]);
 

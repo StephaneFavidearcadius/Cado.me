@@ -29,9 +29,9 @@ class FormationService
         );
         $stmt->execute([
             'cid' => $communauteId,
-            'titre' => htmlspecialchars(trim($data['titre'])),
+            'titre' => trim($data['titre']),
             'slug' => $slug,
-            'desc' => htmlspecialchars(trim($data['description'] ?? '')),
+            'desc' => trim($data['description'] ?? ''),
             'image' => null,
             'statut' => $data['statut'] ?? 'active',
             'ordre' => (int)($data['ordre'] ?? 0),
@@ -67,8 +67,8 @@ class FormationService
             'UPDATE formations SET titre = :titre, description = :desc, statut = :statut, date_modification = NOW() WHERE id = :id'
         );
         $stmt->execute([
-            'titre' => htmlspecialchars(trim($data['titre'])),
-            'desc' => htmlspecialchars(trim($data['description'] ?? '')),
+            'titre' => trim($data['titre']),
+            'desc' => trim($data['description'] ?? ''),
             'statut' => $data['statut'] ?? 'active',
             'id' => $formationId,
         ]);
@@ -119,10 +119,10 @@ class FormationService
         );
         $stmt->execute([
             'fid' => $formationId,
-            'titre' => htmlspecialchars(trim($data['titre'])),
-            'desc' => htmlspecialchars(trim($data['description'] ?? '')),
+            'titre' => trim($data['titre']),
+            'desc' => trim($data['description'] ?? ''),
             'ordre' => (int)($data['ordre'] ?? 0),
-        ]);
+        ];
 
         return ['success' => true, 'module_id' => $this->db->lastInsertId()];
     }
@@ -131,8 +131,8 @@ class FormationService
     {
         $stmt = $this->db->prepare('UPDATE modules_formation SET titre = :titre, description = :desc WHERE id = :id');
         $stmt->execute([
-            'titre' => htmlspecialchars(trim($data['titre'])),
-            'desc' => htmlspecialchars(trim($data['description'] ?? '')),
+            'titre' => trim($data['titre']),
+            'desc' => trim($data['description'] ?? ''),
             'id' => $moduleId,
         ]);
         return ['success' => true];
@@ -208,9 +208,9 @@ class FormationService
             'cid' => $communauteId,
             'fid' => $formationId,
             'mid' => $moduleId,
-            'titre' => htmlspecialchars(trim($data['titre'])),
+            'titre' => trim($data['titre']),
             'slug' => $slug,
-            'desc' => htmlspecialchars(trim($data['description'] ?? '')),
+            'desc' => trim($data['description'] ?? ''),
             'contenu' => $data['contenu'] ?? '',
             'video' => trim($data['video_url'] ?? '') ?: null,
             'vfichier' => $videoFichier,

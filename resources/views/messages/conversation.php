@@ -86,7 +86,7 @@ if (!empty($messageIds)) {
 
                 <?php if (!empty(trim($msg['contenu']))): ?>
                 <div class="<?= $isMine ? 'bg-violet-500 text-white' : 'bg-white border border-gray-100 text-gray-900' ?> px-4 py-2.5 text-sm">
-                    <?= nl2br(htmlspecialchars_decode($msg['contenu'])) ?>
+                    <?= nl2br(htmlspecialchars($msg['contenu'])) ?>
                 </div>
                 <?php endif; ?>
 

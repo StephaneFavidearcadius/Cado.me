@@ -14,7 +14,7 @@
             <div class="bg-white border border-gray-100 sticky top-20">
                 <!-- En-tête cours -->
                 <div class="p-5 border-b border-gray-100">
-                    <h2 class="font-bold text-gray-900 text-sm leading-tight"><?= htmlspecialchars_decode($formation['titre']) ?></h2>
+                    <h2 class="font-bold text-gray-900 text-sm leading-tight"><?= htmlspecialchars($formation['titre']) ?></h2>
                     <div class="flex items-center gap-2 mt-2">
                         <div class="w-full bg-gray-100 h-1.5 flex-1">
                             <div class="h-1.5" style="width: 0%; background: var(--comm-color, #7830E0);"></div>
@@ -37,7 +37,7 @@
                         <button @click="$el.closest('.border-b').querySelector('.module-content').classList.toggle('hidden')" class="w-full px-5 py-3 flex items-center justify-between hover:bg-gray-50 transition text-left">
                             <div class="flex items-center gap-2 min-w-0">
                                 <span class="w-5 h-5 flex items-center justify-center text-xs font-bold flex-shrink-0" style="color: var(--comm-color, #7830E0);"><?= $modIndex + 1 ?></span>
-                                <span class="text-xs font-semibold text-gray-900 truncate"><?= htmlspecialchars_decode($module['titre']) ?></span>
+                                <span class="text-xs font-semibold text-gray-900 truncate"><?= htmlspecialchars($module['titre']) ?></span>
                             </div>
                             <div class="flex items-center gap-1 flex-shrink-0">
                                 <span class="text-[10px] text-gray-400"><?= $module['nb_lecons'] ?></span>
@@ -52,7 +52,7 @@
                                 <div class="w-5 h-5 bg-gray-100 flex items-center justify-center flex-shrink-0">
                                     <span class="text-gray-400 text-[10px]"><?= $leconIndex + 1 ?></span>
                                 </div>
-                                <span class="text-xs text-gray-600 truncate flex-1"><?= htmlspecialchars_decode($lecon['titre']) ?></span>
+                                <span class="text-xs text-gray-600 truncate flex-1"><?= htmlspecialchars($lecon['titre']) ?></span>
                                 <?php if (!empty($lecon['video_url']) || !empty($lecon['video_fichier'])): ?>
                                 <i data-lucide="play-circle" class="w-3 h-3 text-gray-300 flex-shrink-0"></i>
                                 <?php endif; ?>
@@ -72,7 +72,7 @@
                         <div class="w-5 h-5 bg-gray-100 flex items-center justify-center flex-shrink-0">
                             <span class="text-gray-400 text-[10px]"><?= $leconIndex + 1 ?></span>
                         </div>
-                        <span class="text-xs text-gray-600 truncate flex-1"><?= htmlspecialchars_decode($lecon['titre']) ?></span>
+                        <span class="text-xs text-gray-600 truncate flex-1"><?= htmlspecialchars($lecon['titre']) ?></span>
                         <?php if (!empty($lecon['video_url']) || !empty($lecon['video_fichier'])): ?>
                         <i data-lucide="play-circle" class="w-3 h-3 text-gray-300 flex-shrink-0"></i>
                         <?php endif; ?>
@@ -103,11 +103,11 @@
                 <div class="bg-white border border-gray-100">
                     <div class="p-6 border-b border-gray-100">
                         <div class="flex items-center gap-2 text-xs text-gray-400 mb-2">
-                            <span><?= htmlspecialchars_decode($modules[0]['titre']) ?></span>
+                            <span><?= htmlspecialchars($modules[0]['titre']) ?></span>
                             <i data-lucide="chevron-right" class="w-3 h-3"></i>
-                            <span class="text-violet-600 font-medium"><?= htmlspecialchars_decode($premiereLecon['titre']) ?></span>
+                            <span class="text-violet-600 font-medium"><?= htmlspecialchars($premiereLecon['titre']) ?></span>
                         </div>
-                        <h1 class="text-xl font-bold text-gray-900"><?= htmlspecialchars_decode($premiereLecon['titre']) ?></h1>
+                        <h1 class="text-xl font-bold text-gray-900"><?= htmlspecialchars($premiereLecon['titre']) ?></h1>
                     </div>
 
                     <!-- Vidéo -->
@@ -126,11 +126,11 @@
                     <!-- Contenu -->
                     <?php if (!empty($premiereLecon['contenu'])): ?>
                     <div class="p-6 prose prose-sm max-w-none text-gray-700 leading-relaxed">
-                        <?= nl2br(htmlspecialchars_decode($premiereLecon['contenu'])) ?>
+                        <?= nl2br(htmlspecialchars($premiereLecon['contenu'])) ?>
                     </div>
                     <?php elseif (!empty($premiereLecon['description'])): ?>
                     <div class="p-6">
-                        <p class="text-gray-600 leading-relaxed"><?= htmlspecialchars_decode($premiereLecon['description']) ?></p>
+                        <p class="text-gray-600 leading-relaxed"><?= htmlspecialchars($premiereLecon['description']) ?></p>
                     </div>
                     <?php endif; ?>
                 </div>
@@ -147,10 +147,10 @@
                         </div>
                         <div class="flex-1 min-w-0">
                             <div class="flex items-center gap-2">
-                                <span class="text-xs text-gray-400"><?= htmlspecialchars_decode($mod['titre']) ?></span>
+                                <span class="text-xs text-gray-400"><?= htmlspecialchars($mod['titre']) ?></span>
                                 <i data-lucide="chevron-right" class="w-3 h-3 text-gray-300"></i>
                             </div>
-                            <h3 class="font-medium text-gray-900 text-sm"><?= htmlspecialchars_decode($lecon['titre']) ?></h3>
+                            <h3 class="font-medium text-gray-900 text-sm"><?= htmlspecialchars($lecon['titre']) ?></h3>
                         </div>
                         <?php if (!empty($lecon['video_fichier']) || !empty($lecon['video_url'])): ?>
                         <span class="flex items-center gap-1 text-xs text-violet-500">

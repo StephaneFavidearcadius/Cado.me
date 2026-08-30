@@ -73,10 +73,10 @@
             </div>
             <div class="p-5">
                 <h3 class="font-bold text-gray-900 group-hover:text-violet-600 transition mb-1 line-clamp-1">
-                    <?= htmlspecialchars_decode($formation['titre']) ?>
+                    <?= htmlspecialchars($formation['titre']) ?>
                 </h3>
                 <?php if (!empty($formation['description'])): ?>
-                <p class="text-sm text-gray-500 line-clamp-2 mb-3"><?= htmlspecialchars_decode($formation['description']) ?></p>
+                <p class="text-sm text-gray-500 line-clamp-2 mb-3"><?= htmlspecialchars($formation['description']) ?></p>
                 <?php endif; ?>
                 <!-- Progress bar -->
                 <div class="w-full bg-gray-100 h-1.5 mt-3">

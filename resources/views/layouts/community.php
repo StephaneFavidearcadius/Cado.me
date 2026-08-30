@@ -75,7 +75,9 @@
     $commColor = $commActive['couleur_principale'] ?? '#7830E0';
     $commColorLight = $commColor . '18';
     ?>
-    <style>:root { --comm-color: <?= $commColor ?>; --comm-color-light: <?= $commColorLight ?>; }</style>    <!-- Header -->
+    <style>:root { --comm-color: <?= $commColor ?>; --comm-color-light: <?= $commColorLight ?>; }</style>    <!-- Header + Mobile Sidebar Drawer (shared Alpine scope) -->
+    <div x-data="{ sidebarOpen: false }">
+    <!-- Header -->
     <header class="bg-white border-b border-gray-200 sticky top-0 z-40">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div class="flex items-center justify-between h-14 sm:h-16">
@@ -206,8 +208,8 @@
         </div>
     </header>
 
-    <!-- Mobile Sidebar Drawer (Alpine) -->
-    <div x-data="{ sidebarOpen: false }" x-cloak>
+    <!-- Mobile Sidebar Drawer -->
+    <div x-cloak>
         <!-- Overlay -->
         <div x-show="sidebarOpen" x-transition.opacity @click="sidebarOpen = false"
              class="fixed inset-0 bg-black/40 z-50 lg:hidden"></div>
@@ -257,6 +259,7 @@
                 <?php endforeach; ?>
             </nav>
         </div>
+    </div>
     </div>
 
     <!-- Main with Sidebar -->

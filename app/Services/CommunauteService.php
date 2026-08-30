@@ -38,9 +38,9 @@ class CommunauteService
 
             $stmt->execute([
                 'proprietaire_id' => $proprietaireId,
-                'nom' => htmlspecialchars(trim($data['nom'])),
+                'nom' => trim($data['nom']),
                 'slug' => $slug,
-                'description' => htmlspecialchars(trim($data['description'] ?? '')),
+                'description' => trim($data['description'] ?? ''),
                 'couleur_principale' => $data['couleur_principale'] ?? '#7830E0',
                 'statut' => 'active',
                 'visibilite' => $data['visibilite'] ?? 'privee',
@@ -140,11 +140,11 @@ class CommunauteService
 
         if (isset($data['nom'])) {
             $champs[] = 'nom = :nom';
-            $params['nom'] = htmlspecialchars(trim($data['nom']));
+            $params['nom'] = trim($data['nom']);
         }
         if (isset($data['description'])) {
             $champs[] = 'description = :description';
-            $params['description'] = htmlspecialchars(trim($data['description']));
+            $params['description'] = trim($data['description']);
         }
         if (isset($data['couleur_principale'])) {
             $champs[] = 'couleur_principale = :couleur_principale';

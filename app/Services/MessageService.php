@@ -99,7 +99,7 @@ class MessageService
             'comm_id' => $communauteId,
             'conv_id' => $conversationId,
             'uid' => $utilisateurId,
-            'contenu' => htmlspecialchars($contenu),
+            'contenu' => $contenu,
         ]);
 
         // Mettre à jour la date de modification
@@ -194,7 +194,7 @@ class MessageService
             'comm_id' => $communauteId,
             'conv_id' => $conversationId,
             'uid' => $utilisateurId,
-            'contenu' => htmlspecialchars($contenu),
+            'contenu' => $contenu,
         ]);
         $messageId = $this->db->lastInsertId();
 

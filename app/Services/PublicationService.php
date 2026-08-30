@@ -40,7 +40,7 @@ class PublicationService
         $stmt->execute([
             'cid' => $communauteId,
             'uid' => $utilisateurId,
-            'contenu' => htmlspecialchars($contenu),
+            'contenu' => $contenu,
             'type' => $type,
             'statut' => 'active',
         ]);

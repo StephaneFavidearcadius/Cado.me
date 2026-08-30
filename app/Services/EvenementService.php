@@ -31,9 +31,9 @@ class EvenementService
 
         $stmt->execute([
             'cid' => $communauteId,
-            'titre' => htmlspecialchars(trim($data['titre'])),
+            'titre' => trim($data['titre']),
             'slug' => $slug,
-            'description' => htmlspecialchars(trim($data['description'] ?? '')),
+            'description' => trim($data['description'] ?? ''),
             'date_debut' => $data['date_debut'],
             'date_fin' => $data['date_fin'] ?? null,
             'type' => $data['type'] ?? 'autre',

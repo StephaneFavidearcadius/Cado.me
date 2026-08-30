@@ -29,8 +29,8 @@ class RessourceService
 
         $stmt->execute([
             'cid' => $communauteId,
-            'titre' => htmlspecialchars(trim($data['titre'])),
-            'description' => htmlspecialchars(trim($data['description'] ?? '')),
+            'titre' => trim($data['titre']),
+            'description' => trim($data['description'] ?? ''),
             'type' => $data['type'] ?? 'fichier',
             'chemin' => $data['chemin'] ?? null,
             'url' => $data['url'] ?? null,

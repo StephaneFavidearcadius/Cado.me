@@ -34,8 +34,8 @@ class AuthService
         $hash = password_hash($data['mot_de_passe'], PASSWORD_BCRYPT, ['cost' => 12]);
 
         $stmt->execute([
-            'prenom' => htmlspecialchars(trim($data['prenom'])),
-            'nom' => htmlspecialchars(trim($data['nom'])),
+            'prenom' => trim($data['prenom']),
+            'nom' => trim($data['nom']),
             'identifiant' => $this->genererIdentifiant($data['prenom'], $data['nom']),
             'email' => strtolower(trim($data['email'])),
             'mot_de_passe' => $hash,

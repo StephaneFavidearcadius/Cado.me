@@ -8,7 +8,7 @@
         </a>
         <div class="flex items-center justify-between">
             <div>
-                <h1 class="text-2xl font-bold text-gray-900">Modifier : <?= htmlspecialchars_decode($formation['titre']) ?></h1>
+                <h1 class="text-2xl font-bold text-gray-900">Modifier : <?= htmlspecialchars($formation['titre']) ?></h1>
                 <p class="text-gray-500 mt-1"><?= count($modules) ?> module(s)</p>
             </div>
             <?php if ($estAdmin): ?>
@@ -57,9 +57,9 @@
                         <span class="text-violet-600 font-bold text-sm"><?= $modIndex + 1 ?></span>
                     </div>
                     <div>
-                        <h3 class="font-bold text-gray-900"><?= htmlspecialchars_decode($module['titre']) ?></h3>
+                        <h3 class="font-bold text-gray-900"><?= htmlspecialchars($module['titre']) ?></h3>
                         <?php if (!empty($module['description'])): ?>
-                        <p class="text-xs text-gray-500 mt-0.5"><?= htmlspecialchars_decode($module['description']) ?></p>
+                        <p class="text-xs text-gray-500 mt-0.5"><?= htmlspecialchars($module['description']) ?></p>
                         <?php endif; ?>
                     </div>
                 </div>
@@ -127,7 +127,7 @@
                         <span class="text-gray-500 font-medium text-xs"><?= $leconIndex + 1 ?></span>
                     </div>
                     <div class="flex-1 min-w-0">
-                        <p class="text-sm font-medium text-gray-900 truncate"><?= htmlspecialchars_decode($lecon['titre']) ?></p>
+                        <p class="text-sm font-medium text-gray-900 truncate"><?= htmlspecialchars($lecon['titre']) ?></p>
                     </div>
                     <?php if (!empty($lecon['video_fichier'])): ?>
                     <span class="flex items-center gap-1 text-xs text-violet-500">
