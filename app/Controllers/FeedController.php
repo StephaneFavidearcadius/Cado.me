@@ -43,10 +43,15 @@ class FeedController extends Controller
         $publicationService = new PublicationService();
         $resultat = $publicationService->creer($communaute['id'], Session::get('utilisateur_id'), $data);
 
-        if ($resultat['success']) {
-            if ((new Request())->isAjax()) {
+        if ((new Request())->isAjax()) {
+            if ($resultat['success']) {
                 return $this->json(['success' => true, 'publication_id' => $resultat['publication_id']]);
+            } else {
+                return $this->json(['success' => false, 'errors' => $resultat['errors'] ?? ['Erreur lors de la publication.']], 400);
             }
+        }
+
+        if ($resultat['success']) {
             Session::flash('success', 'Publication créée !');
         } else {
             Session::flash('error', $resultat['errors'][0] ?? 'Erreur lors de la publication.');

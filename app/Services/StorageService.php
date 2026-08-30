@@ -80,8 +80,8 @@ class StorageService
      */
     private function validerFichier(array $fichier): bool
     {
-        // Taille max (10 Mo par défaut)
-        if ($fichier['size'] > 10 * 1024 * 1024) {
+        // Taille max (100 Mo)
+        if ($fichier['size'] > 100 * 1024 * 1024) {
             return false;
         }
 
@@ -99,8 +99,16 @@ class StorageService
             'application/zip',
             'video/mp4',
             'video/webm',
+            'video/x-matroska',
+            'video/quicktime',
+            'video/x-msvideo',
+            'video/x-flv',
+            'video/x-ms-wmv',
+            'video/ogg',
             'audio/mpeg',
             'audio/mp3',
+            'audio/wav',
+            'audio/ogg',
         ];
 
         return in_array($mimeType, $typesAutorises);

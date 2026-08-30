@@ -369,7 +369,8 @@ function feedApp() {
                         alert(data.errors ? data.errors[0] : 'Erreur lors de la publication.');
                     }
                 } catch(err) {
-                    alert('Erreur réseau.');
+                    console.error('Publication error:', err);
+                    alert('Erreur lors de la publication. Vérifiez que le fichier n\'est pas trop volumineux (max 100 Mo).');
                 }
                 this.publishing = false;
             });
