@@ -122,7 +122,7 @@ class FormationService
             'titre' => trim($data['titre']),
             'desc' => trim($data['description'] ?? ''),
             'ordre' => (int)($data['ordre'] ?? 0),
-        ];
+        ]);
 
         return ['success' => true, 'module_id' => $this->db->lastInsertId()];
     }
