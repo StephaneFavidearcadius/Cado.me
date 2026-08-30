@@ -56,9 +56,9 @@ class ProfilController extends Controller
 
         $sql = 'UPDATE utilisateurs SET prenom = :prenom, nom = :nom, biographie = :bio, whatsapp = :whatsapp, date_modification = NOW()';
         $params = [
-            'prenom' => htmlspecialchars(trim($_POST['prenom'] ?? '')),
-            'nom' => htmlspecialchars(trim($_POST['nom'] ?? '')),
-            'bio' => htmlspecialchars(trim($_POST['biographie'] ?? '')),
+            'prenom' => trim($_POST['prenom'] ?? ''),
+            'nom' => trim($_POST['nom'] ?? ''),
+            'bio' => trim($_POST['biographie'] ?? ''),
             'whatsapp' => trim($_POST['whatsapp'] ?? '') ?: null,
             'id' => $userId,
         ];

@@ -87,7 +87,7 @@
                         <i data-lucide="menu" class="w-5 h-5 text-gray-600"></i>
                     </button>
                     <a href="/app" class="flex items-center gap-2">
-                        <div class="w-8 h-8 bg-violet-500 rounded-lg flex items-center justify-center">
+                        <div class="w-8 h-8 rounded-lg flex items-center justify-center" style="background: var(--comm-color);">
                             <span class="text-white font-bold text-lg">C</span>
                         </div>
                         <span class="font-semibold text-lg text-gray-900">Cado.me</span>
@@ -139,7 +139,7 @@
 
                 <div class="flex items-center gap-1 sm:gap-3">
                     <!-- Découvrir -->
-                    <a href="/decouvrir" class="hidden md:flex items-center gap-1.5 text-sm text-gray-500 hover:text-violet-600 transition font-medium px-2 py-2">
+                    <a href="/decouvrir" class="hidden md:flex items-center gap-1.5 text-sm text-gray-500 transition font-medium px-2 py-2" style="--tw-text-opacity:1;" onmouseover="this.style.color='var(--comm-color)'" onmouseout="this.style.color=''">
                         <i data-lucide="compass" class="w-4 h-4"></i>
                         Découvrir
                     </a>
@@ -180,8 +180,8 @@
                     <?php endif; ?>
                     <div x-data="{ open: false }" class="relative">
                         <button @click="open = !open" class="flex items-center gap-2 p-1.5 rounded-lg hover:bg-gray-100 transition">
-                            <div class="w-8 h-8 rounded-full bg-violet-100 flex items-center justify-center">
-                                <span class="text-violet-600 text-sm font-bold"><?= strtoupper(substr($_SESSION['utilisateur_prenom'] ?? 'U', 0, 1)) ?></span>
+                            <div class="w-8 h-8 rounded-full flex items-center justify-center" style="background: var(--comm-color-light);">
+                                <span class="text-sm font-bold" style="color: var(--comm-color);"><?= strtoupper(substr($_SESSION['utilisateur_prenom'] ?? 'U', 0, 1)) ?></span>
                             </div>
                         </button>
                         <div x-show="open" @click.away="open = false" x-cloak
@@ -329,19 +329,19 @@
     <!-- Mobile Bottom Nav -->
     <nav class="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 lg:hidden z-40 bottom-nav-safe">
         <div class="flex items-center justify-around py-2">
-            <a href="/c/<?= $slug ?>/feed" class="flex flex-col items-center gap-1 p-2 <?= (str_ends_with($currentPath, '/feed') || str_ends_with($currentPath, '/app')) ? 'text-violet-600' : 'text-gray-500' ?>">
+            <a href="/c/<?= $slug ?>/feed" class="flex flex-col items-center gap-1 p-2" style="color: <?= (str_ends_with($currentPath, '/feed') || str_ends_with($currentPath, '/app')) ? 'var(--comm-color)' : '#6B7280' ?>;">
                 <i data-lucide="layout-dashboard" class="w-5 h-5"></i>
                 <span class="text-xs">Communauté</span>
             </a>
-            <a href="/c/<?= $slug ?>/membres" class="flex flex-col items-center gap-1 p-2 <?= str_contains($currentPath, '/membres') ? 'text-violet-600' : 'text-gray-500' ?>">
+            <a href="/c/<?= $slug ?>/membres" class="flex flex-col items-center gap-1 p-2" style="color: <?= str_contains($currentPath, '/membres') ? 'var(--comm-color)' : '#6B7280' ?>;">
                 <i data-lucide="users" class="w-5 h-5"></i>
                 <span class="text-xs">Membres</span>
             </a>
-            <a href="/c/<?= $slug ?>/formations" class="flex flex-col items-center gap-1 p-2 <?= str_contains($currentPath, '/formations') ? 'text-violet-600' : 'text-gray-500' ?>">
+            <a href="/c/<?= $slug ?>/formations" class="flex flex-col items-center gap-1 p-2" style="color: <?= str_contains($currentPath, '/formations') ? 'var(--comm-color)' : '#6B7280' ?>;">
                 <i data-lucide="book-open" class="w-5 h-5"></i>
                 <span class="text-xs">Formations</span>
             </a>
-            <a href="/c/<?= $slug ?>/messages" class="flex flex-col items-center gap-1 p-2 <?= str_contains($currentPath, '/messages') ? 'text-violet-600' : 'text-gray-500' ?>">
+            <a href="/c/<?= $slug ?>/messages" class="flex flex-col items-center gap-1 p-2" style="color: <?= str_contains($currentPath, '/messages') ? 'var(--comm-color)' : '#6B7280' ?>;">
                 <i data-lucide="message-circle" class="w-5 h-5"></i>
                 <span class="text-xs">Messages</span>
             </a>
