@@ -26,8 +26,11 @@
     </script>
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
     <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
-</head>
-<style>*, *::before, *::after { border-radius: 0 !important; }</style>
+</head>    <style>
+        *, *::before, *::after { border-radius: 0 !important; }
+        html { scroll-behavior: smooth; }
+        @media (pointer: coarse) { button, a, [role="button"] { min-height: 44px; } }
+    </style>
 <body class="font-sora bg-white text-gray-900 antialiased">
 
     <!-- Header -->
@@ -43,9 +46,9 @@
                 <nav class="hidden md:flex items-center gap-8">
                     <a href="/decouvrir" class="text-sm text-gray-500 hover:text-gray-900 transition">Découvrir</a>
                 </nav>
-                <div class="flex items-center gap-3">
-                    <a href="/connexion" class="px-4 py-2 text-sm font-medium text-gray-700 hover:text-violet-600 transition">Connexion</a>
-                    <a href="/inscription" class="px-5 py-2.5 text-sm font-semibold text-white bg-violet-500 hover:bg-violet-600 rounded-xl transition shadow-sm">Commencer</a>
+                <div class="flex items-center gap-2 sm:gap-3">
+                    <a href="/connexion" class="px-3 sm:px-4 py-2 text-xs sm:text-sm font-medium text-gray-700 hover:text-violet-600 transition">Connexion</a>
+                    <a href="/inscription" class="px-3 sm:px-5 py-2 sm:py-2.5 text-xs sm:text-sm font-semibold text-white bg-violet-500 hover:bg-violet-600 transition shadow-sm whitespace-nowrap">Commencer</a>
                 </div>
             </div>
         </div>
@@ -54,34 +57,34 @@
     <!-- ═══════════════════════════════════════════ -->
     <!-- HERO SECTION — NE PAS MODIFIER              -->
     <!-- ═══════════════════════════════════════════ -->
-    <section class="pt-32 pb-20 px-6 lg:px-8">
+    <section class="pt-24 sm:pt-32 pb-12 sm:pb-20 px-4 sm:px-6 lg:px-8">
         <div class="max-w-4xl mx-auto text-center">
             <div class="inline-flex items-center gap-2 bg-violet-50 text-violet-600 px-4 py-1.5 rounded-full text-xs font-semibold mb-8 border border-violet-100">
                 <i data-lucide="sparkles" class="w-3.5 h-3.5"></i>
                 Plateforme SaaS multi-communautés
             </div>
 
-            <h1 class="text-5xl sm:text-6xl lg:text-7xl font-extrabold text-gray-900 leading-[1.1] mb-6 tracking-tight">
+            <h1 class="text-3xl sm:text-5xl lg:text-6xl xl:text-7xl font-extrabold text-gray-900 leading-[1.1] mb-4 sm:mb-6 tracking-tight">
                 Votre communauté,
                 <span class="text-violet-500">votre espace</span>
             </h1>
 
-            <p class="text-lg text-gray-500 max-w-2xl mx-auto mb-10 leading-relaxed">
+            <p class="text-base sm:text-lg text-gray-500 max-w-2xl mx-auto mb-6 sm:mb-10 leading-relaxed px-2">
                 Créez, gérez et développez votre propre communauté privée.
                 Formations, contenus, événements - tout est réuni sur une seule plateforme.
             </p>
 
-            <div class="flex items-center justify-center gap-4 mb-16">
-                <a href="/inscription" class="px-8 py-3.5 bg-violet-500 hover:bg-violet-600 text-white font-semibold rounded-xl transition shadow-lg shadow-violet-500/20 text-sm">
+            <div class="flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-4 mb-10 sm:mb-16 px-4">
+                <a href="/inscription" class="w-full sm:w-auto px-8 py-3.5 bg-violet-500 hover:bg-violet-600 text-white font-semibold rounded-xl transition shadow-lg shadow-violet-500/20 text-sm text-center">
                     Créer ma communauté
                 </a>
-                <a href="/decouvrir" class="px-8 py-3.5 bg-white hover:bg-gray-50 text-gray-700 font-semibold rounded-xl transition border border-gray-200 text-sm">
+                <a href="/decouvrir" class="w-full sm:w-auto px-8 py-3.5 bg-white hover:bg-gray-50 text-gray-700 font-semibold rounded-xl transition border border-gray-200 text-sm text-center">
                     Découvrir
                 </a>
             </div>
 
             <!-- Screenshot Preview -->
-            <div class="relative mx-auto max-w-5xl">
+            <div class="relative mx-auto max-w-5xl px-2">
                 <div class="bg-gray-100 border border-gray-200 overflow-hidden shadow-2xl shadow-gray-200/50">
                     <img src="/images/hero-screenshot.png" alt="Aperçu de Cado.me — communauté AI BUILDERS avec feed, sidebar et menu" class="w-full h-auto block" loading="eager">
                 </div>
@@ -96,14 +99,14 @@
     <!-- ═══════════════════════════════════════════ -->
     <!-- SECTION 01 — NOTRE CONVICTION               -->
     <!-- ═══════════════════════════════════════════ -->
-    <section class="py-24 border-t border-gray-100">
+    <section class="py-16 sm:py-24 border-t border-gray-100">
         <div class="max-w-4xl mx-auto px-6 lg:px-8 text-center">
             <p class="text-xs font-semibold text-violet-500 uppercase tracking-widest mb-6">Notre conviction</p>
-            <h2 class="text-4xl sm:text-5xl font-extrabold text-gray-900 leading-tight mb-6">
+            <h2 class="text-2xl sm:text-4xl lg:text-5xl font-extrabold text-gray-900 leading-tight mb-4 sm:mb-6">
                 <span class="text-gray-400 line-through">Skool</span> n'a pas été pensé pour nous.<br>
                 <span class="text-violet-500">Cado.me</span> si.
             </h2>
-            <p class="text-lg text-gray-500 max-w-2xl mx-auto leading-relaxed">
+            <p class="text-base sm:text-lg text-gray-500 max-w-2xl mx-auto leading-relaxed px-2">
                 Une plateforme construite pour les créateurs, coachs et formateurs francophones.
                 Paiements, langue locale, support qui répond. Tout ce qui manque ailleurs.
             </p>
@@ -114,9 +117,9 @@
     <!-- ═══════════════════════════════════════════ -->
     <!-- SECTION 02 — DES VRAIES COMMUNAUTÉS        -->
     <!-- ═══════════════════════════════════════════ -->
-    <section class="py-24 bg-gray-50 border-y border-gray-100">
-        <div class="max-w-7xl mx-auto px-6 lg:px-8">
-            <div class="flex items-end justify-between mb-12">
+    <section class="py-16 sm:py-24 bg-gray-50 border-y border-gray-100">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex flex-col sm:flex-row sm:items-end justify-between mb-8 sm:mb-12 gap-4">
                 <div>
                     <p class="text-xs font-semibold text-violet-500 uppercase tracking-widest mb-3">Sur Cado.me aujourd'hui</p>
                     <h2 class="text-3xl font-bold text-gray-900">Des vraies communautés.<br>Des vrais créateurs. De vrais résultats.</h2>
@@ -128,7 +131,7 @@
             </div>
 
             <!-- Community Cards -->
-            <div class="grid md:grid-cols-3 gap-6">
+            <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
                 <div class="bg-white border border-gray-200 p-6">
                     <div class="flex items-center gap-3 mb-4">
                         <div class="w-12 h-12 bg-violet-500 flex items-center justify-center">
@@ -200,9 +203,9 @@
     <!-- ═══════════════════════════════════════════ -->
     <!-- SECTION 03 — TES PAIEMENTS (01)            -->
     <!-- ═══════════════════════════════════════════ -->
-    <section class="py-24">
-        <div class="max-w-7xl mx-auto px-6 lg:px-8">
-            <div class="grid lg:grid-cols-2 gap-16 items-center">
+    <section class="py-16 sm:py-24">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid lg:grid-cols-2 gap-10 sm:gap-16 items-center">
                 <div>
                     <p class="text-xs font-semibold text-violet-500 uppercase tracking-widest mb-4">01 · Tes paiements</p>
                     <h2 class="text-3xl font-bold text-gray-900 mb-6 leading-tight">
@@ -282,9 +285,9 @@
     <!-- ═══════════════════════════════════════════ -->
     <!-- SECTION 04 — FORMATIONS (02)               -->
     <!-- ═══════════════════════════════════════════ -->
-    <section class="py-24 bg-gray-50 border-y border-gray-100">
-        <div class="max-w-7xl mx-auto px-6 lg:px-8">
-            <div class="grid lg:grid-cols-2 gap-16 items-center">
+    <section class="py-16 sm:py-24 bg-gray-50 border-y border-gray-100">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid lg:grid-cols-2 gap-10 sm:gap-16 items-center">
                 <div class="order-2 lg:order-1">
                     <!-- Course Preview Card -->
                     <div class="bg-white border border-gray-200 overflow-hidden">
@@ -370,15 +373,15 @@
     <!-- ═══════════════════════════════════════════ -->
     <!-- SECTION 05 — SIX ESPACES (03)              -->
     <!-- ═══════════════════════════════════════════ -->
-    <section class="py-24">
-        <div class="max-w-7xl mx-auto px-6 lg:px-8">
-            <div class="text-center mb-16">
+    <section class="py-16 sm:py-24">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-10 sm:mb-16">
                 <p class="text-xs font-semibold text-violet-500 uppercase tracking-widest mb-4">03 · Tout dans le même espace</p>
                 <h2 class="text-3xl font-bold text-gray-900 mb-4">Six espaces. Une seule communauté.</h2>
                 <p class="text-gray-500 max-w-xl mx-auto">Pas dix outils à connecter, pas dix abonnements à gérer. Tout est là, dès le premier jour.</p>
             </div>
 
-            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-8">
                 <!-- Feed -->
                 <div class="border border-gray-200 p-6">
                     <div class="w-10 h-10 bg-violet-100 flex items-center justify-center mb-4">
@@ -440,9 +443,9 @@
     <!-- ═══════════════════════════════════════════ -->
     <!-- SECTION 06 — PAGE PUBLIQUE (04)            -->
     <!-- ═══════════════════════════════════════════ -->
-    <section class="py-24 bg-gray-50 border-y border-gray-100">
-        <div class="max-w-7xl mx-auto px-6 lg:px-8">
-            <div class="grid lg:grid-cols-2 gap-16 items-center">
+    <section class="py-16 sm:py-24 bg-gray-50 border-y border-gray-100">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid lg:grid-cols-2 gap-10 sm:gap-16 items-center">
                 <div>
                     <p class="text-xs font-semibold text-violet-500 uppercase tracking-widest mb-4">04 · Page publique</p>
                     <h2 class="text-3xl font-bold text-gray-900 mb-6 leading-tight">
@@ -523,9 +526,9 @@
     <!-- ═══════════════════════════════════════════ -->
     <!-- SECTION 07 — 5 ÉTAPES                      -->
     <!-- ═══════════════════════════════════════════ -->
-    <section class="py-24">
-        <div class="max-w-5xl mx-auto px-6 lg:px-8">
-            <div class="text-center mb-16">
+    <section class="py-16 sm:py-24">
+        <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-10 sm:mb-16">
                 <p class="text-xs font-semibold text-violet-500 uppercase tracking-widest mb-4">De zéro à payé</p>
                 <h2 class="text-3xl font-bold text-gray-900">5 étapes. Une seule après-midi.</h2>
             </div>
@@ -588,9 +591,9 @@
     <!-- ═══════════════════════════════════════════ -->
     <!-- SECTION 08 — TARIFS                        -->
     <!-- ═══════════════════════════════════════════ -->
-    <section id="pricing" class="py-24 bg-gray-50 border-y border-gray-100">
-        <div class="max-w-5xl mx-auto px-6 lg:px-8">
-            <div class="text-center mb-16">
+    <section id="pricing" class="py-16 sm:py-24 bg-gray-50 border-y border-gray-100">
+        <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-10 sm:mb-16">
                 <p class="text-xs font-semibold text-violet-500 uppercase tracking-widest mb-4">Tarifs</p>
                 <h2 class="text-3xl font-bold text-gray-900 mb-4">Un abonnement. Une communauté.</h2>
                 <p class="text-gray-500">La techno, l'hébergement, le support. Zéro commission sur tes paiements.</p>
@@ -694,14 +697,12 @@
     <!-- ═══════════════════════════════════════════ -->
     <!-- SECTION 09 — COMPARAISON                   -->
     <!-- ═══════════════════════════════════════════ -->
-    <section class="py-24">
-        <div class="max-w-4xl mx-auto px-6 lg:px-8">
-            <div class="text-center mb-12">
+    <section class="py-16 sm:py-24">
+        <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-8 sm:mb-12">
                 <p class="text-xs font-semibold text-violet-500 uppercase tracking-widest mb-4">Comparaison</p>
                 <h2 class="text-3xl font-bold text-gray-900">Pourquoi pas <span class="text-gray-400 line-through">Skool</span>, <span class="text-gray-400 line-through">Kajabi</span> ?</h2>
-            </div>
-
-            <div class="overflow-x-auto">
+            </div>                <div class="overflow-x-auto -mx-4 sm:mx-0">
                 <table class="w-full text-sm">
                     <thead>
                         <tr class="border-b border-gray-200">
@@ -758,14 +759,14 @@
     <!-- ═══════════════════════════════════════════ -->
     <!-- SECTION 10 — TÉMOIGNAGES                   -->
     <!-- ═══════════════════════════════════════════ -->
-    <section class="py-24 bg-gray-50 border-y border-gray-100">
-        <div class="max-w-5xl mx-auto px-6 lg:px-8">
-            <div class="text-center mb-16">
+    <section class="py-16 sm:py-24 bg-gray-50 border-y border-gray-100">
+        <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-10 sm:mb-16">
                 <p class="text-xs font-semibold text-violet-500 uppercase tracking-widest mb-4">Sur le terrain</p>
                 <h2 class="text-3xl font-bold text-gray-900">Des créateurs. Des coachs. Des formateurs.</h2>
             </div>
 
-            <div class="grid md:grid-cols-3 gap-6">
+            <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
                 <div class="bg-white border border-gray-200 p-6">
                     <blockquote class="text-sm text-gray-600 leading-relaxed mb-6 italic">
                         « Le mois dernier, ma communauté a généré 850€ d'abonnements. Cado.me n'a pris aucun pourboire. Tout est arrivé sur mon compte, comme prévu. »
@@ -825,9 +826,9 @@
     <!-- ═══════════════════════════════════════════ -->
     <!-- SECTION 11 — FAQ                           -->
     <!-- ═══════════════════════════════════════════ -->
-    <section class="py-24">
-        <div class="max-w-3xl mx-auto px-6 lg:px-8">
-            <div class="text-center mb-12">
+    <section class="py-16 sm:py-24">
+        <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-8 sm:mb-12">
                 <p class="text-xs font-semibold text-violet-500 uppercase tracking-widest mb-4">Questions fréquentes</p>
                 <h2 class="text-3xl font-bold text-gray-900">Ce que les gens demandent.</h2>
             </div>
@@ -905,15 +906,15 @@
     <!-- ═══════════════════════════════════════════ -->
     <!-- SECTION 12 — CTA FINAL                     -->
     <!-- ═══════════════════════════════════════════ -->
-    <section class="py-24 bg-violet-500">
+    <section class="py-16 sm:py-24 bg-violet-500">
         <div class="max-w-3xl mx-auto px-6 lg:px-8 text-center">
-            <h2 class="text-3xl sm:text-4xl font-extrabold text-white mb-4 leading-tight">
+            <h2 class="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-white mb-4 leading-tight">
                 Ta communauté n'attend que toi.
             </h2>
-            <p class="text-violet-200 mb-10 max-w-lg mx-auto text-lg">
+            <p class="text-violet-200 mb-6 sm:mb-10 max-w-lg mx-auto text-sm sm:text-lg px-4">
                 9€ pour démarrer. 0% sur ce que tu encaisses. Aucun outil à brancher en plus.
             </p>
-            <a href="/inscription" class="inline-block px-10 py-4 bg-white hover:bg-violet-50 text-violet-600 font-bold transition text-sm shadow-xl">
+            <a href="/inscription" class="block sm:inline-block w-full sm:w-auto px-10 py-4 bg-white hover:bg-violet-50 text-violet-600 font-bold transition text-sm shadow-xl text-center">
                 Créer ma communauté maintenant
             </a>
             <p class="text-violet-300 text-xs mt-4">2 minutes pour créer · Aucune carte requise</p>
@@ -922,9 +923,9 @@
 
 
     <!-- Footer -->
-    <footer class="border-t border-gray-100 py-12">
-        <div class="max-w-7xl mx-auto px-6 lg:px-8">
-            <div class="grid grid-cols-2 md:grid-cols-5 gap-8 mb-12">
+    <footer class="border-t border-gray-100 py-10 sm:py-12">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-6 sm:gap-8 mb-10 sm:mb-12">
                 <div class="col-span-2 md:col-span-1">
                     <div class="flex items-center gap-2 mb-4">
                         <div class="w-8 h-8 bg-violet-500 rounded-lg flex items-center justify-center">

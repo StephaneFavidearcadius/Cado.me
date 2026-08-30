@@ -49,6 +49,13 @@
         [x-cloak] { display: none !important; }
         *, *::before, *::after { border-radius: 0 !important; }
         .editorial-grid { background-image: linear-gradient(rgba(120,48,224,0.04) 1px, transparent 1px), linear-gradient(90deg, rgba(120,48,224,0.04) 1px, transparent 1px); background-size: 60px 60px; }
+        .bottom-nav-safe { padding-bottom: env(safe-area-inset-bottom, 0px); }
+        .page-bottom-spacer { height: 80px; }
+        @media (min-width: 1024px) { .page-bottom-spacer { height: 0; } }
+        .flash-msg { max-width: calc(100vw - 2rem); left: 1rem; right: 1rem; }
+        @media (min-width: 640px) { .flash-msg { left: auto; right: 1rem; max-width: 24rem; } }
+        html { scroll-behavior: smooth; }
+        @media (pointer: coarse) { button, a, [role="button"] { min-height: 44px; } }
     </style>
 </head>
 <body class="font-sora bg-gray-50 text-gray-900 min-h-screen editorial-grid">
@@ -167,13 +174,13 @@
     </header>
 
     <!-- Main Content -->
-    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 lg:py-8 page-bottom-spacer">
         <?= $slot ?>
     </main>
 
     <!-- Mobile Bottom Nav -->
     <?php if ($commActive): ?>
-    <nav class="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 lg:hidden z-40">
+    <nav class="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 lg:hidden z-40 bottom-nav-safe">
         <div class="flex items-center justify-around py-2">
             <a href="/c/<?= htmlspecialchars($commActive['slug']) ?>/app" class="flex flex-col items-center gap-1 p-2 text-violet-600">
                 <i data-lucide="home" class="w-5 h-5"></i>

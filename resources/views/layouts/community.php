@@ -24,8 +24,20 @@
     <style>
         [x-cloak] { display: none !important; }
         *, *::before, *::after { border-radius: 0 !important; }
-        /* Grille éditoriale subtile */
         .editorial-grid { background-image: linear-gradient(rgba(120,48,224,0.04) 1px, transparent 1px), linear-gradient(90deg, rgba(120,48,224,0.04) 1px, transparent 1px); background-size: 60px 60px; }
+        /* Responsive foundations */
+        .bottom-nav-safe { padding-bottom: env(safe-area-inset-bottom, 0px); }
+        .page-bottom-spacer { height: 80px; } /* space for fixed bottom nav */
+        @media (min-width: 1024px) { .page-bottom-spacer { height: 0; } }
+        /* Flash messages responsive */
+        .flash-msg { max-width: calc(100vw - 2rem); left: 1rem; right: 1rem; }
+        @media (min-width: 640px) { .flash-msg { left: auto; right: 1rem; max-width: 24rem; } }
+        /* Smooth scroll */
+        html { scroll-behavior: smooth; }
+        /* Touch-friendly targets */
+        @media (pointer: coarse) {
+            button, a, [role="button"] { min-height: 44px; }
+        }
     </style>
     <script>
     // Fonction pour afficher du texte sans entités HTML doubles
@@ -40,7 +52,7 @@
     <!-- Flash Messages -->
     <?php if (!empty($flash['success'])): ?>
     <div x-data="{ show: true }" x-show="show" x-init="setTimeout(() => show = false, 4000)"
-         class="fixed top-4 right-4 z-50 bg-emerald-500 text-white px-6 py-3 rounded-xl shadow-lg flex items-center gap-3 transition-all duration-300">
+         class="fixed top-4 z-50 bg-emerald-500 text-white px-4 sm:px-6 py-3 shadow-lg flex items-center gap-3 transition-all duration-300 flash-msg">
         <i data-lucide="check-circle" class="w-5 h-5"></i>
         <span><?= $flash['success'] ?></span>
         <button @click="show = false" class="ml-2"><i data-lucide="x" class="w-4 h-4"></i></button>
@@ -48,7 +60,7 @@
     <?php endif; ?>
     <?php if (!empty($flash['error'])): ?>
     <div x-data="{ show: true }" x-show="show" x-init="setTimeout(() => show = false, 4000)"
-         class="fixed top-4 right-4 z-50 bg-red-500 text-white px-6 py-3 rounded-xl shadow-lg flex items-center gap-3 transition-all duration-300">
+         class="fixed top-4 z-50 bg-red-500 text-white px-4 sm:px-6 py-3 shadow-lg flex items-center gap-3 transition-all duration-300 flash-msg">
         <i data-lucide="alert-circle" class="w-5 h-5"></i>
         <span><?= $flash['error'] ?></span>
         <button @click="show = false" class="ml-2"><i data-lucide="x" class="w-4 h-4"></i></button>
@@ -63,13 +75,15 @@
     $commColor = $commActive['couleur_principale'] ?? '#7830E0';
     $commColorLight = $commColor . '18';
     ?>
-    <style>:root { --comm-color: <?= $commColor ?>; --comm-color-light: <?= $commColorLight ?>; }</style>
-
-    <!-- Header -->
+    <style>:root { --comm-color: <?= $commColor ?>; --comm-color-light: <?= $commColorLight ?>; }</style>    <!-- Header -->
     <header class="bg-white border-b border-gray-200 sticky top-0 z-40">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex items-center justify-between h-16">
-                <div class="flex items-center gap-8">
+                <div class="flex items-center justify-between h-14 sm:h-16">
+                <div class="flex items-center gap-3 sm:gap-8">
+                    <!-- Hamburger mobile -->
+                    <button @click="sidebarOpen = !sidebarOpen" class="lg:hidden p-2 hover:bg-gray-100 -ml-2">
+                        <i data-lucide="menu" class="w-5 h-5 text-gray-600"></i>
+                    </button>
                     <a href="/app" class="flex items-center gap-2">
                         <div class="w-8 h-8 bg-violet-500 rounded-lg flex items-center justify-center">
                             <span class="text-white font-bold text-lg">C</span>
@@ -121,15 +135,15 @@
                     <?php endif; ?>
                 </div>
 
-                <div class="flex items-center gap-3">
+                <div class="flex items-center gap-1 sm:gap-3">
                     <!-- Découvrir -->
-                    <a href="/decouvrir" class="hidden md:flex items-center gap-1.5 text-sm text-gray-500 hover:text-violet-600 transition font-medium">
+                    <a href="/decouvrir" class="hidden md:flex items-center gap-1.5 text-sm text-gray-500 hover:text-violet-600 transition font-medium px-2 py-2">
                         <i data-lucide="compass" class="w-4 h-4"></i>
                         Découvrir
                     </a>
 
                     <!-- Barre de recherche -->
-                    <div class="hidden md:flex items-center bg-gray-100 px-3 py-2 w-64">
+                    <div class="hidden lg:flex items-center bg-gray-100 px-3 py-2 w-56 xl:w-64">
                         <i data-lucide="search" class="w-4 h-4 text-gray-400 mr-2"></i>
                         <input type="text" placeholder="Rechercher..." class="bg-transparent text-sm outline-none w-full text-gray-700 placeholder-gray-400">
                     </div>
@@ -143,7 +157,7 @@
                         foreach ($convs as $c) { $nbMsgs += (int)($c['non_lus'] ?? 0); }
                     ?>
                     <!-- Messages icon -->
-                    <a href="/c/<?= $slug ?>/messages" class="relative p-2 hover:bg-gray-100 transition">
+                    <a href="/c/<?= $slug ?>/messages" class="relative p-2 hover:bg-gray-100 transition hidden sm:flex">
                         <svg class="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="square" stroke-linejoin="miter" stroke-width="1.5" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/></svg>
                         <?php if ($nbMsgs > 0): ?>
                         <span class="absolute -top-0.5 -right-0.5 min-w-[18px] h-[18px] bg-red-500 text-white text-[10px] font-bold flex items-center justify-center px-1">
@@ -153,7 +167,7 @@
                     </a>
 
                     <!-- Notifications icon -->
-                    <a href="/c/<?= $slug ?>/notifications" class="relative p-2 hover:bg-gray-100 transition">
+                    <a href="/c/<?= $slug ?>/notifications" class="relative p-2 hover:bg-gray-100 transition hidden sm:flex">
                         <i data-lucide="bell" class="w-5 h-5 text-gray-500"></i>
                         <?php if ($nbNotifs > 0): ?>
                         <span class="absolute -top-0.5 -right-0.5 min-w-[18px] h-[18px] bg-red-500 text-white text-[10px] font-bold flex items-center justify-center px-1">
@@ -192,9 +206,62 @@
         </div>
     </header>
 
+    <!-- Mobile Sidebar Drawer (Alpine) -->
+    <div x-data="{ sidebarOpen: false }" x-cloak>
+        <!-- Overlay -->
+        <div x-show="sidebarOpen" x-transition.opacity @click="sidebarOpen = false"
+             class="fixed inset-0 bg-black/40 z-50 lg:hidden"></div>
+        <!-- Drawer -->
+        <div x-show="sidebarOpen" x-transition:enter="transition ease-out duration-200"
+             x-transition:enter-start="-translate-x-full" x-transition:enter-end="translate-x-0"
+             x-transition:leave="transition ease-in duration-150"
+             x-transition:leave-start="translate-x-0" x-transition:leave-end="-translate-x-full"
+             class="fixed top-0 left-0 bottom-0 w-72 bg-white z-50 lg:hidden overflow-y-auto shadow-xl">
+            <div class="flex items-center justify-between px-4 py-4 border-b border-gray-100">
+                <div class="flex items-center gap-3">
+                    <?php if (!empty($commActive['logo'])): ?>
+                    <img src="<?= htmlspecialchars((new \App\Services\StorageService())->url($commActive['logo'])) ?>" class="w-8 h-8 object-cover" alt="">
+                    <?php else: ?>
+                    <div class="w-8 h-8 flex items-center justify-center" style="background: var(--comm-color-light);">
+                        <span class="text-xs font-bold" style="color: var(--comm-color);"><?= strtoupper(substr($commActive['nom'] ?? 'C', 0, 1)) ?></span>
+                    </div>
+                    <?php endif; ?>
+                    <span class="font-semibold text-sm text-gray-900"><?= htmlspecialchars($commActive['nom'] ?? '') ?></span>
+                </div>
+                <button @click="sidebarOpen = false" class="p-2 hover:bg-gray-100"><i data-lucide="x" class="w-5 h-5 text-gray-500"></i></button>
+            </div>
+            <nav class="p-3 space-y-1">
+                <?php
+                $mobileNavItems = [
+                    ['slug' => '/feed', 'label' => 'Communauté', 'icon' => 'layout-dashboard', 'match' => fn($p) => str_ends_with($p, '/feed') || str_ends_with($p, '/app')],
+                    ['slug' => '/classroom', 'label' => 'Classe', 'icon' => 'graduation-cap', 'match' => fn($p) => str_contains($p, '/classroom')],
+                    ['slug' => '/calendrier', 'label' => 'Calendrier', 'icon' => 'calendar', 'match' => fn($p) => str_contains($p, '/calendrier')],
+                    ['slug' => '/membres', 'label' => 'Membres', 'icon' => 'users', 'match' => fn($p) => str_contains($p, '/membres') && !str_contains($p, '/leaderboards')],
+                    ['slug' => '/leaderboards', 'label' => 'Classement', 'icon' => 'trophy', 'match' => fn($p) => str_contains($p, '/leaderboards')],
+                    ['slug' => '/messages', 'label' => 'Messages', 'icon' => 'message-circle', 'match' => fn($p) => str_contains($p, '/messages')],
+                    ['slug' => '/notifications', 'label' => 'Notifications', 'icon' => 'bell', 'match' => fn($p) => str_contains($p, '/notifications')],
+                    ['slug' => '/favoris', 'label' => 'Favoris', 'icon' => 'bookmark', 'match' => fn($p) => str_contains($p, '/favoris')],
+                    ['slug' => '/a-propos', 'label' => 'À propos', 'icon' => 'info', 'match' => fn($p) => str_contains($p, '/a-propos')],
+                ];
+                if (in_array(($commActive['role'] ?? ''), ['proprietaire', 'administrateur'])):
+                    $mobileNavItems[] = ['slug' => '/gestion', 'label' => 'Paramètres', 'icon' => 'settings', 'match' => fn($p) => str_contains($p, '/gestion')];
+                endif;
+                foreach ($mobileNavItems as $nav):
+                    $active = $nav['match']($currentPath);
+                    $activeStyle = $active ? 'background: var(--comm-color-light); color: var(--comm-color); font-weight: 600;' : '';
+                ?>
+                <a href="/c/<?= $slug ?><?= $nav['slug'] ?>" @click="sidebarOpen = false"
+                   class="flex items-center gap-3 px-3 py-3 text-sm transition" style="<?= $activeStyle ?> <?= !$active ? 'color: #4B5563;' : '' ?>">
+                    <i data-lucide="<?= $nav['icon'] ?>" class="w-5 h-5"></i> <?= $nav['label'] ?>
+                </a>
+                <?php endforeach; ?>
+            </nav>
+        </div>
+    </div>
+
     <!-- Main with Sidebar -->
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div class="flex gap-8">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 lg:py-8 page-bottom-spacer">
+        <div class="flex gap-6 lg:gap-8">
             <!-- Sidebar Navigation -->
             <aside class="hidden lg:block w-64 flex-shrink-0">
                 <div class="sticky top-24 space-y-1">
@@ -257,7 +324,7 @@
     </div>
 
     <!-- Mobile Bottom Nav -->
-    <nav class="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 lg:hidden z-40">
+    <nav class="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 lg:hidden z-40 bottom-nav-safe">
         <div class="flex items-center justify-around py-2">
             <a href="/c/<?= $slug ?>/feed" class="flex flex-col items-center gap-1 p-2 <?= (str_ends_with($currentPath, '/feed') || str_ends_with($currentPath, '/app')) ? 'text-violet-600' : 'text-gray-500' ?>">
                 <i data-lucide="layout-dashboard" class="w-5 h-5"></i>
