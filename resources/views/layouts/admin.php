@@ -28,6 +28,11 @@
         <span><?= $flash['success'] ?></span>
     </div>
     <?php endif; ?>
+    <?php if (!empty($flash['error'])): ?>
+    <div class="fixed top-4 right-4 z-50 bg-red-500 text-white px-6 py-3 rounded-xl shadow-lg flex items-center gap-3" x-data x-init="setTimeout(() => $el.remove(), 4000)">
+        <span><?= $flash['error'] ?></span>
+    </div>
+    <?php endif; ?>
 
     <!-- Admin Header -->
     <header class="bg-gray-900 text-white border-b border-gray-800">
@@ -46,13 +51,36 @@
                         <a href="/admin" class="px-3 py-2 rounded-lg text-sm font-medium hover:bg-gray-800 transition">Dashboard</a>
                         <a href="/admin/communautes" class="px-3 py-2 rounded-lg text-sm font-medium hover:bg-gray-800 transition">Communautés</a>
                         <a href="/admin/utilisateurs" class="px-3 py-2 rounded-lg text-sm font-medium hover:bg-gray-800 transition">Utilisateurs</a>
+                        <a href="/admin/plans" class="px-3 py-2 rounded-lg text-sm font-medium hover:bg-gray-800 transition">Plans</a>
+                        <a href="/admin/abonnements" class="px-3 py-2 rounded-lg text-sm font-medium hover:bg-gray-800 transition">Abonnements</a>
+                        <a href="/admin/moderation" class="px-3 py-2 rounded-lg text-sm font-medium hover:bg-gray-800 transition">Modération</a>
+                        <a href="/admin/parametres" class="px-3 py-2 rounded-lg text-sm font-medium hover:bg-gray-800 transition">Paramètres</a>
                     </nav>
                 </div>
 
-                <a href="/app" class="text-sm text-gray-400 hover:text-white transition">← Retour à l'app</a>
+                <div class="flex items-center gap-4">
+                    <a href="/app" class="text-sm text-gray-400 hover:text-white transition">← Retour à l'app</a>
+                    <form method="POST" action="/deconnexion" class="inline">
+                        <?= \App\Core\Csrf::field() ?>
+                        <button type="submit" class="text-sm text-gray-400 hover:text-red-400 transition">Déconnexion</button>
+                    </form>
+                </div>
             </div>
         </div>
     </header>
+
+    <!-- Mobile nav -->
+    <div class="md:hidden bg-gray-900 border-b border-gray-800 overflow-x-auto">
+        <nav class="flex items-center gap-1 px-4 py-2 whitespace-nowrap">
+            <a href="/admin" class="px-3 py-1.5 rounded-lg text-xs font-medium hover:bg-gray-800 transition">Dashboard</a>
+            <a href="/admin/communautes" class="px-3 py-1.5 rounded-lg text-xs font-medium hover:bg-gray-800 transition">Communautés</a>
+            <a href="/admin/utilisateurs" class="px-3 py-1.5 rounded-lg text-xs font-medium hover:bg-gray-800 transition">Utilisateurs</a>
+            <a href="/admin/plans" class="px-3 py-1.5 rounded-lg text-xs font-medium hover:bg-gray-800 transition">Plans</a>
+            <a href="/admin/abonnements" class="px-3 py-1.5 rounded-lg text-xs font-medium hover:bg-gray-800 transition">Abonnements</a>
+            <a href="/admin/moderation" class="px-3 py-1.5 rounded-lg text-xs font-medium hover:bg-gray-800 transition">Modération</a>
+            <a href="/admin/parametres" class="px-3 py-1.5 rounded-lg text-xs font-medium hover:bg-gray-800 transition">Paramètres</a>
+        </nav>
+    </div>
 
     <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <?= $slot ?>

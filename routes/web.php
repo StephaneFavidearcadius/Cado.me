@@ -185,11 +185,35 @@ $router->post('/c/{slug}/gestion/parametres', [CommunauteController::class, 'mod
 // ===== ADMINISTRATION PLATEFORME =====
 $router->middleware([AuthMiddleware::class, SuperAdministrateurMiddleware::class, CsrfMiddleware::class]);
 $router->get('/admin', [PlateformeController::class, 'dashboard']);
-
-$router->middleware([AuthMiddleware::class, SuperAdministrateurMiddleware::class, CsrfMiddleware::class]);
 $router->get('/admin/communautes', [PlateformeController::class, 'communautes']);
+$router->get('/admin/utilisateurs', [PlateformeController::class, 'utilisateurs']);
+$router->get('/admin/plans', [PlateformeController::class, 'plans']);
+$router->get('/admin/abonnements', [PlateformeController::class, 'abonnements']);
+$router->get('/admin/moderation', [PlateformeController::class, 'moderation']);
+$router->get('/admin/parametres', [PlateformeController::class, 'parametres']);
+
+// Actions admin
+$router->middleware([AuthMiddleware::class, SuperAdministrateurMiddleware::class, CsrfMiddleware::class]);
+$router->post('/admin/communautes/{id}/suspendre', [PlateformeController::class, 'suspendreCommunaute']);
+$router->post('/admin/communautes/{id}/activer', [PlateformeController::class, 'activerCommunaute']);
+$router->post('/admin/communautes/{id}/supprimer', [PlateformeController::class, 'supprimerCommunaute']);
 
 $router->middleware([AuthMiddleware::class, SuperAdministrateurMiddleware::class, CsrfMiddleware::class]);
-$router->get('/admin/utilisateurs', [PlateformeController::class, 'utilisateurs']);
+$router->post('/admin/utilisateurs/{id}/promouvoir', [PlateformeController::class, 'promouvoirSuperAdmin']);
+$router->post('/admin/utilisateurs/{id}/retrograder', [PlateformeController::class, 'retrograderUtilisateur']);
+$router->post('/admin/utilisateurs/{id}/suspendre', [PlateformeController::class, 'suspendreUtilisateur']);
+$router->post('/admin/utilisateurs/{id}/reactiver', [PlateformeController::class, 'reactiverUtilisateur']);
+
+$router->middleware([AuthMiddleware::class, SuperAdministrateurMiddleware::class, CsrfMiddleware::class]);
+$router->post('/admin/plans/creer', [PlateformeController::class, 'creerPlan']);
+$router->post('/admin/plans/{id}/modifier', [PlateformeController::class, 'modifierPlan']);
+$router->post('/admin/plans/{id}/supprimer', [PlateformeController::class, 'supprimerPlan']);
+
+$router->middleware([AuthMiddleware::class, SuperAdministrateurMiddleware::class, CsrfMiddleware::class]);
+$router->post('/admin/publications/{id}/supprimer', [PlateformeController::class, 'supprimerPublication']);
+$router->post('/admin/commentaires/{id}/supprimer', [PlateformeController::class, 'supprimerCommentaire']);
+
+$router->middleware([AuthMiddleware::class, SuperAdministrateurMiddleware::class, CsrfMiddleware::class]);
+$router->post('/admin/parametres', [PlateformeController::class, 'sauvegarderParametres']);
 
 return $router;
