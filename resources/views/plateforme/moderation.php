@@ -39,7 +39,7 @@
                         <td class="px-6 py-4 text-gray-600 max-w-xs truncate">
                             <?= htmlspecialchars(mb_substr($pub['contenu'] ?? '', 0, 80)) ?>
                             <?php if (!empty($pub['fichier'])): ?>
-                            <span class="text-xs text-gray-400 ml-1">📎</span>
+                            <i data-lucide="paperclip" class="w-3.5 h-3.5 inline text-gray-400 ml-1"></i>
                             <?php endif; ?>
                         </td>
                         <td class="px-6 py-4">

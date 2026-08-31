@@ -59,10 +59,10 @@
                 </div>
 
                 <div class="flex items-center gap-4">
-                    <a href="/app" class="text-sm text-gray-400 hover:text-white transition">← Retour à l'app</a>
-                    <form method="POST" action="/deconnexion" class="inline">
+                    <a href="/app" class="text-sm text-gray-400 hover:text-white transition">Retour a l'app</a>
+                    <form method="POST" action="/admin/deconnexion" class="inline">
                         <?= \App\Core\Csrf::field() ?>
-                        <button type="submit" class="text-sm text-gray-400 hover:text-red-400 transition">Déconnexion</button>
+                        <button type="submit" class="text-sm text-gray-400 hover:text-red-400 transition">Deconnexion</button>
                     </form>
                 </div>
             </div>

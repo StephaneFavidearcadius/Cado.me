@@ -6,14 +6,12 @@ use App\Core\Request;
 use App\Core\Response;
 use App\Core\Session;
 
-class SuperAdministrateurMiddleware
+class AdminAuthMiddleware
 {
     public function handle(Request $request): ?Response
     {
-        $role = Session::get('role_plateforme');
-
-        if ($role !== 'super_administrateur') {
-            Session::flash('error', 'Accès réservé aux super administrateurs.');
+        if (!Session::has('utilisateur_id')) {
+            Session::flash('error', 'Veuillez vous connecter pour acceder a l\'administration.');
             return Response::redirect('/admin/connexion');
         }
 
