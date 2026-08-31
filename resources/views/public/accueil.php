@@ -166,7 +166,7 @@
                     </div>
                     <div class="bg-gray-50 p-3 text-sm text-gray-600">
                         <span class="text-xs text-gray-400">il y a 5h</span><br>
-                        Live prévu demain à 18h — SEO avancé
+                        Live prévu demain à 18h - SEO avancé
                     </div>
                 </div>
 
