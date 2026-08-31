@@ -30,7 +30,7 @@ class PlateformeController extends Controller
 
         $abonnementsRecents = $db->query('SELECT a.*, p.nom as plan_nom, p.prix_mensuel, c.nom as communaute_nom FROM abonnements a JOIN plans p ON p.id = a.plan_id JOIN communautes c ON c.id = a.communaute_id ORDER BY a.date_creation DESC LIMIT 5')->fetchAll();
 
-        return $this->view('plateforme.dashboard', [
+        return $this->viewAdmin('plateforme.dashboard', [
             'stats' => $stats,
             'communautes' => $communautes,
             'derniersUtilisateurs' => $derniersUtilisateurs,
@@ -45,7 +45,7 @@ class PlateformeController extends Controller
         $db = Database::getInstance();
         $communautes = $db->query('SELECT c.*, COUNT(mc.id) as nombre_membres, u.prenom, u.nom as proprietaire_nom FROM communautes c LEFT JOIN membres_communautes mc ON mc.communaute_id = c.id AND mc.statut = \'actif\' JOIN utilisateurs u ON u.id = c.proprietaire_id GROUP BY c.id ORDER BY c.date_creation DESC')->fetchAll();
 
-        return $this->view('plateforme.communautes', [
+        return $this->viewAdmin('plateforme.communautes', [
             'communautes' => $communautes,
             'titre' => 'Gestion des communautés',
         ]);
@@ -84,7 +84,7 @@ class PlateformeController extends Controller
         $db = Database::getInstance();
         $utilisateurs = $db->query('SELECT * FROM utilisateurs ORDER BY date_creation DESC LIMIT 50')->fetchAll();
 
-        return $this->view('plateforme.utilisateurs', [
+        return $this->viewAdmin('plateforme.utilisateurs', [
             'utilisateurs' => $utilisateurs,
             'titre' => 'Gestion des utilisateurs',
         ]);
@@ -132,7 +132,7 @@ class PlateformeController extends Controller
         $db = Database::getInstance();
         $plans = $db->query('SELECT p.*, (SELECT COUNT(*) FROM abonnements a WHERE a.plan_id = p.id AND a.statut = \'actif\') as nb_abonnements FROM plans p ORDER BY p.prix_mensuel ASC')->fetchAll();
 
-        return $this->view('plateforme.plans', [
+        return $this->viewAdmin('plateforme.plans', [
             'plans' => $plans,
             'titre' => 'Gestion des plans',
         ]);
@@ -200,7 +200,7 @@ class PlateformeController extends Controller
         $db = Database::getInstance();
         $abonnements = $db->query('SELECT a.*, p.nom as plan_nom, p.prix_mensuel, c.nom as communaute_nom, c.slug as communaute_slug FROM abonnements a JOIN plans p ON p.id = a.plan_id JOIN communautes c ON c.id = a.communaute_id ORDER BY a.date_creation DESC LIMIT 50')->fetchAll();
 
-        return $this->view('plateforme.abonnements', [
+        return $this->viewAdmin('plateforme.abonnements', [
             'abonnements' => $abonnements,
             'titre' => 'Gestion des abonnements',
         ]);
@@ -215,7 +215,7 @@ class PlateformeController extends Controller
 
         $commentaires = $db->query('SELECT cm.*, u.prenom, u.nom, p.id as publication_id FROM commentaires cm JOIN utilisateurs u ON u.id = cm.utilisateur_id JOIN publications p ON p.id = cm.publication_id ORDER BY cm.date_creation DESC LIMIT 30')->fetchAll();
 
-        return $this->view('plateforme.moderation', [
+        return $this->viewAdmin('plateforme.moderation', [
             'publications' => $publications,
             'commentaires' => $commentaires,
             'titre' => 'Modération',
@@ -246,7 +246,7 @@ class PlateformeController extends Controller
         $db = Database::getInstance();
         $parametres = $db->query('SELECT * FROM parametres_plateforme WHERE id = 1')->fetch() ?: [];
 
-        return $this->view('plateforme.parametres', [
+        return $this->viewAdmin('plateforme.parametres', [
             'parametres' => $parametres,
             'titre' => 'Paramètres plateforme',
         ]);
