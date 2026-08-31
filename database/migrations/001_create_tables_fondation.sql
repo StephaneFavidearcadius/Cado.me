@@ -407,6 +407,6 @@ VALUES ('Gratuit', 'Parfait pour commencer', 0.00, 0.00, 50, 1073741824, 3, 1, 1
 
 -- Super administrateur par défaut
 INSERT INTO `utilisateurs` (`prenom`, `nom`, `identifiant`, `email`, `mot_de_passe`, `role_plateforme`, `statut`, `email_verifie`, `date_creation`, `date_modification`)
-VALUES ('Admin', 'Cado.me', 'admin', 'admin@cado.me', '$2y$12$LJ3m4yZn.s19jThRNyBZxeD.kRUXGH1FJEGF1j0sO3pNNsfmfqAKe', 'super_administrateur', 'actif', 1, NOW(), NOW());
+VALUES ('Admin', 'Cado.me', 'admin', 'admin@cado.me', '$2y$12$j5XCDcL7YlMhBgacKYTjkunQzZX0W69AhrepB9hYfMyfiKgL9Nbbi', 'super_administrateur', 'actif', 1, NOW(), NOW());
 
 SET FOREIGN_KEY_CHECKS = 1;
