@@ -348,6 +348,19 @@
         </div>
     </nav>
 
+    <!-- Footer -->
+    <footer class="border-t border-gray-100 py-6 mt-8">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between">
+            <p class="text-xs text-gray-400">&copy; <?= date('Y') ?> Cado.me</p>
+            <?php if (($_SESSION['role_plateforme'] ?? '') === 'super_administrateur'): ?>
+            <a href="/admin" class="inline-flex items-center gap-1.5 text-xs font-medium bg-violet-50 text-violet-600 px-3 py-1 hover:bg-violet-100 transition">
+                <i data-lucide="shield" class="w-3.5 h-3.5"></i>
+                Admin
+            </a>
+            <?php endif; ?>
+        </div>
+    </footer>
+
     <script>lucide.createIcons();</script>
 </body>
 </html>
