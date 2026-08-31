@@ -107,7 +107,15 @@ class Request
     private function getBody(): string
     {
         if ($this->body === null) {
-            $this->body = file_get_contents('php://input') ?? '';
+            // Ne pas lire php://input pour les requêtes multipart/form-data
+            // (uploads de fichiers) car PHP a déjà parsé le body dans $_POST.
+            // Lire le body brut doublerait la consommation mémoire.
+            $contentType = $this->server['CONTENT_TYPE'] ?? '';
+            if (str_starts_with($contentType, 'multipart/form-data')) {
+                $this->body = '';
+            } else {
+                $this->body = file_get_contents('php://input') ?? '';
+            }
         }
         return $this->body;
     }
