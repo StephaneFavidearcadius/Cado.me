@@ -18,6 +18,7 @@ use App\Controllers\FavoriController;
 use App\Controllers\InvitationController;
 use App\Controllers\ModerationController;
 use App\Controllers\RechercheController;
+use App\Controllers\ProgressionController;
 use App\Controllers\AdminAuthController;
 use App\Middleware\AdminAuthMiddleware;
 use App\Middleware\AdminGuestMiddleware;
@@ -217,6 +218,13 @@ $router->post('/c/{slug}/gestion/invitations/{id}/renvoyer', [InvitationControll
 // Recherche
 $router->middleware([AuthMiddleware::class, CommunauteMiddleware::class]);
 $router->get('/c/{slug}/recherche', [RechercheController::class, 'rechercher']);
+
+// Progression formations
+$router->middleware([AuthMiddleware::class, CommunauteMiddleware::class, CsrfMiddleware::class]);
+$router->post('/c/{slug}/formations/{formation}/lecons/{lecon}/terminer', [ProgressionController::class, 'marquerTerminee']);
+
+$router->middleware([AuthMiddleware::class, CommunauteMiddleware::class, CsrfMiddleware::class]);
+$router->post('/c/{slug}/formations/{formation}/lecons/{lecon}/annuler', [ProgressionController::class, 'annulerTerminee']);
 
 // Partages
 $router->middleware([AuthMiddleware::class, CommunauteMiddleware::class, CsrfMiddleware::class]);
