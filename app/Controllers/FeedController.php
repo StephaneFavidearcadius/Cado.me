@@ -140,6 +140,61 @@ class FeedController extends Controller
         return $this->redirect("/c/{$slug}/feed");
     }
 
+    public function partager(string $slug, string $id): Response
+    {
+        $communaute = $this->getCommunaute($slug);
+        if (!$communaute) return $this->view('errors.404', [], 404);
+
+        $utilisateurId = Session::get('utilisateur_id');
+        $partageService = new \App\Services\PartageService();
+
+        // Vérifier si déjà partagé pour toggle
+        if ($partageService->estPartage($communaute['id'], (int) $id, $utilisateurId)) {
+            $resultat = $partageService->annulerPartage($communaute['id'], (int) $id, $utilisateurId);
+            $action = 'unshare';
+        } else {
+            $resultat = $partageService->partager($communaute['id'], (int) $id, $utilisateurId);
+            $action = 'share';
+        }
+
+        if ((new \App\Core\Request())->isAjax()) {
+            return $this->json(['success' => true, 'action' => $action, 'nb_partages' => $resultat['nb_partages'] ?? 0]);
+        }
+
+        return $this->redirect("/c/{$slug}/feed");
+    }
+
+    public function signaler(string $slug, string $id): Response
+    {
+        $communaute = $this->getCommunaute($slug);
+        if (!$communaute) return $this->view('errors.404', [], 404);
+
+        $motif = $_POST['motif'] ?? '';
+        $utilisateurId = Session::get('utilisateur_id');
+
+        $signalementService = new \App\Services\SignalementService();
+        $resultat = $signalementService->signalerPublication(
+            $communaute['id'],
+            $utilisateurId,
+            (int) $id,
+            $motif
+        );
+
+        if ($resultat['success']) {
+            if ((new \App\Core\Request())->isAjax()) {
+                return $this->json(['success' => true]);
+            }
+            Session::flash('success', 'Signalement envoyé. Merci.');
+        } else {
+            if ((new \App\Core\Request())->isAjax()) {
+                return $this->json(['success' => false, 'errors' => $resultat['errors']], 422);
+            }
+            Session::flash('error', $resultat['errors'][0] ?? 'Erreur lors du signalement.');
+        }
+
+        return $this->redirect("/c/{$slug}/feed");
+    }
+
     private function getCommunaute(string $slug): ?array
     {
         $communauteService = new \App\Services\CommunauteService();

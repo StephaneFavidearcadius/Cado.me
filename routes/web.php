@@ -16,6 +16,8 @@ use App\Controllers\RessourceController;
 use App\Controllers\AbonnementController;
 use App\Controllers\FavoriController;
 use App\Controllers\InvitationController;
+use App\Controllers\ModerationController;
+use App\Controllers\RechercheController;
 use App\Controllers\AdminAuthController;
 use App\Middleware\AdminAuthMiddleware;
 use App\Middleware\AdminGuestMiddleware;
@@ -26,6 +28,7 @@ use App\Middleware\GuestMiddleware;
 use App\Middleware\AdministrateurMiddleware;
 use App\Middleware\ProprietaireMiddleware;
 use App\Middleware\SuperAdministrateurMiddleware;
+use App\Middleware\RateLimitMiddleware;
 
 $router = new \App\Core\Router();
 
@@ -37,13 +40,29 @@ $router->get('/decouvrir', [AccueilController::class, 'decouvrir']);
 // Auth
 $router->middleware([GuestMiddleware::class, CsrfMiddleware::class]);
 $router->get('/connexion', [AuthController::class, 'formulaireConnexion']);
+$router->middleware([RateLimitMiddleware::class, GuestMiddleware::class, CsrfMiddleware::class]);
 $router->post('/connexion', [AuthController::class, 'connecter']);
 $router->get('/inscription', [AuthController::class, 'formulaireInscription']);
+$router->middleware([RateLimitMiddleware::class, GuestMiddleware::class, CsrfMiddleware::class]);
 $router->post('/inscription', [AuthController::class, 'inscrire']);
 
 // Déconnexion
 $router->middleware([CsrfMiddleware::class]);
 $router->post('/deconnexion', [AuthController::class, 'deconnecter']);
+
+// Mot de passe oublié
+$router->middleware([GuestMiddleware::class, CsrfMiddleware::class]);
+$router->get('/mot-de-passe-oublie', [AuthController::class, 'formulaireMotDePasseOublie']);
+$router->middleware([RateLimitMiddleware::class, GuestMiddleware::class, CsrfMiddleware::class]);
+$router->post('/mot-de-passe-oublie', [AuthController::class, 'motDePasseOublie']);
+$router->middleware([GuestMiddleware::class, CsrfMiddleware::class]);
+$router->get('/reinitialiser-mot-de-passe/{token}', [AuthController::class, 'formulaireReinitialiser']);
+$router->middleware([CsrfMiddleware::class]);
+$router->post('/reinitialiser-mot-de-passe/{token}', [AuthController::class, 'reinitialiserMotDePasse']);
+
+// Vérification email
+$router->middleware([CsrfMiddleware::class]);
+$router->get('/verifier-email/{token}', [AuthController::class, 'verifierEmail']);
 
 // ===== DASHBOARD UTILISATEUR =====
 $router->middleware([AuthMiddleware::class, CsrfMiddleware::class]);
@@ -176,6 +195,9 @@ $router->get('/c/{slug}/profil', [ProfilController::class, 'index']);
 $router->middleware([AuthMiddleware::class, CommunauteMiddleware::class, CsrfMiddleware::class]);
 $router->post('/c/{slug}/profil', [ProfilController::class, 'modifier']);
 
+$router->middleware([AuthMiddleware::class, CommunauteMiddleware::class, CsrfMiddleware::class]);
+$router->post('/c/{slug}/profil/changer-mot-de-passe', [ProfilController::class, 'changerMotDePasse']);
+
 // Invitations (propriétaire/admin)
 $router->middleware([AuthMiddleware::class, CommunauteMiddleware::class, AdministrateurMiddleware::class, CsrfMiddleware::class]);
 $router->get('/c/{slug}/gestion/invitations', [InvitationController::class, 'index']);
@@ -191,6 +213,25 @@ $router->post('/c/{slug}/gestion/invitations/{id}/supprimer', [InvitationControl
 
 $router->middleware([AuthMiddleware::class, CommunauteMiddleware::class, AdministrateurMiddleware::class, CsrfMiddleware::class]);
 $router->post('/c/{slug}/gestion/invitations/{id}/renvoyer', [InvitationController::class, 'renvoyer']);
+
+// Recherche
+$router->middleware([AuthMiddleware::class, CommunauteMiddleware::class]);
+$router->get('/c/{slug}/recherche', [RechercheController::class, 'rechercher']);
+
+// Partages
+$router->middleware([AuthMiddleware::class, CommunauteMiddleware::class, CsrfMiddleware::class]);
+$router->post('/c/{slug}/publications/{id}/partager', [FeedController::class, 'partager']);
+
+// Signalements
+$router->middleware([AuthMiddleware::class, CommunauteMiddleware::class, CsrfMiddleware::class]);
+$router->post('/c/{slug}/publications/{id}/signaler', [FeedController::class, 'signaler']);
+
+// Modération (propriétaire/admin)
+$router->middleware([AuthMiddleware::class, CommunauteMiddleware::class, AdministrateurMiddleware::class, CsrfMiddleware::class]);
+$router->get('/c/{slug}/gestion/moderation', [ModerationController::class, 'index']);
+
+$router->middleware([AuthMiddleware::class, CommunauteMiddleware::class, AdministrateurMiddleware::class, CsrfMiddleware::class]);
+$router->post('/c/{slug}/gestion/moderation/{id}/traiter', [ModerationController::class, 'traiter']);
 
 // ===== GESTION COMMUNAUTÉ (propriétaire/admin) =====
 $router->middleware([AuthMiddleware::class, CommunauteMiddleware::class, AdministrateurMiddleware::class, CsrfMiddleware::class]);

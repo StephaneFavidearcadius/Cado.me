@@ -145,10 +145,47 @@
                     </a>
 
                     <!-- Barre de recherche -->
-                    <div class="hidden lg:flex items-center bg-gray-100 px-3 py-2 w-56 xl:w-64">
-                        <i data-lucide="search" class="w-4 h-4 text-gray-400 mr-2"></i>
-                        <input type="text" placeholder="Rechercher..." class="bg-transparent text-sm outline-none w-full text-gray-700 placeholder-gray-400">
+                    <div class="relative hidden lg:block" x-data="searchBar()">
+                        <div class="flex items-center bg-gray-100 px-3 py-2 w-56 xl:w-64">
+                            <i data-lucide="search" class="w-4 h-4 text-gray-400 mr-2"></i>
+                            <input type="text" x-model="query" @input.debounce.300ms="doSearch()" @focus="open = true" @click.away="open = false" @keydown.escape="open = false"
+                                   placeholder="Rechercher..." class="bg-transparent text-sm outline-none w-full text-gray-700 placeholder-gray-400">
+                        </div>
+                        <div x-show="open && results.length > 0" x-cloak
+                             class="absolute top-full left-0 mt-2 w-80 bg-white rounded-xl shadow-lg border border-gray-100 py-2 max-h-80 overflow-y-auto z-50">
+                            <template x-for="r in results" :key="r.type + '-' + r.titre">
+                                <a :href="r.url" class="flex items-center gap-3 px-4 py-2.5 hover:bg-gray-50 transition">
+                                    <div class="w-8 h-8 bg-violet-100 flex items-center justify-center flex-shrink-0">
+                                        <i :data-lucide="r.icone" class="w-4 h-4 text-violet-600"></i>
+                                    </div>
+                                    <div class="min-w-0">
+                                        <p class="text-sm font-medium text-gray-900 truncate" x-text="r.titre"></p>
+                                        <p class="text-xs text-gray-500 truncate" x-text="r.soustitre"></p>
+                                    </div>
+                                    <span class="text-[10px] px-1.5 py-0.5 bg-gray-100 text-gray-500 ml-auto flex-shrink-0 capitalize" x-text="r.type"></span>
+                                </a>
+                            </template>
+                        </div>
                     </div>
+
+                    <script>
+                    function searchBar() {
+                        return {
+                            query: '',
+                            results: [],
+                            open: false,
+                            async doSearch() {
+                                if (this.query.length < 2) { this.results = []; return; }
+                                try {
+                                    const res = await fetch('/c/<?= $slug ?>/recherche?q=' + encodeURIComponent(this.query));
+                                    const data = await res.json();
+                                    this.results = data.resultats || [];
+                                    this.$nextTick(() => lucide.createIcons());
+                                } catch (e) { this.results = []; }
+                            }
+                        }
+                    }
+                    </script>
 
                     <?php if ($slug):
                         $notifService = new \App\Services\NotificationService();

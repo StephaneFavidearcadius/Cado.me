@@ -47,6 +47,13 @@ class AuthService
 
         $utilisateurId = $this->db->lastInsertId();
 
+        // Envoyer email de bienvenue
+        $emailService = new EmailService();
+        $emailService->envoyerBienvenue($email, trim($data['prenom']));
+
+        // Envoyer email de vérification
+        $this->envoyerVerificationEmail($utilisateurId);
+
         return ['success' => true, 'utilisateur_id' => $utilisateurId];
     }
 
@@ -64,6 +71,11 @@ class AuthService
         }
 
         Session::regenerate();
+
+        // Journal d'audit
+        $audit = new AuditService();
+        $audit->connexion($utilisateur['id']);
+
         Session::set('utilisateur_id', $utilisateur['id']);
         Session::set('utilisateur_prenom', $utilisateur['prenom']);
         Session::set('utilisateur_nom', $utilisateur['nom']);
@@ -82,6 +94,11 @@ class AuthService
      */
     public function deconnecter(): void
     {
+        $userId = Session::get('utilisateur_id');
+        if ($userId) {
+            $audit = new AuditService();
+            $audit->deconnexion($userId);
+        }
         Session::clear();
         Session::destroy();
     }
@@ -92,6 +109,136 @@ class AuthService
     public function estConnecte(): bool
     {
         return Session::has('utilisateur_id');
+    }
+
+    // ===== MOT DE PASSE OUBLIÉ =====
+
+    /**
+     * Demander la réinitialisation du mot de passe
+     */
+    public function demanderReset(string $email): array
+    {
+        $email = strtolower(trim($email));
+        $stmt = $this->db->prepare('SELECT id, email FROM utilisateurs WHERE email = :email AND statut = :statut');
+        $stmt->execute(['email' => $email, 'statut' => 'actif']);
+        $utilisateur = $stmt->fetch();
+
+        // Toujours retourner succès pour ne pas révéler si l'email existe
+        if (!$utilisateur) {
+            return ['success' => true];
+        }
+
+        $token = bin2hex(random_bytes(32));
+        $expires = date('Y-m-d H:i:s', strtotime('+1 hour'));
+
+        $stmt = $this->db->prepare(
+            'UPDATE utilisateurs SET reset_token = :token, reset_expires = :expires, date_modification = NOW() WHERE id = :id'
+        );
+        $stmt->execute(['token' => $token, 'expires' => $expires, 'id' => $utilisateur['id']]);
+
+        // Envoyer l'email
+        $emailService = new EmailService();
+        $emailService->envoyerResetMotDePasse($email, $token);
+
+        return ['success' => true];
+    }
+
+    /**
+     * Vérifier un token de réinitialisation
+     */
+    public function verifierTokenReset(string $token): ?array
+    {
+        $stmt = $this->db->prepare(
+            'SELECT id, prenom, nom, email FROM utilisateurs
+             WHERE reset_token = :token AND reset_expires > NOW() AND statut = :statut'
+        );
+        $stmt->execute(['token' => $token, 'statut' => 'actif']);
+        return $stmt->fetch() ?: null;
+    }
+
+    /**
+     * Réinitialiser le mot de passe
+     */
+    public function reinitialiserMotDePasse(string $token, string $nouveauMotDePasse): array
+    {
+        if (strlen($nouveauMotDePasse) < 8) {
+            return ['success' => false, 'errors' => ['Le mot de passe doit contenir au moins 8 caractères.']];
+        }
+
+        $utilisateur = $this->verifierTokenReset($token);
+        if (!$utilisateur) {
+            return ['success' => false, 'errors' => ['Lien de réinitialisation invalide ou expiré.']];
+        }
+
+        $hash = password_hash($nouveauMotDePasse, PASSWORD_BCRYPT, ['cost' => 12]);
+
+        $stmt = $this->db->prepare(
+            'UPDATE utilisateurs SET mot_de_passe = :mdp, reset_token = NULL, reset_expires = NULL, date_modification = NOW() WHERE id = :id'
+        );
+        $stmt->execute(['mdp' => $hash, 'id' => $utilisateur['id']]);
+
+        return ['success' => true];
+    }
+
+    /**
+     * Changer le mot de passe (utilisateur connecté)
+     */
+    public function changerMotDePasse(int $utilisateurId, string $ancienMdp, string $nouveauMdp): array
+    {
+        if (strlen($nouveauMdp) < 8) {
+            return ['success' => false, 'errors' => ['Le nouveau mot de passe doit contenir au moins 8 caractères.']];
+        }
+
+        $stmt = $this->db->prepare('SELECT mot_de_passe FROM utilisateurs WHERE id = :id');
+        $stmt->execute(['id' => $utilisateurId]);
+        $utilisateur = $stmt->fetch();
+
+        if (!$utilisateur || !password_verify($ancienMdp, $utilisateur['mot_de_passe'])) {
+            return ['success' => false, 'errors' => ['Le mot de passe actuel est incorrect.']];
+        }
+
+        $hash = password_hash($nouveauMdp, PASSWORD_BCRYPT, ['cost' => 12]);
+        $stmt = $this->db->prepare('UPDATE utilisateurs SET mot_de_passe = :mdp, date_modification = NOW() WHERE id = :id');
+        $stmt->execute(['mdp' => $hash, 'id' => $utilisateurId]);
+
+        return ['success' => true];
+    }
+
+    // ===== VÉRIFICATION EMAIL =====
+
+    /**
+     * Générer et envoyer un token de vérification d'email
+     */
+    public function envoyerVerificationEmail(int $utilisateurId): void
+    {
+        $token = bin2hex(random_bytes(32));
+
+        $stmt = $this->db->prepare(
+            'UPDATE utilisateurs SET email_token = :token, date_modification = NOW() WHERE id = :id'
+        );
+        $stmt->execute(['token' => $token, 'id' => $utilisateurId]);
+
+        $stmt = $this->db->prepare('SELECT email FROM utilisateurs WHERE id = :id');
+        $stmt->execute(['id' => $utilisateurId]);
+        $utilisateur = $stmt->fetch();
+
+        if ($utilisateur) {
+            $emailService = new EmailService();
+            $emailService->envoyerVerificationEmail($utilisateur['email'], $token);
+        }
+    }
+
+    /**
+     * Vérifier l'email via le token
+     */
+    public function verifierEmail(string $token): bool
+    {
+        $stmt = $this->db->prepare(
+            'UPDATE utilisateurs SET email_verifie = 1, email_token = NULL, date_modification = NOW()
+             WHERE email_token = :token AND email_verifie = 0'
+        );
+        $stmt->execute(['token' => $token]);
+        return $stmt->rowCount() > 0;
     }
 
     /**

@@ -46,6 +46,44 @@ class EmailService
         return $this->envoyer($destinataire, "Vous êtes invité à rejoindre {$nomCommunaute}", $contenuHtml);
     }
 
+    public function envoyerBienvenue(string $destinataire, string $prenom): bool
+    {
+        $url = Config::get('app.url', 'http://localhost');
+        $contenuHtml = $this->chargerTemplate('bienvenue', [
+            'prenom' => $prenom,
+            'url' => $url . '/app',
+        ]);
+        return $this->envoyer($destinataire, 'Bienvenue sur Cado.me !', $contenuHtml);
+    }
+
+    public function envoyerVerificationEmail(string $destinataire, string $token): bool
+    {
+        $url = Config::get('app.url', 'http://localhost') . "/verifier-email/{$token}";
+        $contenuHtml = $this->chargerTemplate('verification_email', [
+            'url_verification' => $url,
+        ]);
+        return $this->envoyer($destinataire, 'Vérifiez votre adresse email - Cado.me', $contenuHtml);
+    }
+
+    public function envoyerResetMotDePasse(string $destinataire, string $token): bool
+    {
+        $url = Config::get('app.url', 'http://localhost') . "/reinitialiser-mot-de-passe/{$token}";
+        $contenuHtml = $this->chargerTemplate('reset_mot_de_passe', [
+            'url_reset' => $url,
+        ]);
+        return $this->envoyer($destinataire, 'Réinitialisation de mot de passe - Cado.me', $contenuHtml);
+    }
+
+    public function envoyerNotificationCommunaute(string $destinataire, string $titre, string $message, ?string $urlAction = null): bool
+    {
+        $contenuHtml = $this->chargerTemplate('notification', [
+            'titre' => $titre,
+            'message' => $message,
+            'url_action' => $urlAction,
+        ]);
+        return $this->envoyer($destinataire, $titre . ' - Cado.me', $contenuHtml);
+    }
+
     private function logEmail(string $destinataire, string $sujet, string $contenuHtml): bool
     {
         $logDir = __DIR__ . '/../../storage/logs';

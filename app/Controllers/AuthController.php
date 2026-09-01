@@ -83,4 +83,83 @@ class AuthController extends Controller
         $authService->deconnecter();
         return $this->redirect('/');
     }
+
+    // ===== MOT DE PASSE OUBLIÉ =====
+
+    public function formulaireMotDePasseOublie(): Response
+    {
+        return $this->viewAuth('combined', [
+            'titre' => 'Mot de passe oublié',
+            'activeTab' => 'reset_request',
+        ]);
+    }
+
+    public function motDePasseOublie(): Response
+    {
+        $email = $_POST['email'] ?? '';
+
+        $authService = new AuthService();
+        $authService->demanderReset($email);
+
+        // Toujours afficher le même message
+        return $this->viewAuth('combined', [
+            'titre' => 'Email envoyé',
+            'activeTab' => 'reset_sent',
+        ]);
+    }
+
+    public function formulaireReinitialiser(string $token): Response
+    {
+        $authService = new AuthService();
+        $utilisateur = $authService->verifierTokenReset($token);
+
+        if (!$utilisateur) {
+            Session::flash('error', 'Lien de réinitialisation invalide ou expiré.');
+            return $this->redirect('/connexion');
+        }
+
+        return $this->viewAuth('combined', [
+            'titre' => 'Nouveau mot de passe',
+            'activeTab' => 'reset_form',
+            'reset_token' => $token,
+        ]);
+    }
+
+    public function reinitialiserMotDePasse(string $token): Response
+    {
+        $motDePasse = $_POST['mot_de_passe'] ?? '';
+        $confirmation = $_POST['mot_de_passe_confirmation'] ?? '';
+
+        if ($motDePasse !== $confirmation) {
+            Session::flash('error', 'Les mots de passe ne correspondent pas.');
+            return $this->redirect("/reinitialiser-mot-de-passe/{$token}");
+        }
+
+        $authService = new AuthService();
+        $resultat = $authService->reinitialiserMotDePasse($token, $motDePasse);
+
+        if ($resultat['success']) {
+            Session::flash('success', 'Votre mot de passe a été réinitialisé. Connectez-vous.');
+            return $this->redirect('/connexion');
+        }
+
+        Session::flash('error', $resultat['errors'][0] ?? 'Erreur lors de la réinitialisation.');
+        return $this->redirect("/reinitialiser-mot-de-passe/{$token}");
+    }
+
+    // ===== VÉRIFICATION EMAIL =====
+
+    public function verifierEmail(string $token): Response
+    {
+        $authService = new AuthService();
+        $ok = $authService->verifierEmail($token);
+
+        if ($ok) {
+            Session::flash('success', 'Votre adresse email a été vérifiée !');
+        } else {
+            Session::flash('error', 'Lien de vérification invalide ou déjà utilisé.');
+        }
+
+        return $this->redirect('/app');
+    }
 }

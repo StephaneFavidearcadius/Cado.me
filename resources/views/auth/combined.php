@@ -1,4 +1,4 @@
-<div x-data="{ activeTab: '<?= $activeTab ?? 'connexion' ?>' }">
+<div x-data="{ activeTab: '<?= $activeTab ?? 'connexion' ?>', // Allow overriding from PHP $resetToken: '<?= $reset_token ?? '' ?>' }">
     <!-- Tabs Onglets -->
     <div class="flex mb-6 bg-gray-100 p-1">
         <button @click="activeTab = 'connexion'"
@@ -57,6 +57,13 @@
                         </svg>
                     </button>
                 </div>
+            </div>
+
+            <!-- Mot de passe oublié -->
+            <div class="text-right">
+                <a href="/mot-de-passe-oublie" @click.prevent="activeTab = 'reset_request'" class="text-sm text-violet-500 hover:text-violet-600 font-medium">
+                    Mot de passe oublié ?
+                </a>
             </div>
 
             <!-- Submit -->
@@ -208,6 +215,100 @@
                 Déjà un compte ? Se connecter
             </a>
         </div>
+    </div>
+
+    <!-- ===== FORMULAIRE MOT DE PASSE OUBLIÉ ===== -->
+    <div x-show="activeTab === 'reset_request'" x-transition>
+        <p class="text-gray-500 mb-6 text-sm text-center">Entrez votre adresse email pour recevoir un lien de réinitialisation.</p>
+
+        <form method="POST" action="/mot-de-passe-oublie" class="space-y-5">
+            <?= \App\Core\Csrf::field() ?>
+
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1.5">Adresse email</label>
+                <div class="relative">
+                    <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
+                        <i data-lucide="mail" class="w-5 h-5 text-gray-400"></i>
+                    </div>
+                    <input type="email" name="email" required
+                           class="block w-full pl-11 pr-4 py-3 border border-gray-200 text-sm focus:ring-2 focus:ring-violet-500 focus:border-transparent outline-none transition placeholder-gray-400"
+                           placeholder="votre@email.com">
+                </div>
+            </div>
+
+            <button type="submit"
+                    class="w-full bg-violet-500 hover:bg-violet-600 text-white font-semibold py-3 px-4 transition duration-200">
+                Envoyer le lien
+            </button>
+        </form>
+
+        <div class="mt-4 text-center">
+            <a href="#" @click.prevent="activeTab = 'connexion'" class="text-sm text-violet-500 hover:text-violet-600 font-medium">
+                Retour à la connexion
+            </a>
+        </div>
+    </div>
+
+    <!-- ===== EMAIL ENVOYÉ ===== -->
+    <div x-show="activeTab === 'reset_sent'" x-transition>
+        <div class="text-center py-8">
+            <div class="w-16 h-16 bg-violet-100 flex items-center justify-center mx-auto mb-4">
+                <i data-lucide="mail-check" class="w-8 h-8 text-violet-600"></i>
+            </div>
+            <h3 class="text-lg font-semibold text-gray-900 mb-2">Email envoyé</h3>
+            <p class="text-sm text-gray-500 leading-relaxed max-w-sm mx-auto">
+                Si un compte existe avec cette adresse, vous recevrez un email avec un lien pour réinitialiser votre mot de passe.
+            </p>
+            <div class="mt-6">
+                <a href="/connexion" class="text-sm text-violet-500 hover:text-violet-600 font-medium">
+                    Retour à la connexion
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== FORMULAIRE NOUVEAU MOT DE PASSE ===== -->
+    <div x-show="activeTab === 'reset_form'" x-transition>
+        <div class="text-center mb-6">
+            <div class="w-12 h-12 bg-violet-100 flex items-center justify-center mx-auto mb-3">
+                <i data-lucide="key-round" class="w-6 h-6 text-violet-600"></i>
+            </div>
+            <h3 class="text-lg font-semibold text-gray-900">Nouveau mot de passe</h3>
+            <p class="text-sm text-gray-500 mt-1">Choisissez un mot de passe sécurisé.</p>
+        </div>
+
+        <form method="POST" action="/reinitialiser-mot-de-passe/<?= htmlspecialchars($reset_token ?? '') ?>" class="space-y-5">
+            <?= \App\Core\Csrf::field() ?>
+
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1.5">Nouveau mot de passe</label>
+                <div class="relative" x-data="{ show: false }">
+                    <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
+                        <i data-lucide="lock" class="w-5 h-5 text-gray-400"></i>
+                    </div>
+                    <input :type="show ? 'text' : 'password'" name="mot_de_passe" required minlength="8"
+                           class="block w-full pl-11 pr-12 py-3 border border-gray-200 text-sm focus:ring-2 focus:ring-violet-500 focus:border-transparent outline-none transition"
+                           placeholder="••••••••">
+                    <button type="button" @click="show = !show"
+                            class="absolute inset-y-0 right-0 pr-3.5 flex items-center text-gray-400 hover:text-gray-600 transition">
+                        <svg x-show="!show" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z"/><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+                        <svg x-show="show" x-cloak class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M3.98 8.223A10.477 10.477 0 001.934 12C3.226 16.338 7.244 19.5 12 19.5c.993 0 1.953-.138 2.863-.395M6.228 6.228A10.45 10.45 0 0112 4.5c4.756 0 8.773 3.162 10.065 7.498a10.523 10.523 0 01-4.293 5.774M6.228 6.228L3 3m3.228 3.228l3.65 3.65m7.894 7.894L21 21m-3.228-3.228l-3.65-3.65m0 0a3 3 0 10-4.243-4.243m4.242 4.242L9.88 9.88"/></svg>
+                    </button>
+                </div>
+            </div>
+
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1.5">Confirmer le mot de passe</label>
+                <input type="password" name="mot_de_passe_confirmation" required minlength="8"
+                       class="block w-full px-4 py-3 border border-gray-200 text-sm focus:ring-2 focus:ring-violet-500 focus:border-transparent outline-none transition"
+                       placeholder="••••••••">
+            </div>
+
+            <button type="submit"
+                    class="w-full bg-violet-500 hover:bg-violet-600 text-white font-semibold py-3 px-4 transition duration-200">
+                Réinitialiser le mot de passe
+            </button>
+        </form>
     </div>
 
     <!-- Lien dispatch pour le switch depuis connexion -->

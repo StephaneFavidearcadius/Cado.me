@@ -72,6 +72,13 @@ class CommunauteService
                 'statut' => 'actif',
             ]);
 
+            // Journal d'audit
+            $audit = new AuditService();
+            $audit->creer('communaute', (int) $communauteId, (int) $communauteId, [
+                'nom' => trim($data['nom']),
+                'slug' => $slug,
+            ]);
+
             $this->db->commit();
 
             // Recharger les communautés en session directement

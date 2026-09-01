@@ -80,4 +80,34 @@ class ProfilController extends Controller
         Session::flash('success', 'Profil mis à jour.');
         return $this->redirect("/c/{$slug}/profil");
     }
+
+    public function changerMotDePasse(string $slug): Response
+    {
+        $communauteService = new \App\Services\CommunauteService();
+        $communaute = $communauteService->recupererParSlug($slug);
+
+        if (!$communaute) {
+            return $this->view('errors.404', [], 404);
+        }
+
+        $ancienMdp = $_POST['ancien_mot_de_passe'] ?? '';
+        $nouveauMdp = $_POST['nouveau_mot_de_passe'] ?? '';
+        $confirmation = $_POST['confirmation_mot_de_passe'] ?? '';
+
+        if ($nouveauMdp !== $confirmation) {
+            Session::flash('error', 'Les mots de passe ne correspondent pas.');
+            return $this->redirect("/c/{$slug}/profil");
+        }
+
+        $authService = new \App\Services\AuthService();
+        $resultat = $authService->changerMotDePasse(Session::get('utilisateur_id'), $ancienMdp, $nouveauMdp);
+
+        if ($resultat['success']) {
+            Session::flash('success', 'Mot de passe changé avec succès.');
+        } else {
+            Session::flash('error', $resultat['errors'][0] ?? 'Erreur lors du changement.');
+        }
+
+        return $this->redirect("/c/{$slug}/profil");
+    }
 }

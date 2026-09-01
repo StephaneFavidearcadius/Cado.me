@@ -55,12 +55,12 @@
             <p class="text-sm text-gray-500 mt-1">Inviter des membres par email</p>
         </a>
 
-        <div class="bg-white border border-gray-100 p-6 opacity-50">
-            <div class="w-12 h-12 bg-gray-100 flex items-center justify-center mb-4">
-                <i data-lucide="shield" class="w-6 h-6 text-gray-400"></i>
+        <a href="/c/<?= $slug ?>/gestion/moderation" class="bg-white border border-gray-100 p-6 hover:shadow-md transition group">
+            <div class="w-12 h-12 bg-red-100 flex items-center justify-center mb-4 group-hover:bg-red-200 transition">
+                <i data-lucide="shield-alert" class="w-6 h-6 text-red-600"></i>
             </div>
-            <h3 class="font-semibold text-gray-900">Signalements</h3>
-            <p class="text-sm text-gray-500 mt-1">Bientôt disponible</p>
-        </div>
+            <h3 class="font-semibold text-gray-900 group-hover:text-red-600 transition">Modération</h3>
+            <p class="text-sm text-gray-500 mt-1">Gérer les signalements</p>
+        </a>
     </div>
 </div>
