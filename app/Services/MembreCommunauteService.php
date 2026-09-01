@@ -56,7 +56,65 @@ class MembreCommunauteService
             'statut' => 'actif',
         ]);
 
+        // Notifier le propriétaire du nouveau membre
+        $this->notifierNouveauMembre($communauteId, $utilisateurId);
+
         return ['success' => true];
+    }
+
+    /**
+     * Notifier le propriétaire d'un nouveau membre
+     */
+    private function notifierNouveauMembre(int $communauteId, int $nouveauMembreId): void
+    {
+        try {
+            // Récupérer le propriétaire
+            $stmt = $this->db->prepare(
+                'SELECT u.id, u.email, u.prenom, u.nom FROM membres_communautes mc
+                 JOIN utilisateurs u ON u.id = mc.utilisateur_id
+                 WHERE mc.communaute_id = :cid AND mc.role = :role LIMIT 1'
+            );
+            $stmt->execute(['cid' => $communauteId, 'role' => 'proprietaire']);
+            $proprietaire = $stmt->fetch();
+
+            if (!$proprietaire) return;
+
+            // Récupérer info du nouveau membre
+            $stmt2 = $this->db->prepare('SELECT prenom, nom FROM utilisateurs WHERE id = :uid');
+            $stmt2->execute(['uid' => $nouveauMembreId]);
+            $membre = $stmt2->fetch();
+
+            // Récupérer le slug de la communauté
+            $stmt3 = $this->db->prepare('SELECT slug, nom FROM communautes WHERE id = :cid');
+            $stmt3->execute(['cid' => $communauteId]);
+            $comm = $stmt3->fetch();
+
+            if (!$membre || !$comm) return;
+
+            $url = \App\Core\Config::get('app.url', 'http://localhost');
+
+            $emailService = new EmailService();
+            $emailService->envoyerNouveauMembre(
+                $proprietaire['email'],
+                $membre['prenom'],
+                $membre['nom'],
+                $comm['nom'],
+                $url . '/c/' . $comm['slug'] . '/membres'
+            );
+
+            // Notification in-app
+            $notifService = new NotificationService();
+            $notifService->creer(
+                $communauteId,
+                $proprietaire['id'],
+                'nouveau_membre',
+                'Nouveau membre',
+                "{$membre['prenom']} {$membre['nom']} a rejoint la communauté.",
+                '/c/' . $comm['slug'] . '/membres'
+            );
+        } catch (\Exception $e) {
+            // Ne pas faire échouer l'adhésion si la notification échoue
+        }
     }
 
     /**

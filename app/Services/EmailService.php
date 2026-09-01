@@ -30,7 +30,7 @@ class EmailService
             $mailer->send($email);
             return true;
         } catch (\Exception $e) {
-            error_log("Erreur envoi email: " . $e->getMessage());
+            \App\Core\Logger::error('Erreur envoi email', ['destinataire' => $destinataire, 'erreur' => $e->getMessage()]);
             return false;
         }
     }
@@ -72,6 +72,17 @@ class EmailService
             'url_reset' => $url,
         ]);
         return $this->envoyer($destinataire, 'Réinitialisation de mot de passe - Cado.me', $contenuHtml);
+    }
+
+    public function envoyerNouveauMembre(string $destinataire, string $prenomMembre, string $nomMembre, string $nomCommunaute, string $urlMembre): bool
+    {
+        $contenuHtml = $this->chargerTemplate('nouveau_membre', [
+            'prenom_membre' => $prenomMembre,
+            'nom_membre' => $nomMembre,
+            'nom_communaute' => $nomCommunaute,
+            'url_membre' => $urlMembre,
+        ]);
+        return $this->envoyer($destinataire, "Nouveau membre dans {$nomCommunaute} - Cado.me", $contenuHtml);
     }
 
     public function envoyerNotificationCommunaute(string $destinataire, string $titre, string $message, ?string $urlAction = null): bool

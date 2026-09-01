@@ -241,13 +241,32 @@ $derniersMembres = $stmt3->fetchAll();
                 <div x-show="showComments" x-cloak x-transition class="mt-3 pt-3 border-t border-gray-100">
                     <div class="space-y-2 mb-3">
                         <template x-for="c in comments" :key="c.id">
-                            <div class="flex items-start gap-2">
+                            <div class="flex items-start gap-2 group">
                                 <div class="w-7 h-7 flex items-center justify-center flex-shrink-0" style="background: var(--comm-color-light);">
                                     <span class="text-[10px] font-bold" style="color: var(--comm-color);" x-text="c.prenom.charAt(0)"></span>
                                 </div>
-                                <div class="bg-gray-50 border border-gray-100 px-3 py-2 flex-1">
-                                    <p class="text-xs font-semibold text-gray-900" x-text="c.prenom + ' ' + c.nom"></p>
+                                <div class="bg-gray-50 border border-gray-100 px-3 py-2 flex-1 relative">
+                                    <div class="flex items-center justify-between">
+                                        <p class="text-xs font-semibold text-gray-900" x-text="c.prenom + ' ' + c.nom"></p>
+                                        <button @click="showReportComment = c.id" class="opacity-0 group-hover:opacity-100 transition p-0.5 text-gray-300 hover:text-red-500">
+                                            <i data-lucide="flag" class="w-3 h-3"></i>
+                                        </button>
+                                    </div>
                                     <p class="text-sm text-gray-700" x-text="c.contenu"></p>
+                                    <!-- Modal signaler commentaire -->
+                                    <div x-show="showReportComment === c.id" @click.away="showReportComment = null" x-cloak
+                                         class="absolute right-0 bottom-full mb-2 w-64 bg-white border border-gray-200 shadow-lg p-3 z-50">
+                                        <p class="text-xs font-semibold text-gray-900 mb-2">Signaler ce commentaire</p>
+                                        <form @submit.prevent="reportComment(c.id, $el)">
+                                            <?= \App\Core\Csrf::field() ?>
+                                            <input type="text" name="motif" required placeholder="Motif..."
+                                                   class="w-full px-2 py-1.5 border border-gray-200 text-xs outline-none mb-2">
+                                            <div class="flex gap-1">
+                                                <button type="submit" class="flex-1 px-2 py-1 bg-red-500 text-white text-xs font-medium hover:bg-red-600">Signaler</button>
+                                                <button type="button" @click="showReportComment = null" class="px-2 py-1 border border-gray-200 text-gray-500 text-xs hover:bg-gray-50">Annuler</button>
+                                            </div>
+                                        </form>
+                                    </div>
                                 </div>
                             </div>
                         </template>
@@ -438,6 +457,7 @@ function publication(pubId, nbLikes, nbComments, pubSlug) {
         shareCount: <?= (int)($pub['nb_partages'] ?? 0) ?>,
         showReportModal: false,
         reportMotif: '',
+        showReportComment: null,
         showComments: false,
         comments: [],
         newComment: '',
@@ -567,6 +587,56 @@ function publication(pubId, nbLikes, nbComments, pubSlug) {
                     navigator.clipboard.writeText(url).then(() => alert('Lien copié !'));
                 }
             }
+        },
+
+        async submitReport(formEl) {
+            const motif = formEl.querySelector('textarea[name=motif]').value;
+            if (!motif.trim()) return;
+            try {
+                const csrfEl = document.querySelector('input[name="_token"]');
+                const csrfToken = csrfEl ? csrfEl.value : '';
+                const resp = await fetch('/c/' + this.slug + '/publications/' + this.id + '/signaler', {
+                    method: 'POST',
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest',
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                        'X-CSRF-Token': csrfToken
+                    },
+                    body: 'motif=' + encodeURIComponent(motif) + '&_token=' + encodeURIComponent(csrfToken)
+                });
+                const data = await resp.json();
+                if (data.success) {
+                    alert('Signalement envoyé. Merci.');
+                    this.showReportModal = false;
+                } else {
+                    alert(data.errors ? data.errors[0] : 'Erreur.');
+                }
+            } catch(err) { alert('Erreur lors du signalement.'); }
+        },
+
+        async reportComment(commentId, formEl) {
+            const motif = formEl.querySelector('input[name=motif]').value;
+            if (!motif.trim()) return;
+            try {
+                const csrfEl = document.querySelector('input[name="_token"]');
+                const csrfToken = csrfEl ? csrfEl.value : '';
+                const resp = await fetch('/c/' + this.slug + '/publications/' + this.id + '/signaler', {
+                    method: 'POST',
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest',
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                        'X-CSRF-Token': csrfToken
+                    },
+                    body: 'motif=' + encodeURIComponent('[Commentaire #' + commentId + '] ' + motif) + '&_token=' + encodeURIComponent(csrfToken)
+                });
+                const data = await resp.json();
+                if (data.success) {
+                    alert('Commentaire signalé.');
+                    this.showReportComment = null;
+                } else {
+                    alert(data.errors ? data.errors[0] : 'Erreur.');
+                }
+            } catch(err) { alert('Erreur.'); }
         },
 
         async toggleEpingle() {
