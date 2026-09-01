@@ -65,11 +65,19 @@ class FormationController extends Controller
         $leconsSansModule = $formationService->listerLecons($communaute['id'], $formationData['id']);
         $leconsSansModule = array_filter($leconsSansModule, fn($l) => empty($l['module_id']));
 
+        // Progression de l'utilisateur
+        $userId = \App\Core\Session::get('utilisateur_id');
+        $progressionService = new \App\Services\ProgressionService();
+        $leconsTerminees = $progressionService->getLeconsTerminees($communaute['id'], $userId, $formationData['id']);
+        $pourcentage = $progressionService->getPourcentage($communaute['id'], $userId, $formationData['id']);
+
         return $this->viewCommunity('formations.detail', [
             'communaute' => $communaute,
             'formation' => $formationData,
             'modules' => $modules,
             'lecons' => $leconsSansModule,
+            'leconsTerminees' => $leconsTerminees,
+            'pourcentage' => $pourcentage,
             'titre' => $formationData['titre'],
         ]);
     }

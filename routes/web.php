@@ -19,6 +19,7 @@ use App\Controllers\InvitationController;
 use App\Controllers\ModerationController;
 use App\Controllers\RechercheController;
 use App\Controllers\ProgressionController;
+use App\Controllers\RgpdController;
 use App\Controllers\AdminAuthController;
 use App\Middleware\AdminAuthMiddleware;
 use App\Middleware\AdminGuestMiddleware;
@@ -64,6 +65,8 @@ $router->post('/reinitialiser-mot-de-passe/{token}', [AuthController::class, 're
 // Vérification email
 $router->middleware([CsrfMiddleware::class]);
 $router->get('/verifier-email/{token}', [AuthController::class, 'verifierEmail']);
+$router->middleware([AuthMiddleware::class, CsrfMiddleware::class]);
+$router->post('/renvoyer-verification', [AuthController::class, 'renvoyerVerification']);
 
 // ===== DASHBOARD UTILISATEUR =====
 $router->middleware([AuthMiddleware::class, CsrfMiddleware::class]);
@@ -76,6 +79,14 @@ $router->post('/app/communautes', [CommunauteController::class, 'creer']);
 $router->middleware([AuthMiddleware::class, CsrfMiddleware::class]);
 $router->get('/abonnement', [AbonnementController::class, 'index']);
 $router->post('/abonnement/souscrire', [AbonnementController::class, 'souscrire']);
+
+// ===== RGPD =====
+$router->middleware([AuthMiddleware::class, CsrfMiddleware::class]);
+$router->get('/app/compte/exporter', [RgpdController::class, 'exporterDonnees']);
+$router->middleware([AuthMiddleware::class, CsrfMiddleware::class]);
+$router->get('/app/compte/supprimer', [RgpdController::class, 'formulaireSuppression']);
+$router->middleware([AuthMiddleware::class, CsrfMiddleware::class]);
+$router->post('/app/compte/supprimer', [RgpdController::class, 'supprimerCompte']);
 
 // ===== COMMUNAUTÉS (publiques, sans auth) =====
 $router->middleware([CommunauteMiddleware::class]);

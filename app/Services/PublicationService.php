@@ -104,7 +104,8 @@ class PublicationService
         $stmt = $this->db->prepare(
             'SELECT p.*, u.prenom, u.nom, u.avatar, u.identifiant,
                     (SELECT COUNT(*) FROM commentaires WHERE publication_id = p.id AND statut = :statut_c AND communaute_id = p.communaute_id) as nb_commentaires,
-                    (SELECT COUNT(*) FROM likes_publications WHERE publication_id = p.id AND communaute_id = p.communaute_id) as nb_likes
+                    (SELECT COUNT(*) FROM likes_publications WHERE publication_id = p.id AND communaute_id = p.communaute_id) as nb_likes,
+                    (SELECT COUNT(*) FROM partages_publications WHERE publication_id = p.id AND communaute_id = p.communaute_id) as nb_partages
              FROM publications p
              JOIN utilisateurs u ON u.id = p.utilisateur_id
              WHERE p.communaute_id = :cid AND p.statut = :statut

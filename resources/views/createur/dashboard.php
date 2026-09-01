@@ -135,6 +135,21 @@ $nbCommunautes = count($mesCommunautes ?? []);
         </div>
     </div>
     <?php endif; ?>
+
+    <!-- Paramètres du compte -->
+    <div class="mt-8 bg-white border border-gray-100 p-6">
+        <h2 class="font-semibold text-gray-900 mb-4">Paramètres du compte</h2>
+        <div class="flex flex-wrap gap-3">
+            <a href="/app/compte/exporter" class="inline-flex items-center gap-2 px-4 py-2 bg-gray-50 border border-gray-200 text-sm text-gray-700 hover:bg-gray-100 transition">
+                <i data-lucide="download" class="w-4 h-4"></i>
+                Exporter mes données
+            </a>
+            <a href="/app/compte/supprimer" class="inline-flex items-center gap-2 px-4 py-2 bg-red-50 border border-red-200 text-sm text-red-600 hover:bg-red-100 transition">
+                <i data-lucide="trash-2" class="w-4 h-4"></i>
+                Supprimer mon compte
+            </a>
+        </div>
+    </div>
 </div>
 
 <script>lucide.createIcons();</script>

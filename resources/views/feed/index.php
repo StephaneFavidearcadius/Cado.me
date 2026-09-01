@@ -181,8 +181,10 @@ $derniersMembres = $stmt3->fetchAll();
                     </button>
 
                     <!-- Share -->
-                    <button @click="sharePub()" class="flex items-center gap-1.5 text-sm transition" style="color: #6B7280;">
+                    <button @click="sharePub()" class="flex items-center gap-1.5 text-sm transition"
+                            :style="isPartagee ? 'color: var(--comm-color); font-weight: 500' : 'color: #6B7280'">
                         <i data-lucide="share-2" class="w-4 h-4"></i>
+                        <span x-show="shareCount > 0" x-text="shareCount"></span>
                     </button>
 
                     <!-- Bookmark (Favori) -->
@@ -190,6 +192,33 @@ $derniersMembres = $stmt3->fetchAll();
                             :class="isFavori ? 'text-amber-500 font-medium' : 'text-gray-500 hover:text-amber-500'">
                         <i data-lucide="bookmark" class="w-4 h-4" :class="isFavori ? 'fill-amber-500' : ''"></i>
                     </button>
+
+                    <!-- Signaler -->
+                    <div class="relative ml-auto" x-data="{ reportOpen: false }">
+                        <button @click="reportOpen = !reportOpen" class="p-1.5 text-gray-400 hover:text-red-500 transition">
+                            <i data-lucide="flag" class="w-4 h-4"></i>
+                        </button>
+                        <div x-show="reportOpen" @click.away="reportOpen = false" x-cloak
+                             class="absolute right-0 bottom-full mb-2 w-72 bg-white border border-gray-200 shadow-lg p-4 z-50">
+                            <p class="text-sm font-semibold text-gray-900 mb-2">Signaler cette publication</p>
+                            <form @submit.prevent="submitReport($el, $event)">
+                                <?= \App\Core\Csrf::field() ?>
+                                <textarea name="motif" rows="3" required
+                                          class="w-full px-3 py-2 border border-gray-200 text-sm outline-none focus:ring-2 focus:ring-red-300 resize-none mb-2"
+                                          placeholder="Décrivez le problème..."></textarea>
+                                <div class="flex gap-2">
+                                    <button type="submit"
+                                            class="flex-1 px-3 py-2 bg-red-500 text-white text-sm font-medium hover:bg-red-600 transition">
+                                        Signaler
+                                    </button>
+                                    <button type="button" @click="reportOpen = false"
+                                            class="px-3 py-2 border border-gray-200 text-gray-600 text-sm hover:bg-gray-50 transition">
+                                        Annuler
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
 
                     <?php if ($estAdmin): ?>
                     <!-- Épingler -->
@@ -405,6 +434,10 @@ function publication(pubId, nbLikes, nbComments, pubSlug) {
         commentCount: nbComments,
         isFavori: false,
         isEpinglee: <?= !empty($pub['epinglee']) ? 'true' : 'false' ?>,
+        isPartagee: false,
+        shareCount: <?= (int)($pub['nb_partages'] ?? 0) ?>,
+        showReportModal: false,
+        reportMotif: '',
         showComments: false,
         comments: [],
         newComment: '',
@@ -507,14 +540,32 @@ function publication(pubId, nbLikes, nbComments, pubSlug) {
             } catch(err) {}
         },
 
-        sharePub() {
-            const url = window.location.origin + '/c/' + this.slug + '/feed#pub-' + this.id;
-            if (navigator.share) {
-                navigator.share({ title: 'Publication Cado.me', url: url });
-            } else {
-                navigator.clipboard.writeText(url).then(() => {
-                    alert('Lien copié !');
+        async sharePub() {
+            try {
+                const csrfEl = document.querySelector('input[name="_token"]');
+                const csrfToken = csrfEl ? csrfEl.value : '';
+                const resp = await fetch('/c/' + this.slug + '/publications/' + this.id + '/partager', {
+                    method: 'POST',
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest',
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                        'X-CSRF-Token': csrfToken
+                    },
+                    body: '_token=' + encodeURIComponent(csrfToken)
                 });
+                const data = await resp.json();
+                if (data.success) {
+                    this.isPartagee = data.action === 'share';
+                    this.shareCount = data.nb_partages || 0;
+                }
+            } catch(err) {
+                // Fallback: copier le lien
+                const url = window.location.origin + '/c/' + this.slug + '/feed#pub-' + this.id;
+                if (navigator.share) {
+                    navigator.share({ title: 'Publication Cado.me', url: url });
+                } else {
+                    navigator.clipboard.writeText(url).then(() => alert('Lien copié !'));
+                }
             }
         },
 

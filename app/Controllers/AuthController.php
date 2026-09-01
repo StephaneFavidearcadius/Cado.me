@@ -149,6 +149,17 @@ class AuthController extends Controller
 
     // ===== VÉRIFICATION EMAIL =====
 
+    public function renvoyerVerification(): Response
+    {
+        $authService = new AuthService();
+        $userId = Session::get('utilisateur_id');
+        if ($userId) {
+            $authService->envoyerVerificationEmail($userId);
+        }
+        Session::flash('success', 'Un email de vérification vous a été envoyé.');
+        return $this->redirect('/app');
+    }
+
     public function verifierEmail(string $token): Response
     {
         $authService = new AuthService();

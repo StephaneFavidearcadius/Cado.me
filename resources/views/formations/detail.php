@@ -17,9 +17,9 @@
                     <h2 class="font-bold text-gray-900 text-sm leading-tight"><?= htmlspecialchars($formation['titre']) ?></h2>
                     <div class="flex items-center gap-2 mt-2">
                         <div class="w-full bg-gray-100 h-1.5 flex-1">
-                            <div class="h-1.5" style="width: 0%; background: var(--comm-color, #7830E0);"></div>
+                            <div class="h-1.5 transition-all duration-500" style="width: <?= $pourcentage ?>%; background: var(--comm-color, #7830E0);"></div>
                         </div>
-                        <span class="text-xs text-gray-400">0%</span>
+                        <span class="text-xs font-medium" style="color: var(--comm-color);"><?= $pourcentage ?>%</span>
                     </div>
                     <div class="flex items-center gap-3 mt-2 text-xs text-gray-400">
                         <span><?= count($modules) ?> module(s)</span>
@@ -48,11 +48,25 @@
                         <div class="module-content">
                             <?php if (!empty($module['lecons'])): ?>
                             <?php foreach ($module['lecons'] as $leconIndex => $lecon): ?>
-                            <div class="pl-10 pr-5 py-2.5 flex items-center gap-2 hover:bg-gray-50 transition cursor-pointer border-l-2 border-transparent hover:border-violet-300">
-                                <div class="w-5 h-5 bg-gray-100 flex items-center justify-center flex-shrink-0">
-                                    <span class="text-gray-400 text-[10px]"><?= $leconIndex + 1 ?></span>
-                                </div>
-                                <span class="text-xs text-gray-600 truncate flex-1"><?= htmlspecialchars($lecon['titre']) ?></span>
+                            <?php $estTerminee = in_array($lecon['id'], $leconsTerminees ?? []); ?>
+                            <div class="pl-10 pr-5 py-2.5 flex items-center gap-2 hover:bg-gray-50 transition cursor-pointer border-l-2 <?= $estTerminee ? 'border-emerald-400' : 'border-transparent hover:border-violet-300' ?>">
+                                <form method="POST" action="/c/<?= $slug ?>/formations/<?= htmlspecialchars($formation['slug']) ?>/lecons/<?= $lecon['id'] ?>/<?= $estTerminee ? 'annuler' : 'terminer' ?>"
+                                      class="inline" x-data @submit.prevent="async (e) => {
+                                          const form = e.target;
+                                          const resp = await fetch(form.action, { method: 'POST', headers: { 'X-Requested-With': 'XMLHttpRequest', 'X-CSRF-Token': form.querySelector('input[name=_token]').value } });
+                                          const data = await resp.json();
+                                          if (data.success) location.reload();
+                                      }">
+                                    <?= \App\Core\Csrf::field() ?>
+                                    <button type="submit" class="w-5 h-5 flex items-center justify-center flex-shrink-0 <?= $estTerminee ? 'bg-emerald-500 text-white' : 'bg-gray-100 hover:bg-violet-100' ?>">
+                                        <?php if ($estTerminee): ?>
+                                        <i data-lucide="check" class="w-3 h-3"></i>
+                                        <?php else: ?>
+                                        <span class="text-gray-400 text-[10px]"><?= $leconIndex + 1 ?></span>
+                                        <?php endif; ?>
+                                    </button>
+                                </form>
+                                <span class="text-xs <?= $estTerminee ? 'text-emerald-600 font-medium' : 'text-gray-600' ?> truncate flex-1"><?= htmlspecialchars($lecon['titre']) ?></span>
                                 <?php if (!empty($lecon['video_url']) || !empty($lecon['video_fichier'])): ?>
                                 <i data-lucide="play-circle" class="w-3 h-3 text-gray-300 flex-shrink-0"></i>
                                 <?php endif; ?>
@@ -68,11 +82,16 @@
                     <?php endforeach; ?>
                     <?php elseif (!empty($lecons)): ?>
                     <?php foreach ($lecons as $leconIndex => $lecon): ?>
-                    <div class="pl-5 pr-5 py-2.5 flex items-center gap-2 hover:bg-gray-50 transition cursor-pointer border-l-2 border-transparent hover:border-violet-300">
-                        <div class="w-5 h-5 bg-gray-100 flex items-center justify-center flex-shrink-0">
-                            <span class="text-gray-400 text-[10px]"><?= $leconIndex + 1 ?></span>
-                        </div>
-                        <span class="text-xs text-gray-600 truncate flex-1"><?= htmlspecialchars($lecon['titre']) ?></span>
+                    <?php $estTerminee2 = in_array($lecon['id'], $leconsTerminees ?? []); ?>
+                    <div class="pl-5 pr-5 py-2.5 flex items-center gap-2 hover:bg-gray-50 transition cursor-pointer border-l-2 <?= $estTerminee2 ? 'border-emerald-400' : 'border-transparent hover:border-violet-300' ?>">
+                        <form method="POST" action="/c/<?= $slug ?>/formations/<?= htmlspecialchars($formation['slug']) ?>/lecons/<?= $lecon['id'] ?>/<?= $estTerminee2 ? 'annuler' : 'terminer' ?>"
+                              class="inline" x-data @submit.prevent="async (e) => { const f=e.target; const r=await fetch(f.action,{method:'POST',headers:{'X-Requested-With':'XMLHttpRequest','X-CSRF-Token':f.querySelector('input[name=_token]').value}}); const d=await r.json(); if(d.success)location.reload(); }">
+                            <?= \App\Core\Csrf::field() ?>
+                            <button type="submit" class="w-5 h-5 flex items-center justify-center flex-shrink-0 <?= $estTerminee2 ? 'bg-emerald-500 text-white' : 'bg-gray-100 hover:bg-violet-100' ?>">
+                                <?php if ($estTerminee2): ?><i data-lucide="check" class="w-3 h-3"></i><?php else: ?><span class="text-gray-400 text-[10px]"><?= $leconIndex + 1 ?></span><?php endif; ?>
+                            </button>
+                        </form>
+                        <span class="text-xs <?= $estTerminee2 ? 'text-emerald-600 font-medium' : 'text-gray-600' ?> truncate flex-1"><?= htmlspecialchars($lecon['titre']) ?></span>
                         <?php if (!empty($lecon['video_url']) || !empty($lecon['video_fichier'])): ?>
                         <i data-lucide="play-circle" class="w-3 h-3 text-gray-300 flex-shrink-0"></i>
                         <?php endif; ?>

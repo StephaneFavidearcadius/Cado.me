@@ -67,6 +67,31 @@
     </div>
     <?php endif; ?>
 
+    <?php if (!empty($_SESSION['utilisateur_id'])): ?>
+    <?php
+    $dbVerif = \App\Core\Database::getInstance();
+    $stmtVerif = $dbVerif->prepare('SELECT email_verifie, email FROM utilisateurs WHERE id = :uid');
+    $stmtVerif->execute(['uid' => $_SESSION['utilisateur_id']]);
+    $userVerif = $stmtVerif->fetch();
+    ?>
+    <?php if ($userVerif && !$userVerif['email_verifie']): ?>
+    <div class="bg-amber-50 border-b border-amber-200 px-4 py-2.5">
+        <div class="max-w-7xl mx-auto flex items-center justify-between">
+            <div class="flex items-center gap-2">
+                <i data-lucide="alert-triangle" class="w-4 h-4 text-amber-600"></i>
+                <span class="text-sm text-amber-800">Votre adresse email n'est pas vérifiée.</span>
+            </div>
+            <form method="POST" action="/renvoyer-verification" class="inline">
+                <?= \App\Core\Csrf::field() ?>
+                <button type="submit" class="text-sm font-medium text-amber-700 hover:text-amber-900 underline">
+                    Renvoyer la vérification
+                </button>
+            </form>
+        </div>
+    </div>
+    <?php endif; ?>
+    <?php endif; ?>
+
     <?php
     $mesCommunautes = $_SESSION['mes_communautes'] ?? [];
     $commActive = $_SESSION['communaute_courante'] ?? ($mesCommunautes[0] ?? null);
