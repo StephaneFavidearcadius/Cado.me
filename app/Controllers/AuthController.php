@@ -27,6 +27,13 @@ class AuthController extends Controller
         $resultat = $authService->connecter($email, $motDePasse);
 
         if ($resultat['success']) {
+            // Vérifier si un token d'invitation est en attente
+            $invitationToken = Session::get('invitation_token');
+            if ($invitationToken) {
+                Session::forget('invitation_token');
+                return $this->redirect("/invitation/{$invitationToken}");
+            }
+
             Session::flash('success', 'Bienvenue !');
             return $this->redirect('/app');
         }
@@ -52,6 +59,14 @@ class AuthController extends Controller
         if ($resultat['success']) {
             // Connecter automatiquement
             $authService->connecter($_POST['email'], $_POST['mot_de_passe']);
+
+            // Vérifier si un token d'invitation est en attente
+            $invitationToken = Session::get('invitation_token');
+            if ($invitationToken) {
+                Session::forget('invitation_token');
+                return $this->redirect("/invitation/{$invitationToken}");
+            }
+
             Session::flash('success', 'Votre compte a été créé avec succès !');
             return $this->redirect('/app');
         }

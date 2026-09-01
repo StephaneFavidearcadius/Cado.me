@@ -15,6 +15,7 @@ use App\Controllers\ProfilController;
 use App\Controllers\RessourceController;
 use App\Controllers\AbonnementController;
 use App\Controllers\FavoriController;
+use App\Controllers\InvitationController;
 use App\Controllers\AdminAuthController;
 use App\Middleware\AdminAuthMiddleware;
 use App\Middleware\AdminGuestMiddleware;
@@ -175,6 +176,22 @@ $router->get('/c/{slug}/profil', [ProfilController::class, 'index']);
 $router->middleware([AuthMiddleware::class, CommunauteMiddleware::class, CsrfMiddleware::class]);
 $router->post('/c/{slug}/profil', [ProfilController::class, 'modifier']);
 
+// Invitations (propriétaire/admin)
+$router->middleware([AuthMiddleware::class, CommunauteMiddleware::class, AdministrateurMiddleware::class, CsrfMiddleware::class]);
+$router->get('/c/{slug}/gestion/invitations', [InvitationController::class, 'index']);
+
+$router->middleware([AuthMiddleware::class, CommunauteMiddleware::class, AdministrateurMiddleware::class, CsrfMiddleware::class]);
+$router->post('/c/{slug}/gestion/invitations/envoyer', [InvitationController::class, 'envoyer']);
+
+$router->middleware([AuthMiddleware::class, CommunauteMiddleware::class, AdministrateurMiddleware::class, CsrfMiddleware::class]);
+$router->post('/c/{slug}/gestion/invitations/envoyer-masse', [InvitationController::class, 'envoyerEnMasse']);
+
+$router->middleware([AuthMiddleware::class, CommunauteMiddleware::class, AdministrateurMiddleware::class, CsrfMiddleware::class]);
+$router->post('/c/{slug}/gestion/invitations/{id}/supprimer', [InvitationController::class, 'supprimer']);
+
+$router->middleware([AuthMiddleware::class, CommunauteMiddleware::class, AdministrateurMiddleware::class, CsrfMiddleware::class]);
+$router->post('/c/{slug}/gestion/invitations/{id}/renvoyer', [InvitationController::class, 'renvoyer']);
+
 // ===== GESTION COMMUNAUTÉ (propriétaire/admin) =====
 $router->middleware([AuthMiddleware::class, CommunauteMiddleware::class, AdministrateurMiddleware::class, CsrfMiddleware::class]);
 $router->get('/c/{slug}/gestion', [CommunauteController::class, 'gestion']);
@@ -184,6 +201,16 @@ $router->get('/c/{slug}/gestion/parametres', [CommunauteController::class, 'para
 
 $router->middleware([AuthMiddleware::class, CommunauteMiddleware::class, AdministrateurMiddleware::class, CsrfMiddleware::class]);
 $router->post('/c/{slug}/gestion/parametres', [CommunauteController::class, 'modifierParametres']);
+
+// Invitations publiques (lien d'invitation)
+$router->middleware([CsrfMiddleware::class]);
+$router->get('/invitation/{token}', [InvitationController::class, 'accepterPage']);
+
+$router->middleware([CsrfMiddleware::class]);
+$router->post('/invitation/{token}/accepter', [InvitationController::class, 'accepter']);
+
+$router->middleware([CsrfMiddleware::class]);
+$router->post('/invitation/{token}/refuser', [InvitationController::class, 'refuser']);
 
 // ===== ADMINISTRATION PLATEFORME (connexion separee) =====
 $router->middleware([AdminGuestMiddleware::class, CsrfMiddleware::class]);

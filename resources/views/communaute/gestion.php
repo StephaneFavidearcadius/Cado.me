@@ -47,6 +47,14 @@
             <p class="text-sm text-gray-500 mt-1">Planifier des événements</p>
         </a>
 
+        <a href="/c/<?= $slug ?>/gestion/invitations" class="bg-white border border-gray-100 p-6 hover:shadow-md transition group">
+            <div class="w-12 h-12 bg-violet-100 flex items-center justify-center mb-4 group-hover:bg-violet-200 transition">
+                <i data-lucide="mail-plus" class="w-6 h-6 text-violet-600"></i>
+            </div>
+            <h3 class="font-semibold text-gray-900 group-hover:text-violet-600 transition">Invitations</h3>
+            <p class="text-sm text-gray-500 mt-1">Inviter des membres par email</p>
+        </a>
+
         <div class="bg-white border border-gray-100 p-6 opacity-50">
             <div class="w-12 h-12 bg-gray-100 flex items-center justify-center mb-4">
                 <i data-lucide="shield" class="w-6 h-6 text-gray-400"></i>
