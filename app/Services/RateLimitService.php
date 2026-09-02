@@ -22,9 +22,19 @@ class RateLimitService
         'upload'               => [20, 3600],    // 20 / heure
     ];
 
+    private bool $available = false;
+
     public function __construct()
     {
-        $this->db = Database::getInstance();
+        try {
+            $this->db = Database::getInstance();
+            // Vérifier que la table existe
+            $this->db->query('SELECT 1 FROM rate_limits LIMIT 0');
+            $this->available = true;
+        } catch (\PDOException \Exception) {
+            // Table rate_limits inexistante — on désactive le rate limiting
+            $this->available = false;
+        }
     }
 
     /**
@@ -32,6 +42,10 @@ class RateLimitService
      */
     public function estAutorise(string $action, string $cle): bool
     {
+        if (!$this->available) {
+            return true; // Pas de table = pas de limite
+        }
+
         $limite = self::LIMITES[$action] ?? [60, 600]; // défaut : 60/10min
         $max = $limite[0];
         $fenetre = $limite[1];
@@ -81,6 +95,10 @@ class RateLimitService
      */
     public function restantes(string $action, string $cle): int
     {
+        if (!$this->available) {
+            return 999;
+        }
+
         $limite = self::LIMITES[$action] ?? [60, 600];
         $max = $limite[0];
         $fenetre = $limite[1];
@@ -102,6 +120,10 @@ class RateLimitService
      */
     private function nettoyer(string $cle, int $fenetre): void
     {
+        if (!$this->available) {
+            return;
+        }
+
         $stmt = $this->db->prepare(
             'DELETE FROM rate_limits WHERE cle = :cle AND date_premiere < DATE_SUB(NOW(), INTERVAL :fenetre SECOND)'
         );

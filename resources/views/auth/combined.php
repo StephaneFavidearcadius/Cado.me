@@ -1,20 +1,22 @@
-<div x-data="{ activeTab: '<?= $activeTab ?? 'connexion' ?>', // Allow overriding from PHP $resetToken: '<?= $reset_token ?? '' ?>' }">
+<?php $currentTab = $activeTab ?? 'connexion'; ?>
+
+<div>
     <!-- Tabs Onglets -->
     <div class="flex mb-6 bg-gray-100 p-1">
-        <button @click="activeTab = 'connexion'"
-                :class="activeTab === 'connexion' ? 'bg-white text-gray-900 shadow-sm font-semibold' : 'text-gray-500 hover:text-gray-700'"
-                class="flex-1 py-2.5 text-sm transition">
+        <button onclick="showTab('connexion')"
+                data-tab-btn="connexion"
+                class="flex-1 py-2.5 text-sm transition <?= $currentTab === 'connexion' ? 'bg-white text-gray-900 shadow-sm font-semibold' : 'text-gray-500 hover:text-gray-700' ?>">
             Connexion
         </button>
-        <button @click="activeTab = 'inscription'"
-                :class="activeTab === 'inscription' ? 'bg-white text-gray-900 shadow-sm font-semibold' : 'text-gray-500 hover:text-gray-700'"
-                class="flex-1 py-2.5 text-sm transition">
+        <button onclick="showTab('inscription')"
+                data-tab-btn="inscription"
+                class="flex-1 py-2.5 text-sm transition <?= $currentTab === 'inscription' ? 'bg-white text-gray-900 shadow-sm font-semibold' : 'text-gray-500 hover:text-gray-700' ?>">
             Inscription
         </button>
     </div>
 
     <!-- ===== FORMULAIRE CONNEXION ===== -->
-    <div x-show="activeTab === 'connexion'" x-transition>
+    <div data-tab="connexion" style="<?= $currentTab !== 'connexion' ? 'display:none' : '' ?>">
         <p class="text-gray-500 mb-6 text-sm text-center">Connectez-vous pour accéder à votre espace.</p>
 
         <form method="POST" action="/connexion" class="space-y-5">
@@ -46,12 +48,10 @@
                            placeholder="••••••••">
                     <button type="button" @click="show = !show"
                             class="absolute inset-y-0 right-0 pr-3.5 flex items-center text-gray-400 hover:text-gray-600 transition">
-                        <!-- Eye (mot de passe masqué) -->
                         <svg x-show="!show" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5">
                             <path stroke-linecap="square" stroke-linejoin="miter" d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z"/>
                             <path stroke-linecap="square" stroke-linejoin="miter" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
                         </svg>
-                        <!-- EyeOff (mot de passe visible) -->
                         <svg x-show="show" x-cloak class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5">
                             <path stroke-linecap="square" stroke-linejoin="miter" d="M3.98 8.223A10.477 10.477 0 001.934 12C3.226 16.338 7.244 19.5 12 19.5c.993 0 1.953-.138 2.863-.395M6.228 6.228A10.45 10.45 0 0112 4.5c4.756 0 8.773 3.162 10.065 7.498a10.523 10.523 0 01-4.293 5.774M6.228 6.228L3 3m3.228 3.228l3.65 3.65m7.894 7.894L21 21m-3.228-3.228l-3.65-3.65m0 0a3 3 0 10-4.243-4.243m4.242 4.242L9.88 9.88"/>
                         </svg>
@@ -61,7 +61,7 @@
 
             <!-- Mot de passe oublié -->
             <div class="text-right">
-                <a href="/mot-de-passe-oublie" @click.prevent="activeTab = 'reset_request'" class="text-sm text-violet-500 hover:text-violet-600 font-medium">
+                <a href="#" onclick="showTab('reset_request'); return false;" class="text-sm text-violet-500 hover:text-violet-600 font-medium">
                     Mot de passe oublié ?
                 </a>
             </div>
@@ -74,14 +74,14 @@
         </form>
 
         <div class="mt-4 text-center">
-            <a href="#" @click.prevent="$dispatch('switch-to-register')" class="text-sm text-violet-500 hover:text-violet-600 font-medium">
+            <a href="#" onclick="showTab('inscription'); return false;" class="text-sm text-violet-500 hover:text-violet-600 font-medium">
                 Pas encore de compte ? Créer un compte
             </a>
         </div>
     </div>
 
     <!-- ===== FORMULAIRE INSCRIPTION ===== -->
-    <div x-show="activeTab === 'inscription'" x-transition>
+    <div data-tab="inscription" style="<?= $currentTab !== 'inscription' ? 'display:none' : '' ?>">
         <p class="text-gray-500 mb-6 text-sm text-center">Créez votre compte Cado.me</p>
 
         <form method="POST" action="/inscription" class="space-y-5">
@@ -211,14 +211,14 @@
         </form>
 
         <div class="mt-4 text-center">
-            <a href="#" @click.prevent="activeTab = 'connexion'" class="text-sm text-violet-500 hover:text-violet-600 font-medium">
+            <a href="#" onclick="showTab('connexion'); return false;" class="text-sm text-violet-500 hover:text-violet-600 font-medium">
                 Déjà un compte ? Se connecter
             </a>
         </div>
     </div>
 
     <!-- ===== FORMULAIRE MOT DE PASSE OUBLIÉ ===== -->
-    <div x-show="activeTab === 'reset_request'" x-transition>
+    <div data-tab="reset_request" style="<?= $currentTab !== 'reset_request' ? 'display:none' : '' ?>">
         <p class="text-gray-500 mb-6 text-sm text-center">Entrez votre adresse email pour recevoir un lien de réinitialisation.</p>
 
         <form method="POST" action="/mot-de-passe-oublie" class="space-y-5">
@@ -243,14 +243,14 @@
         </form>
 
         <div class="mt-4 text-center">
-            <a href="#" @click.prevent="activeTab = 'connexion'" class="text-sm text-violet-500 hover:text-violet-600 font-medium">
+            <a href="#" onclick="showTab('connexion'); return false;" class="text-sm text-violet-500 hover:text-violet-600 font-medium">
                 Retour à la connexion
             </a>
         </div>
     </div>
 
     <!-- ===== EMAIL ENVOYÉ ===== -->
-    <div x-show="activeTab === 'reset_sent'" x-transition>
+    <div data-tab="reset_sent" style="<?= $currentTab !== 'reset_sent' ? 'display:none' : '' ?>">
         <div class="text-center py-8">
             <div class="w-16 h-16 bg-violet-100 flex items-center justify-center mx-auto mb-4">
                 <i data-lucide="mail-check" class="w-8 h-8 text-violet-600"></i>
@@ -268,7 +268,7 @@
     </div>
 
     <!-- ===== FORMULAIRE NOUVEAU MOT DE PASSE ===== -->
-    <div x-show="activeTab === 'reset_form'" x-transition>
+    <div data-tab="reset_form" style="<?= $currentTab !== 'reset_form' ? 'display:none' : '' ?>">
         <div class="text-center mb-6">
             <div class="w-12 h-12 bg-violet-100 flex items-center justify-center mx-auto mb-3">
                 <i data-lucide="key-round" class="w-6 h-6 text-violet-600"></i>
@@ -310,11 +310,32 @@
             </button>
         </form>
     </div>
-
-    <!-- Lien dispatch pour le switch depuis connexion -->
-    <div x-data @switch-to-register.window="activeTab = 'inscription'"></div>
 </div>
 
+<!-- Vanilla JS tab switching - works WITHOUT Alpine.js / CDN -->
+<script>
+function showTab(name) {
+    // Hide all tab content, show the target
+    document.querySelectorAll('[data-tab]').forEach(function(el) {
+        el.style.display = el.getAttribute('data-tab') === name ? '' : 'none';
+    });
+    // Update tab button styles
+    document.querySelectorAll('[data-tab-btn]').forEach(function(btn) {
+        var isActive = btn.getAttribute('data-tab-btn') === name;
+        btn.classList.toggle('bg-white', isActive);
+        btn.classList.toggle('text-gray-900', isActive);
+        btn.classList.toggle('shadow-sm', isActive);
+        btn.classList.toggle('font-semibold', isActive);
+        btn.classList.toggle('text-gray-500', !isActive);
+    });
+    // Re-create Lucide icons in newly visible content
+    if (typeof lucide !== 'undefined') {
+        lucide.createIcons();
+    }
+}
+</script>
+
+<!-- Alpine.js phone selector - progressive enhancement -->
 <script>
 function phoneSelector() {
     return {
@@ -366,10 +387,10 @@ function phoneSelector() {
         ],
         get filteredCountries() {
             if (!this.search) return this.countries;
-            const q = this.search.toLowerCase();
-            return this.countries.filter(c => c.name.toLowerCase().includes(q) || c.dial.includes(q));
+            var q = this.search.toLowerCase();
+            return this.countries.filter(function(c) { return c.name.toLowerCase().includes(q) || c.dial.includes(q); });
         },
-        selectCountry(c) {
+        selectCountry: function(c) {
             this.selectedCode = c.dial;
             this.selectedFlag = c.flag;
             this.search = '';
