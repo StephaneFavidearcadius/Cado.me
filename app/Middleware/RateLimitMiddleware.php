@@ -21,6 +21,11 @@ class RateLimitMiddleware
 
     public function handle(Request $request): ?Response
     {
+        // Le rate limiting ne s'applique qu'aux requêtes POST
+        if ($request->method() !== 'POST') {
+            return null;
+        }
+
         $method = $request->method();
         $uri = $request->uri();
         $cle = $this->getCleClient();

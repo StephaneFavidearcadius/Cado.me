@@ -31,8 +31,8 @@ class RateLimitService
             // Vérifier que la table existe
             $this->db->query('SELECT 1 FROM rate_limits LIMIT 0');
             $this->available = true;
-        } catch (\PDOException \Exception) {
-            // Table rate_limits inexistante — on désactive le rate limiting
+        } catch (\Exception $e) {
+            // Table rate_limits inexistante ou erreur DB — on désactive le rate limiting
             $this->available = false;
         }
     }
