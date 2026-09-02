@@ -7,10 +7,34 @@ use App\Core\Database;
 class PublicationService
 {
     private \PDO $db;
+    private static ?bool $hasPartagesTable = null;
 
     public function __construct()
     {
         $this->db = Database::getInstance();
+    }
+
+    /**
+     * Vérifier si une table existe dans la base
+     */
+    private function tableExists(string $table): bool
+    {
+        $stmt = $this->db->prepare(
+            'SELECT COUNT(*) as c FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = :table'
+        );
+        $stmt->execute(['table' => $table]);
+        return (int) $stmt->fetch()['c'] > 0;
+    }
+
+    /**
+     * Vérifier si la table partages_publications existe (cached)
+     */
+    private function hasPartagesTable(): bool
+    {
+        if (self::$hasPartagesTable === null) {
+            self::$hasPartagesTable = $this->tableExists('partages_publications');
+        }
+        return self::$hasPartagesTable;
     }
 
     /**
@@ -101,18 +125,21 @@ class PublicationService
     {
         $offset = ($page - 1) * $perPage;
 
+        $selectPartages = $this->hasPartagesTable()
+            ? '(SELECT COUNT(*) FROM partages_publications WHERE publication_id = p.id AND communaute_id = p.communaute_id) as nb_partages'
+            : '0 as nb_partages';
+
         $stmt = $this->db->prepare(
-            'SELECT p.*, u.prenom, u.nom, u.avatar, u.identifiant,
+            "SELECT p.*, u.prenom, u.nom, u.avatar, u.identifiant,
                     (SELECT COUNT(*) FROM commentaires WHERE publication_id = p.id AND statut = :statut_c AND communaute_id = p.communaute_id) as nb_commentaires,
                     (SELECT COUNT(*) FROM likes_publications WHERE publication_id = p.id AND communaute_id = p.communaute_id) as nb_likes,
-                    (SELECT COUNT(*) FROM partages_publications WHERE publication_id = p.id AND communaute_id = p.communaute_id) as nb_partages
+                    {$selectPartages}
              FROM publications p
              JOIN utilisateurs u ON u.id = p.utilisateur_id
              WHERE p.communaute_id = :cid AND p.statut = :statut
              ORDER BY p.date_creation DESC
-             LIMIT :limit OFFSET :offset'
+             LIMIT :limit OFFSET :offset"
         );
-
         $stmt->bindValue(':cid', $communauteId, \PDO::PARAM_INT);
         $stmt->bindValue(':statut', 'active');
         $stmt->bindValue(':statut_c', 'actif');

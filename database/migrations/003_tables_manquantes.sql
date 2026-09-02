@@ -122,4 +122,21 @@ CREATE TABLE IF NOT EXISTS `rate_limits` (
 -- -------------------------------------------
 CREATE INDEX IF NOT EXISTS `idx_rate_limits_cleanup` ON `rate_limits` (`date_premiere`);
 
+-- -------------------------------------------
+-- Table: partages_publications
+-- -------------------------------------------
+CREATE TABLE IF NOT EXISTS `partages_publications` (
+    `id` INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    `communaute_id` INT UNSIGNED NOT NULL,
+    `publication_id` INT UNSIGNED NOT NULL,
+    `utilisateur_id` INT UNSIGNED NOT NULL,
+    `date_creation` DATETIME NOT NULL,
+    UNIQUE KEY `uk_partages` (`communaute_id`, `publication_id`, `utilisateur_id`),
+    KEY `idx_partages_publication` (`publication_id`),
+    KEY `idx_partages_utilisateur` (`utilisateur_id`),
+    CONSTRAINT `fk_partages_communaute` FOREIGN KEY (`communaute_id`) REFERENCES `communautes` (`id`) ON DELETE CASCADE,
+    CONSTRAINT `fk_partages_publication` FOREIGN KEY (`publication_id`) REFERENCES `publications` (`id`) ON DELETE CASCADE,
+    CONSTRAINT `fk_partages_utilisateur` FOREIGN KEY (`utilisateur_id`) REFERENCES `utilisateurs` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
 SET FOREIGN_KEY_CHECKS = 1;
